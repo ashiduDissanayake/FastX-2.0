@@ -1,7 +1,15 @@
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import PublicLayout from './layouts/PublicLayout';
+import Home from './pages/Home';
+
 function App() {
   return (
     <>
-      <h1 className="text-4xl text-blue-500  font-bold underline">Hello world!</h1>
+      <Router>
+        <Routes>
+          <Route path="/" element={<PublicLayout> <Home/> </PublicLayout>} />
+        </Routes>
+      </Router>
     </>
   );
 }

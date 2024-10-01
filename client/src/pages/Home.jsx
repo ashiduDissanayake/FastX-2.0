@@ -1,9 +1,10 @@
 import React from "react";
+import Sales from "../components/home/Sales";
 
 export default function Home() {
   return (
     <div>
-      <h1 className="text-center text-black text-4xl text-bold">Home</h1>
+      <Sales />
     </div>
   );
 }

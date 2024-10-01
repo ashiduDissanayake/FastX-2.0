@@ -1,7 +1,10 @@
-import React from 'react'
+import React from "react";
+import Sales from "../components/home/Sales";
 
 export default function Home() {
   return (
-    <div>Home</div>
-  )
+    <div>
+      <Sales />
+    </div>
+  );
 }

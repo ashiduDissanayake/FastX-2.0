@@ -23,6 +23,20 @@ ALTER TABLE Customer
 ADD CONSTRAINT check_email_format 
 CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
 
+-- 2. Create the Product table
+CREATE TABLE `Product` (
+  `product_ID` INT AUTO_INCREMENT, -- Auto-incrementing primary key
+  `product_Name` varchar(20) NOT NULL UNIQUE, -- Product name is unique and cannot be NULL
+  `price` numeric(6,2) NOT NULL, -- Price cannot be NULL
+  `weight` INT NOT NULL, -- Weight cannot be NULL
+  `volume` INT NOT NULL, -- Volume cannot be NULL
+  `available_Qty` INT NOT NULL, -- Available quantity cannot be NULL
+  `image_link` varchar(255) NOT NULL, -- Image link cannot be NULL
+  `description` varchar(500) NOT NULL, -- Description cannot be NULL
+  PRIMARY KEY (`product_ID`) -- Primary key for product_ID
+);
+
+
 ------------------------------------------------------------
 ------------------------------------------------------------
 
@@ -44,18 +58,6 @@ CREATE TABLE `Store` (
   PRIMARY KEY (`store_ID`)
 );
 
--- 4. Create the Product table (store_ID references Store)
-CREATE TABLE `Product` (
-  `product_ID` varchar(10),
-  `product_Name` varchar(20),
-  `price` numeric(6,2),
-  `weight` INT,
-  `volume` INT,
-  `available_Qty` INT,
-  `image_link` varchar(255), -- New column for storing the image link
-  `description` varchar(500), -- New column for storing the product description
-  PRIMARY KEY (`product_ID`)
-);
 
 
 -- 5. Create the cart table (customer_ID references Customer, product_ID references Product, discount_ID references Discount)

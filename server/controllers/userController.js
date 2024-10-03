@@ -139,22 +139,113 @@ const userController = {
 
   // Post a product
   postProduct: (req, res) => {
-    const { product_Name, price, image, description } = req.body;
+    const {
+      product_Name,
+      price,
+      image,
+      description,
+      weight,
+      volume,
+      available_Qty,
+    } = req.body;
 
-    // Validate input data (you can add more validation logic)
-    if (!product_Name || !price || !image || !description) {
+    // Validate input data (you can add more validation logic as needed)
+    if (
+      !product_Name ||
+      !price ||
+      !image ||
+      !description ||
+      !weight ||
+      !volume ||
+      !available_Qty
+    ) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    // Call the create function from the product model
-    Product.create({ product_Name, price, image, description }, (err, result) => {
-      if (err) {
-        console.error("Error posting product:", err);  // Log error for debugging
-        return res.status(500).json({ error: err.message || "Database error" });
+    // Validate numerical fields
+    if (
+      isNaN(price) ||
+      isNaN(weight) ||
+      isNaN(volume) ||
+      isNaN(available_Qty)
+    ) {
+      return res
+        .status(400)
+        .json({
+          error:
+            "Price, weight, volume, and available quantity must be valid numbers",
+        });
+    }
+
+    // Call the create function from the Product model with all necessary parameters
+    Product.create(
+      {
+        product_Name,
+        price,
+        image_link: image,
+        description,
+        weight,
+        volume,
+        available_Qty,
+      },
+      (err, result) => {
+        if (err) {
+          console.error("Error posting product:", err); // Log error for debugging
+          return res
+            .status(500)
+            .json({ error: err.message || "Database error" });
+        }
+        res.status(201).json(result); // Return success response with message
       }
-      res.status(201).json(result);  // Return success response with message
+    );
+  },
+
+  // Get product by ID
+  getProductById: (req, res) => {
+    const productId = req.params.id;
+    Product.findById(productId, (err, product) => {
+      if (err) {
+        return res.status(500).json({ error: "Database error" });
+      }
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.json(product);
     });
   },
+
+  // Delete product
+  deleteProduct: (req, res) => {
+    const productId = req.params.id;
+    Product.delete(productId, (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: "Database error" });
+      }
+      res.json({ message: "Product deleted" });
+    });
+  },
+
+  // Update product
+  updateProduct: (req, res) => {
+    const productId = req.params.id;
+    const updatedData = req.body;
+    Product.update(productId, updatedData, (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: "Database error" });
+      }
+      res.json({ message: "Product updated" });
+    });
+  },
+
+
+
+
+
+
+
+
+
+
 
   // Get all users
   getUsers: (req, res) => {

@@ -17,7 +17,7 @@ function App() {
             <Route path="/login" element={<LoginForm />} />
             {/* Protected route - accessible only if authenticated */}
             <Route path="/signup" element={<SignUpForm />} />
-
+            
             {/* Other routes */}
             <Route
               path="/"

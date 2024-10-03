@@ -1,12 +1,11 @@
 import React from "react";
 import Sales from "../components/home/Sales";
-import Carousel from "../components/Carousel/Carousel";
+import Slider from "../components/Slider";
 
 export default function Home() {
-  
   return (
     <div>
-      <Carousel />
+      <Slider />
       <Sales />
     </div>
   );

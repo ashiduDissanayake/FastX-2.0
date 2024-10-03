@@ -1,16 +1,35 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import PublicLayout from './layouts/PublicLayout';
-import Home from './pages/Home';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import PublicRoute from "./layouts/PublicLayout";
+import ProtectedRoute from "./layouts/ProtectedLayout";
+import Home from "./pages/Home";
+import LoginForm from "./pages/Login";
+import SignUpForm from "./pages/Signup";
+import { AuthProvider } from "./context/AuthContext";
 import Carousel from './components/Carousel/Carousel';
 
 function App() {
   return (
     <>
-      <Router>
-        <Routes>
-          <Route path="/" element={<PublicLayout> <Carousel/> </PublicLayout>} />
-        </Routes>
-      </Router>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            {/* Public route - accessible only if not authenticated */}
+            <Route path="/login" element={<LoginForm />} />
+            {/* Protected route - accessible only if authenticated */}
+            <Route path="/signup" element={<SignUpForm />} />
+
+            {/* Other routes */}
+            <Route
+              path="/"
+              element={
+                <PublicRoute>
+                  <Home />
+                </PublicRoute>
+              }
+            />
+          </Routes>
+        </Router>
+      </AuthProvider>
     </>
   );
 }

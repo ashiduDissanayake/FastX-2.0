@@ -5,7 +5,7 @@ import Home from "./pages/Home";
 import LoginForm from "./pages/Login";
 import SignUpForm from "./pages/Signup";
 import { AuthProvider } from "./context/AuthContext";
-import Carousel from './components/Carousel/Carousel';
+import Shop from "./pages/Shop";
 
 function App() {
   return (
@@ -17,13 +17,22 @@ function App() {
             <Route path="/login" element={<LoginForm />} />
             {/* Protected route - accessible only if authenticated */}
             <Route path="/signup" element={<SignUpForm />} />
-            
+
             {/* Other routes */}
             <Route
               path="/"
               element={
                 <PublicRoute>
                   <Home />
+                </PublicRoute>
+              }
+            />
+
+            <Route
+              path="/shop"
+              element={
+                <PublicRoute>
+                  <Shop />
                 </PublicRoute>
               }
             />

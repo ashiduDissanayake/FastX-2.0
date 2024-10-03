@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const db = require('./config/db');
+const cookieParser = require('cookie-parser');
 
 // Import the routes
 const userRoutes = require('./routes/userRoute');
@@ -13,8 +14,15 @@ dotenv.config();
 const app = express();
 
 // Middlewares
-//Middleware for cross platform
-app.use(cors());
+// Allow credentials and specify the frontend origin
+const corsOptions = {
+  origin: 'http://localhost:3000', // Frontend URL
+  credentials: true,               // Allow credentials (cookies)
+};
+// Cookie parser middleware
+app.use(cookieParser());
+
+app.use(cors(corsOptions));
 // Middleware to parse incoming JSON requests
 app.use(express.json());
 // Connect to MySQL database
@@ -36,7 +44,7 @@ const port = process.env.PORT;
 
 //Routes
 // User routes
-app.use('/users', userRoutes);
+app.use('/user', userRoutes);
 
 // Root route (for testing)
 app.get('/', (req, res) => {

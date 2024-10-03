@@ -52,10 +52,11 @@ CREATE TABLE `Product` (
   `weight` INT,
   `volume` INT,
   `available_Qty` INT,
-  `store_ID` varchar(10),
-  PRIMARY KEY (`product_ID`),
-  FOREIGN KEY (`store_ID`) REFERENCES `Store`(`store_ID`)
+  `image_link` varchar(255), -- New column for storing the image link
+  `description` varchar(500), -- New column for storing the product description
+  PRIMARY KEY (`product_ID`)
 );
+
 
 -- 5. Create the cart table (customer_ID references Customer, product_ID references Product, discount_ID references Discount)
 CREATE TABLE `cart` (

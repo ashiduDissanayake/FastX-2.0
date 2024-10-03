@@ -1,6 +1,8 @@
 const User = require("../models/userModel");
+const Product = require("../models/productModel");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const { get } = require("../routes/userRoute");
 
 // dotenv config
 dotenv.config();
@@ -114,6 +116,44 @@ const userController = {
   logoutUser: (req, res) => {
     res.cookie("jwt", "", { maxAge: 1 });
     res.redirect("/");
+  },
+
+  // Get all products
+  // Get all products with error handling
+  getAllProducts: (req, res) => {
+    Product.getAllProducts((err, products) => {
+      if (err) {
+        // Handle database or other errors
+        return res.status(500).json({ error: err.message || "Database error" });
+      }
+
+      if (!products) {
+        // Handle the case where no products are available
+        return res.status(404).json({ message: "No products found" });
+      }
+
+      // If everything is fine, return the products
+      res.json(products);
+    });
+  },
+
+  // Post a product
+  postProduct: (req, res) => {
+    const { product_Name, price, image, description } = req.body;
+
+    // Validate input data (you can add more validation logic)
+    if (!product_Name || !price || !image || !description) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // Call the create function from the product model
+    Product.create({ product_Name, price, image, description }, (err, result) => {
+      if (err) {
+        console.error("Error posting product:", err);  // Log error for debugging
+        return res.status(500).json({ error: err.message || "Database error" });
+      }
+      res.status(201).json(result);  // Return success response with message
+    });
   },
 
   // Get all users

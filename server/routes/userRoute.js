@@ -7,5 +7,6 @@ router.post('/signup', userController.createUser);         // POST /user/signup 
 router.post('/login', userController.loginUser);       // POST /user/login - login the user
 router.post('/logout', userController.logoutUser);      // GET /user/logout - logout the user
 router.get('/check-auth', userController.checkAuth);    // GET /user/check-auth - check if the user is authenticated 
-
+router.get('/getallproducts', userController.getAllProducts); // GET /user/getallproducts - get all products
+router.post('/postproduct', userController.postProduct); // POST /user/postproduct - post a product
 module.exports = router;

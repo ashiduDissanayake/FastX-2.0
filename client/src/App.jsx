@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import LoginForm from "./pages/Login";
 import SignUpForm from "./pages/Signup";
 import { AuthProvider } from "./context/AuthContext";
+import Carousel from './components/Carousel/Carousel';
 
 function App() {
   return (

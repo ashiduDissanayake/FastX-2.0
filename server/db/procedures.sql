@@ -47,3 +47,65 @@ END$$
 
 DELIMITER ;
 
+DELIMITER //
+
+CREATE PROCEDURE GetAllProducts()
+BEGIN
+    -- Declare handler for SQL exceptions
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        -- Handling SQL exception, return an error message
+        SELECT 'SQL Exception Occurred. Unable to fetch products.' AS error_message;
+    END;
+
+    -- Check if any products exist
+    IF (SELECT COUNT(*) FROM Product) = 0 THEN
+        -- If no products exist, return a message
+        SELECT 'No products available.' AS message;
+    ELSE
+        -- Retrieve specific columns with aliases
+        SELECT 
+            product_ID AS id, 
+            product_Name AS name, 
+            price, 
+            image_link AS image, 
+            description 
+        FROM Product;
+    END IF;
+    
+END //
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE CreateProduct(
+    IN product_Name VARCHAR(255),
+    IN price DECIMAL(10, 2),
+    IN image VARCHAR(255),
+    IN description TEXT
+)
+BEGIN
+    -- Start a transaction
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        -- Rollback in case of error
+        ROLLBACK;
+        SELECT 'Error occurred while creating product';
+    END;
+
+    START TRANSACTION;
+
+    -- Insert the product details into the products table
+    INSERT INTO products (product_Name, price, image, description)
+    VALUES (product_Name, price, image, description);
+
+    -- Commit the transaction after successful insertion
+    COMMIT;
+
+    -- Return success message
+    SELECT 'Product successfully created' AS message;
+END $$
+
+DELIMITER ;
+

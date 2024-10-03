@@ -3,9 +3,11 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const db = require('./config/db');
 const cookieParser = require('cookie-parser');
+const bodyParser=require('body-parser');
 
 // Import the routes
 const userRoutes = require('./routes/userRoute');
+const managerRoutes = require('./routes/managerRoute');
 
 // dotenv config
 dotenv.config();
@@ -22,6 +24,10 @@ const corsOptions = {
 // Cookie parser middleware
 app.use(cookieParser());
 
+// Body Parser Middleware
+app.use(bodyParser.urlencoded({extended:true}));
+
+// Cross platform Middleware
 app.use(cors(corsOptions));
 // Middleware to parse incoming JSON requests
 app.use(express.json());
@@ -45,6 +51,7 @@ const port = process.env.PORT;
 //Routes
 // User routes
 app.use('/user', userRoutes);
+app.use('/manager', managerRoutes)
 
 // Root route (for testing)
 app.get('/', (req, res) => {

@@ -11,7 +11,7 @@ export default function Navbar() {
 
   return (
     <nav>
-      <ul className="flex space-x-4"> {/* Example styling with Tailwind CSS */}
+      <ul className="absolute flex space-x-4 z-[]"> {/* Example styling with Tailwind CSS */}
         <li>
           <Link to="/">Home</Link>
         </li>

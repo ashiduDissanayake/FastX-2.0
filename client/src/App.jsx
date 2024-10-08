@@ -7,6 +7,7 @@ import SignUpForm from "./pages/Signup";
 import { AuthProvider } from "./context/AuthContext";
 import DashBoard from "./Manager/pages/Dashboard";
 import ScheduleTrip from "./Manager/pages/ScheduleTip";
+import ProductDetail from "./components/ProductDetail";
 import Shop from "./pages/Shop";
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
             <Route path="/login" element={<LoginForm />} />
             {/* Protected route - accessible only if authenticated */}
             <Route path="/signup" element={<SignUpForm />} />
+            <Route path="/product/:productId" element={<ProductDetail />} />
 
             {/* Manager Route */}
             <Route path="/dashboard" element={<DashBoard/>} />

@@ -14,4 +14,5 @@ router.post('/postproduct', userController.postProduct); // POST /user/postprodu
 router.get('/getproduct/:id', userController.getProductById); // GET /user/getproduct/:id - get a product by id
 router.delete('/deleteproduct/:id', userController.deleteProduct); // DELETE /user/deleteproduct/:id - delete a product by id
 router.put('/updateproduct/:id', userController.updateProduct); // PUT /user/updateproduct/:id - update a product by id
+
 module.exports = router;

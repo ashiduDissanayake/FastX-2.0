@@ -201,14 +201,14 @@ const userController = {
   },
 
   // Get product by ID
-  getProductById: (req, res) => {
-    const productId = req.params.id;
-    Product.findById(productId, (err, product) => {
+   getProductById: (req, res) => {
+    const { id } = req.params;
+    Product.getProductById(id, (err, product) => {
       if (err) {
-        return res.status(500).json({ error: "Database error" });
+        return res.status(500).json({ error: 'Server error' });
       }
       if (!product) {
-        return res.status(404).json({ message: "Product not found" });
+        return res.status(404).json({ error: 'Product not found' });
       }
       res.json(product);
     });
@@ -236,6 +236,10 @@ const userController = {
       res.json({ message: "Product updated" });
     });
   },
+
+
+
+
 
 
 

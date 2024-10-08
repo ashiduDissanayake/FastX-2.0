@@ -191,4 +191,8 @@ CREATE TABLE `Admin` (
   PRIMARY KEY (`admin_ID`)
 );
 
+ALTER TABLE product
+ADD category VARCHAR(255);
+
+
 

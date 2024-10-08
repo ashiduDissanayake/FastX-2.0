@@ -8,6 +8,7 @@ import { AuthProvider } from "./context/AuthContext";
 import DashBoard from "./Manager/pages/Dashboard";
 import ScheduleTrip from "./Manager/pages/ScheduleTip";
 import Shop from "./pages/Shop";
+import ActiveTrips from "./Manager/pages/ActiveTrips";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             {/* Manager Route */}
             <Route path="/dashboard" element={<DashBoard/>} />
             <Route path="/schedule-trip" element={<ScheduleTrip/>} />
+            <Route path="/active-trips" element={<ActiveTrips/>} />
               
             {/* Other routes */}
             <Route

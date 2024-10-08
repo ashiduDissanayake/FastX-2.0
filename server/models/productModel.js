@@ -26,6 +26,34 @@ const Product = {
     });
   },
 
+
+// /app/models/productModel.js
+
+
+
+ 
+
+getProductById : (id, callback) => {
+  const query = `
+    SELECT *
+    FROM product 
+    WHERE product_ID = ?;
+  `;
+
+  db.query(query, [id], (err, results) => {
+    if (err) {
+      return callback(err, null);
+    }
+    return callback(null, results[0]); // Return the first product (since IDs are unique)
+  });
+},
+
+
+
+  
+  
+
+
   // Create a new product in the database
   create: (product, callback) => {
     const query = "CALL CreateProduct(?, ?, ?, ?, ?, ?, ?)";

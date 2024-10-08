@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Shop = () => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  // Fetch products from the backend
   useEffect(() => {
     fetch("http://localhost:8080/user/getallproducts", {
       method: "GET",
@@ -15,18 +16,21 @@ const Shop = () => {
       .then((response) => response.json())
       .then((data) => {
         if (data.error) {
-          // Handle error from the backend
           setError(data.error);
         } else if (data.message === "No products found") {
-          // Handle case where no products are available
           setError(data.message);
         } else {
-          // Set the products state with fetched data
           setProducts(data);
         }
       })
       .catch((error) => setError("Error fetching products: " + error.message));
   }, []);
+
+  const handleProductClick = (productId) => {
+    console.log(productId)
+    // Navigate to product detail page
+    navigate(`/product/${productId}`);
+  };
 
   return (
     <div className="bg-gradient-to-r from-purple-200 to-teal-200 min-h-screen p-8">
@@ -39,8 +43,9 @@ const Shop = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {products.map((product) => (
             <div
-              key={product.product_ID}
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow"
+              key={product.id}
+              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
+              onClick={() => handleProductClick(product.id)}
             >
               <img
                 src={product.image}
@@ -51,6 +56,7 @@ const Shop = () => {
                 <h2 className="text-2xl font-semibold text-gray-800">
                   {product.product_Name}
                 </h2>
+                <p className="text-sm text-gray-600">{product.description}</p>
                 <p className="text-lg font-bold text-gray-900 mb-4">
                   ${product.price}
                 </p>

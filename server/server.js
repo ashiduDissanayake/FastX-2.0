@@ -58,6 +58,39 @@ app.get('/', (req, res) => {
   res.send('Welcome to the Express App!');
 });
 
+app.get("/user/getallproducts", (req, res) => {
+  const search = req.query.search || "";
+  const category = req.query.category || "";
+
+  let query = `SELECT product_ID, product_Name, description, price, image_link, category FROM product`;
+  let params = [];
+
+  if (search || category) {
+    query += ` WHERE`;
+    if (search) {
+      query += ` LOWER(product_Name) LIKE LOWER(?)`;
+      params.push(`%${search}%`);
+    }
+    if (category) {
+      if (search) query += ` AND`;
+      query += ` LOWER(category) = LOWER(?)`;
+      params.push(category);
+      console.log(category);
+    }
+  }
+
+  db.query(query, params, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: "Database query error" });
+    }
+
+    if (results.length === 0) {
+      return res.json({ message: "No products found" });
+    }
+
+    return res.json(results);
+  });
+});
 
 
 

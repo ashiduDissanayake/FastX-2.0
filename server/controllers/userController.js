@@ -120,21 +120,21 @@ const userController = {
 
   // Get all products
   // Get all products with error handling
-  getAllProducts: (req, res) => {
-    Product.getAllProducts((err, products) => {
-      if (err) {
-        // Handle database or other errors
-        return res.status(500).json({ error: err.message || "Database error" });
+   getAllProducts: async (req, res) => {
+    const search = req.query.search || "";
+    const category = req.query.category || "";
+  
+    try {
+      const results = await Product.getAllProducts(search, category);
+  
+      if (results.length === 0) {
+        return res.json({ message: "No products found" });
       }
-
-      if (!products) {
-        // Handle the case where no products are available
-        return res.status(404).json({ message: "No products found" });
-      }
-
-      // If everything is fine, return the products
-      res.json(products);
-    });
+  
+      return res.json(results);
+    } catch (err) {
+      return res.status(500).json({ error: "Database query error" });
+    }
   },
 
   // Post a product
@@ -235,6 +235,18 @@ const userController = {
       }
       res.json({ message: "Product updated" });
     });
+  },
+
+   async getcategoryProducts(req, res) {
+    const { search, category } = req.query; // Extract query parameters
+
+    try {
+      const products = await ProductModel.getcategoryProducts(search || '', category || '');
+      res.status(200).json(products);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error retrieving products' });
+    }
   },
 
 

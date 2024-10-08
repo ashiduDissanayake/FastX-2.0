@@ -26,6 +26,7 @@ function App() {
             {/* Manager Route */}
             <Route path="/dashboard" element={<DashBoard/>} />
             <Route path="/schedule-trip" element={<ScheduleTrip/>} />
+              
             {/* <Route path="/active-trips" element={<ActiveTrips/>} /> */}
               
             {/* Other routes */}

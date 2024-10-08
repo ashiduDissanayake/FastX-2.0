@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const db = require('../config/db')
+const db = require("../config/db");
 
 // dotenv config
 dotenv.config();
@@ -152,92 +152,144 @@ const managerController = {
   //   });
   // },
 
-  // Manager 
+  // Manager
   // get driver details
   getDriver: (req, res) => {
     const storeId = req.params.storeId; // Get the storeId from the request parameters
-    const sqlGet = "SELECT * FROM driver WHERE store_ID = ?"; 
+    const sqlGet = "SELECT * FROM driver WHERE store_ID = ?";
     db.query(sqlGet, [storeId], (error, result) => {
-        if (error) {
-            return res.status(500).send({ message: "Error retrieving drivers", error });
-        }
-        res.send(result); 
+      if (error) {
+        return res
+          .status(500)
+          .send({ message: "Error retrieving drivers", error });
+      }
+      res.send(result);
     });
   },
 
   //get driver assistant details
-  getDriverAssistant:(req, res) => {
+  getDriverAssistant: (req, res) => {
     const storeId = req.params.storeId; // Get the storeId from the request parameters
-    const sqlGet="SELECT * FROM driver_assistant WHERE store_ID = ?"; 
+    const sqlGet = "SELECT * FROM driver_assistant WHERE store_ID = ?";
     db.query(sqlGet, [storeId], (error, result) => {
-        if (error) {
-            return res.status(500).send({ message: "Error retrieving driver assistents", error });
-        }
-        res.send(result); 
+      if (error) {
+        return res
+          .status(500)
+          .send({ message: "Error retrieving driver assistents", error });
+      }
+      res.send(result);
     });
   },
 
   //get truck details
-  getTruck:(req, res) => {
-    const storeId = req.params.storeId; 
-    const sqlGet="SELECT * FROM truck WHERE store_ID = ?"; 
+  getTruck: (req, res) => {
+    const storeId = req.params.storeId;
+    const sqlGet = "SELECT * FROM truck WHERE store_ID = ?";
     db.query(sqlGet, [storeId], (error, result) => {
-        if (error) {
-            return res.status(500).send({ message: "Error retrieving trucks", error });
-        }
-        res.send(result); 
+      if (error) {
+        return res
+          .status(500)
+          .send({ message: "Error retrieving trucks", error });
+      }
+      res.send(result);
     });
   },
 
-  getStore:(req, res) => {
-    const sqlGet="SELECT * FROM store";
-    db.query(sqlGet,(error,result) => {
+  getStore: (req, res) => {
+    const sqlGet = "SELECT * FROM store";
+    db.query(sqlGet, (error, result) => {
+      res.send(result);
+    });
+  },
+
+  getRoute: (req, res) => {
+    const storeId = req.params.storeId;
+    const sqlGet = "SELECT * FROM route WHERE store_ID = ?";
+    db.query(sqlGet, [storeId], (error, result) => {
+      if (error) {
+        return res
+          .status(500)
+          .send({ message: "Error retrieving routes", error });
+      }
+      res.send(result);
+    });
+  },
+
+  getStoreOrders: (req, res) => {
+    const storeId = req.params.storeId;
+
+    const sqlGet = `
+      SELECT o.order_ID, o.route_ID, o.capacity
+      FROM \`order\` o
+      JOIN  store s USING (store_ID)
+      WHERE s.store_ID = ? AND o.status = 'branch'
+    `;
+
+    db.query(sqlGet, [storeId], (error, result) => {
+        if (error) {
+            console.error("Error executing SQL query:", error.message); // Log the error message
+            return res.status(500).send({ message: "Error retrieving orders", error });
+        }
+        console.log("Orders retrieved:", result); // Log successful retrieval
         res.send(result);
     });
-  },
+}
+,
 
-  getRoute:(req,res) => {
-    const storeId = req.params.storeId; 
-    const sqlGet="SELECT * FROM route WHERE store_ID = ?"; 
-    db.query(sqlGet, [storeId], (error, result) => {
-        if (error) {
-            return res.status(500).send({ message: "Error retrieving routes", error });
-        }
-        res.send(result); 
-    });
-
-  },
-
-  getScheduleTrip:(req,res) => {
-    console.log('GET request received');
+  getScheduleTrip: (req, res) => {
+    console.log("GET request received");
     res.send("Schedule Trip Endpoint");
   },
 
   scheduleTrip: async (req, res) => {
-    const { truck_ID, driver_ID, assistant_ID, store_ID, route_ID, start_time, end_time } = req.body;
+    const {
+        truck_ID,
+        driver_ID,
+        assistant_ID,
+        store_ID,
+        route_ID,
+        start_time,
+        end_time,
+        selectedOrders, // Get selected orders from the request body
+    } = req.body;
 
-    if (!truck_ID || !driver_ID || !assistant_ID || !store_ID || !route_ID || !start_time) {
-        return res.status(400).send({ message: 'All fields are required.' });
+    if (!truck_ID || !driver_ID || !assistant_ID || !store_ID || !route_ID || !start_time || selectedOrders.length === 0) {
+        return res.status(400).send({ message: "All fields are required and at least one order must be selected." });
     }
 
     try {
-        const currentDate = new Date().toISOString().split('T')[0]; // Get the current date in YYYY-MM-DD format
+        // Schedule the trip by inserting into truck_schedule
+        const currentDate = new Date().toISOString().split("T")[0]; // Get the current date in YYYY-MM-DD format
         const formattedStartTime = `${currentDate} ${start_time}:00`;
 
-        const query = `INSERT INTO truck_schedule ( truck_ID, driver_ID, assistant_ID, store_ID, route_ID, start_time, end_time)
-        VALUES ( ?, ?, ?, ?, ?, ?, ?);`;
+        const scheduleQuery = `
+            INSERT INTO truck_schedule (truck_ID, driver_ID, assistant_ID, store_ID, route_ID, start_time, end_time)
+            VALUES (?, ?, ?, ?, ?, ?, ?);
+        `;
+        await db.promise().execute(scheduleQuery, [
+            truck_ID, driver_ID, assistant_ID, store_ID, route_ID, formattedStartTime, null
+        ]);
 
-        await db.promise().execute(query, [truck_ID, driver_ID, assistant_ID, store_ID, route_ID, formattedStartTime, null]);
+        // Convert selectedOrders array into a dynamic SQL placeholders string
+        const placeholders = selectedOrders.map(() => '?').join(', ');
 
-        res.status(200).send({ message: 'Trip scheduled successfully!' });
+        // Update the status of selected orders to 'delivered'
+        const orderUpdateQuery = `
+            UPDATE \`order\`
+            SET status = 'delivered'
+            WHERE order_ID IN (${placeholders})
+        `;
+
+        // Execute the update query with selectedOrders
+        await db.promise().execute(orderUpdateQuery, selectedOrders);
+
+        res.status(200).send({ message: "Trip scheduled and orders updated successfully!" });
     } catch (error) {
-        console.error('Error scheduling trip:', error);
-        res.status(500).send({ message: 'Failed to schedule trip', error: error.message });
+        console.error("Error scheduling trip:", error);
+        res.status(500).send({ message: "Failed to schedule trip", error: error.message });
     }
-    }
-  };
-  
-  
-  
-  
-  module.exports = managerController;
+},
+
+};
+
+module.exports = managerController;

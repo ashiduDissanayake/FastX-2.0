@@ -9,6 +9,8 @@ router.get('/gettruck/:storeId', managerController.getTruck);
 router.get('/getstore', managerController.getStore);     
 router.get('/getroute/:storeId', managerController.getRoute);   
 router.get('/getscheduletrip', managerController.getScheduleTrip);  
+router.get('/getstoreorders/:storeId', managerController.getStoreOrders);
+// router.get('/gettrips/:storeId', managerController.getTripsByStore);
 
 router.post('/scheduletrip', managerController.scheduleTrip);   
 

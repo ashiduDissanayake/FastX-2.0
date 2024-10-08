@@ -5,6 +5,7 @@ import {
   FaTasks,
   FaFileAlt,
   FaClipboardList,
+  FaStore, // Import a new icon for store
 } from "react-icons/fa";
 
 import Sidebar from "../components/Sidebar";
@@ -38,15 +39,22 @@ const DashBoard = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
             {[
               {
+                title: "View Orders", // New Box for Select Store Orders
+                bgColor: "bg-red-500",
+                icon: <FaStore />, // New icon for store
+                navigateTo: "/vieworders", // Navigate to SelectStoreOrders page
+              },
+              {
                 title: "Schedule a New Trip",
                 bgColor: "bg-blue-500",
                 icon: <FaTruck />,
-                navigateTo: true,
+                navigateTo: "/schedule-trip",
               },
               {
                 title: "Active Trips",
                 bgColor: "bg-green-500",
                 icon: <FaTasks />,
+                navigateTo: "/active-trips",
               },
               {
                 title: "Finished Trips",
@@ -58,13 +66,14 @@ const DashBoard = () => {
                 bgColor: "bg-purple-500",
                 icon: <FaFileAlt />,
               },
+              
             ].map((stat) => (
               <div
                 key={stat.title}
                 className={`${stat.bgColor} text-white p-10 rounded-2xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 relative overflow-hidden cursor-pointer`}
                 onClick={() => {
                   if (stat.navigateTo) {
-                    navigate("/schedule-trip"); // Navigate to the schedule-trip page
+                    navigate(stat.navigateTo); // Navigate to respective page
                   }
                 }}
               >

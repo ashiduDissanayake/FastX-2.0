@@ -7,6 +7,7 @@ const Shop = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("");
+  const [message, setMessage] = useState(""); // For 'No products found' message
   const navigate = useNavigate();
 
   // Fetch all products on component mount
@@ -17,18 +18,26 @@ const Shop = () => {
   // Fetch products from the backend
   const fetchProducts = async (searchTerm = "", category = "") => {
     try {
-      const response = await fetch(`http://localhost:8080/user/getallproducts?search=${searchTerm}&category=${category}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `http://localhost:8080/user/getallproducts?search=${searchTerm}&category=${category}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const data = await response.json();
       if (data.error) {
         setError(data.error);
+      } else if (data.message) {
+        setMessage(data.message); // Set the "No products found" message
+        setProducts([]); // Clear products array if no products found
+        setFilteredProducts([]);
       } else {
         setProducts(data);
         setFilteredProducts(data); // Reset filtered products to fetched data
+        setMessage(""); // Clear message if products are found
       }
     } catch (error) {
       setError("Error fetching products: " + error.message);
@@ -88,6 +97,8 @@ const Shop = () => {
 
       {error ? (
         <div className="text-center text-red-600 text-2xl">{error}</div>
+      ) : message ? (
+        <div className="text-center text-gray-600 text-2xl">{message}</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {filteredProducts.map((product) => (

@@ -24,7 +24,7 @@ const ManagerDashBoard = () => {
     {
       title: "Schedule a New Trip",
       description: "Organize and plan new delivery routes.",
-      bgColor: "bg-gradient-to-r from-blue-500 to-blue-700",
+      bgColor: "bg-gradient-to-r from-blue-700 to-blue-900",
       icon: <FaTruck />,
       navigateTo: "/manager-schedule-trip",
     },
@@ -45,24 +45,26 @@ const ManagerDashBoard = () => {
     {
       title: "Reports",
       description: "Generate and analyze performance reports.",
-      bgColor: "bg-gradient-to-r from-purple-500 to-purple-700",
+      bgColor: "bg-gradient-to-r from-purple-700 to-purple-900",
       icon: <FaFileAlt />,
       navigateTo: "/reports",
     },
   ];
 
   return (
-    <div className="flex min-h-screen bg-purple-50">
+    <div className="flex min-h-screen bg-gradient-to-r from-purple-100 to-blue-100">
       {/* Sidebar */}
       <Sidebar activePage={activePage} setActivePage={setActivePage} />
 
       {/* Main Content */}
-      <main className="flex-1 p-10">
+      <main className="flex-1 p-0">
         {/* Header Section */}
-        <h1 className="text-4xl font-bold mb-6 text-center text-purple-800">Manager Dashboard</h1>
+        <div className="bg-gray-900 p-5 shadow-lg mb-6 text-center ">
+          <h1 className="text-4xl font-extrabold text-white">Branch Manager Dashboard</h1>
+        </div>
 
         {/* Cards Section */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 p-5">
           {cards.map((card) => (
             <div
               key={card.title}
@@ -81,7 +83,7 @@ const ManagerDashBoard = () => {
         </section>
 
         {/* Analytics Section */}
-<section className="mt-16">
+<section className="m-5">
   <h2 className="text-3xl font-semibold text-gray-800 mb-8 text-center">
     Key Performance Indicators
   </h2>

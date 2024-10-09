@@ -115,27 +115,21 @@ const ScheduleTrip = () => {
   const handleOrderSelection = (orderId, capacity) => {
     setSelectedOrders((prevOrders) => {
       const isSelected = prevOrders.includes(orderId);
-
-      // Calculate new total capacity based on the order being selected or deselected
       const newTotalCapacity = isSelected
-        ? totalCapacity - capacity // Deselecting reduces capacity
-        : totalCapacity + capacity; // Selecting increases capacity
+        ? totalCapacity - capacity
+        : totalCapacity + capacity;
 
-      // Prevent the user from selecting an order if the total capacity exceeds 500
       if (!isSelected && newTotalCapacity > 500) {
         setWarning(
-          `Cannot select order! Selecting this order will exceed the capacity limit of 500. Current capacity: ${totalCapacity}`
+          `Cannot select order! This will exceed the capacity limit of 500. Current capacity: ${newTotalCapacity}`
         );
-        return prevOrders; // Return previous state without making changes
+        return prevOrders;
       }
 
-      setWarning(""); // Clear any warning if valid selection
-      setTotalCapacity(newTotalCapacity); // Update total capacity
-
-      // Add or remove the order based on selection
+      setWarning("");
       return isSelected
-        ? prevOrders.filter((id) => id !== orderId) // Deselect
-        : [...prevOrders, orderId]; // Select
+        ? prevOrders.filter((id) => id !== orderId)
+        : [...prevOrders, orderId];
     });
   };
 
@@ -149,7 +143,7 @@ const ScheduleTrip = () => {
       route_ID: selectedRoute,
       start_time: startTime,
       end_time: endTime,
-      selectedOrders: selectedOrders, // Send the selected orders
+      selectedOrders: selectedOrders,
     };
 
     try {
@@ -169,8 +163,10 @@ const ScheduleTrip = () => {
     }
   };
 
+  const [maxTimeOfRoute, setMaxTimeOfRoute] = useState(0);
+
   return (
-    <div className="flex min-h-screen bg-purple-50">
+    <div className="flex min-h-screen bg-gradient-to-r from-purple-100 to-blue-100">
       {/* Sidebar */}
       <Sidebar
         activePage={activePage}
@@ -179,16 +175,22 @@ const ScheduleTrip = () => {
       />
 
       {/* Main Content */}
-      <div className="w-3/4 p-6">
-        <h1 className="text-4xl font-bold mb-6 text-center text-purple-800">Schedule A Trip</h1>
+      <div className="w-3/4 p-8">
+        <div className="flex justify-center mb-8">
+          <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-800 to-blue-800">
+            Schedule A Trip
+          </h1>
+        </div>
 
         {/* Store Selection */}
-        <div className="mb-4">
-          <label className="block mb-2 text-gray-700">Select Store</label>
+        <div className="mb-6 flex flex-col items-center">
+          <label className="block mb-2 text-gray-700 text-lg font-semibold">
+            Select Store
+          </label>
           <select
             value={selectedStore}
             onChange={handleStoreChange}
-            className="w-full px-3 py-2 border rounded-lg"
+            className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required
           >
             <option value="">-- Select Store --</option>
@@ -200,70 +202,88 @@ const ScheduleTrip = () => {
           </select>
         </div>
 
-       {/* Orders List for the Selected Store */}
-{selectedStore && (
-  <div className="mb-4">
-    <label className="block mb-2 text-gray-700">Select Orders</label>
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xl font-bold ml-2">Loading Packages</span>
+          </div>
 
-    <div className="grid grid-cols-1 md:grid-cols-5 gap-4"> {/* 5 columns for the lists */}
-      {orderData.length > 0 ? (
-        // Grouping orders by route_ID
-        Array.from(new Set(orderData.map((order) => order.route_ID))).map((routeID) => {
-          const isSelectedRoute = selectedRoute === routeID; // Check if this route is selected
-          return (
-            <div key={routeID} className="bg-white p-4 rounded-lg shadow">
-              <h3 className="font-bold mb-2">Route ID: {routeID}</h3>
-              <div className="grid grid-cols-1 gap-2">
-                {orderData
-                  .filter((order) => order.route_ID === routeID)
-                  .map((order) => (
-                    <div key={order.order_ID} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        value={order.order_ID}
-                        checked={selectedOrders.includes(order.order_ID)}
-                        onChange={() => {
-                          handleOrderSelection(order.order_ID, order.capacity);
-                          if (!isSelectedRoute) {
-                            setSelectedRoute(routeID); // Set the selected route
-                          }
-                        }}
-                        disabled={selectedRoute && selectedRoute !== routeID} // Disable if another route is selected
-                        className="mr-2"
-                      />
-                      <span>
-                        Order #{order.order_ID} - Capacity: {order.capacity}
-                      </span>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            {orderData.length > 0 ? (
+              Array.from(new Set(orderData.map((order) => order.route_ID))).map(
+                (routeID) => {
+                  const isSelectedRoute = selectedRoute === routeID;
+                  return (
+                    <div
+                      key={routeID}
+                      className="bg-white p-4 rounded-lg shadow"
+                    >
+                      <h3 className="font-bold mb-2">Route ID: {routeID}</h3>
+                      <div className="grid grid-cols-1 gap-2">
+                        {orderData
+                          .filter((order) => order.route_ID === routeID)
+                          .map((order) => (
+                            <div
+                              key={order.order_ID}
+                              className={`flex items-center p-4 bg-gray-100 rounded-lg shadow-md transition duration-300 ease-in-out ${
+                                selectedOrders.includes(order.order_ID)
+                                  ? "bg-green-200"
+                                  : ""
+                              } hover:bg-green-50`}
+                            >
+                              <input
+                                type="checkbox"
+                                value={order.order_ID}
+                                checked={selectedOrders.includes(
+                                  order.order_ID
+                                )}
+                                onChange={() => {
+                                  handleOrderSelection(
+                                    order.order_ID,
+                                    order.capacity
+                                  );
+                                  if (!isSelectedRoute) {
+                                    setSelectedRoute(routeID);
+                                  }
+                                }}
+                                disabled={
+                                  selectedRoute && selectedRoute !== routeID
+                                }
+                                className="mr-2 h-5 w-5 text-green-600 rounded focus:ring-green-500 cursor-pointer"
+                              />
+                              <span className="text-gray-700 font-semibold">
+                                Order #{order.order_ID} - Capacity:{" "}
+                                {order.capacity}
+                              </span>
+                            </div>
+                          ))}
+                      </div>
                     </div>
-                  ))}
-              </div>
+                  );
+                }
+              )
+            ) : (
+              <p>No orders found for the selected store.</p>
+            )}
+          </div>
+
+          {/* Warning Message */}
+          {warning && (
+            <div className="text-red-500 text-sm mt-2">{warning}</div>
+          )}
+
+          {/* Progress Bar for Capacity */}
+          <div className="mt-4">
+            <div className="relative h-4 bg-gray-200 rounded-full overflow-hidden">
+              <div
+                className="absolute h-full bg-gradient-to-r from-green-400 to-blue-500 rounded-full"
+                style={{ width: `${(totalCapacity / 500) * 100}%` }} // Calculate width based on total capacity
+              />
             </div>
-          );
-        })
-      ) : (
-        <p>No orders found for the selected store.</p>
-      )}
-    </div>
-
-    {/* Warning Message */}
-    {warning && (
-      <div className="text-red-500 text-sm mt-2">{warning}</div>
-    )}
-
-    {/* Progress Bar for Capacity */}
-    <div className="mt-4">
-      <div className="relative h-2 bg-gray-200 rounded">
-        <div
-          className="absolute h-full bg-green-500 rounded"
-          style={{ width: `${(totalCapacity / 500) * 100}%` }} // Calculate width based on total capacity
-        />
-      </div>
-      <p className="text-sm mt-1">
-        {totalCapacity} / 500 Capacity Used
-      </p>
-    </div>
-  </div>
-)}
+            <p className="text-sm mt-1 text-center">
+              {totalCapacity} / 500 Capacity Used
+            </p>
+          </div>
+        </div>
 
         {/* Trip Scheduling Form */}
         {selectedOrders.length > 0 && (
@@ -271,7 +291,7 @@ const ScheduleTrip = () => {
             onSubmit={handleSubmit}
             className="max-w-lg mx-auto bg-white p-8 shadow-lg rounded-lg text-gray-600"
           >
-            {/* Driver Selection */}
+            {/* driver selection */}
             <div className="mb-4">
               <label className="block mb-2 text-gray-700">Select Driver</label>
               <select
@@ -281,19 +301,24 @@ const ScheduleTrip = () => {
                 required
               >
                 <option value="">-- Select Driver --</option>
-                {driverData.map((driver) => (
-                  <option
-                    key={driver.driver_ID}
-                    value={driver.driver_ID}
-                    disabled={
-                      driver.status !== "inactive" ||
-                      driver.current_working_time === 40
-                    }
-                  >
-                    {`${driver.driver_ID} - worked ${driver.current_working_time} hrs`}{" "}
-                    {driver.status === "inactive" ? "" : "(active)"}
-                  </option>
-                ))}
+                {driverData.map((driver) => {
+                  // Calculate total working hours
+                  const totalDriverHours =
+                    driver.current_working_time + maxTimeOfRoute;
+
+                  return (
+                    <option
+                      key={driver.driver_ID}
+                      value={driver.driver_ID}
+                      disabled={
+                        driver.status !== "inactive" || totalDriverHours >= 40
+                      }
+                    >
+                      {`${driver.driver_ID} - worked ${driver.current_working_time} hrs`}
+                      {driver.status === "inactive" ? "" : "(active)"}
+                    </option>
+                  );
+                })}
               </select>
             </div>
 
@@ -308,23 +333,45 @@ const ScheduleTrip = () => {
                 className="w-full px-3 py-2 border rounded-lg"
               >
                 <option value="">-- Select Assistant --</option>
-                {assistantData.map((assistant) => (
-                  <option
-                    key={assistant.assistant_ID}
-                    value={assistant.assistant_ID}
-                    disabled={
-                      assistant.status !== "inactive" ||
-                      assistant.current_working_time === 60
+                {assistantData
+                  .sort((a, b) => {
+                    // Sorting: "inactive" first, then "available"
+                    if (a.status === "inactive" && b.status !== "inactive")
+                      return -1;
+                    if (a.status !== "inactive" && b.status === "inactive")
+                      return 1;
+                    if (a.status === "available" && b.status !== "available")
+                      return -1;
+                    if (a.status !== "available" && b.status === "available")
+                      return 1;
+                    return 0;
+                  })
+                  .map((assistant) => {
+                    // Set status display text
+                    let statusText = "";
+                    if (assistant.status === "inactive") {
+                      statusText = "(Inactive)";
+                    } else if (assistant.status === "available") {
+                      statusText = "(Available)";
+                    } else if (assistant.status === "active1") {
+                      statusText = "(Active 1)";
+                    } else if (assistant.status === "active2") {
+                      statusText = "(Active 2)";
                     }
-                  >
-                    {`${assistant.assistant_ID} - worked ${assistant.current_working_time} hrs`}{" "}
-                    {assistant.status === "inactive"
-                      ? ""
-                      : assistant.status === "active1"
-                      ? "(active1)"
-                      : "(active2)"}
-                  </option>
-                ))}
+
+                    return (
+                      <option
+                        key={assistant.assistant_ID}
+                        value={assistant.assistant_ID}
+                        disabled={
+                          assistant.status !== "inactive" &&
+                          assistant.status !== "available"
+                        }
+                      >
+                        {`${assistant.assistant_ID} - worked ${assistant.current_working_time} hrs ${statusText}`}
+                      </option>
+                    );
+                  })}
               </select>
             </div>
 
@@ -356,8 +403,17 @@ const ScheduleTrip = () => {
               <label className="block mb-2 text-gray-700">Select Route</label>
               <select
                 value={selectedRoute}
-                onChange={(e) => setSelectedRoute(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg"
+                onChange={(e) => {
+                  const selectedRouteId = e.target.value;
+                  setSelectedRoute(selectedRouteId);
+                  const selectedRouteData = routeData.find(
+                    (route) => route.route_ID === selectedRouteId
+                  );
+                  if (selectedRouteData) {
+                    setMaxTimeOfRoute(selectedRouteData.max_time);
+                  }
+                }}
+                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg"
                 required
               >
                 <option value="">-- Select Route --</option>

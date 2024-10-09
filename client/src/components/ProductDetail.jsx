@@ -9,7 +9,7 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1); // Default quantity is 1
   const colors = ["black", "red", "blue", "green", "white"];
 
-  const addToCart = (productId) => {
+  const addToCart = (productId, quantity) => {
     // Add product to the cart
     fetch("http://localhost:8080/user/addtocart", {
       method: "POST",
@@ -18,7 +18,7 @@ const ProductDetail = () => {
         "Content-Type": "application/json",
         
       },
-      body: JSON.stringify({ product_ID: productId, quantity: 1 }),
+      body: JSON.stringify({ product_ID: productId, quantity: quantity }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -38,6 +38,7 @@ const ProductDetail = () => {
     // Fetch product details from the backend
     fetch(`http://localhost:8080/user/getproduct/${productId}`, {
       method: "GET",
+      credentials: 'include',
       headers: {
         "Content-Type": "application/json",
       },
@@ -122,7 +123,7 @@ const ProductDetail = () => {
           </div>
         <button
           className="w-full bg-teal-600 text-white font-medium py-3 rounded hover:bg-teal-700 transition"
-          onClick={() => addToCart(productId)}
+          onClick={() => addToCart(productId, quantity)}
         >
           Add to Cart
         </button>

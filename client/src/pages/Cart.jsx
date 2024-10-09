@@ -12,7 +12,7 @@ const Cart = () => {
         const response = await axios.get('http://localhost:8080/user/getcart/', {
           withCredentials: true,  // Include cookies in the request
         });
-        console.log('Cart Data:', response.data); // Debugging output
+        console.log('Cart Data:', response.data.cart[0]); // Debugging output
         setCart(response.data.cart[0]); // Set cart data (first element is the array of items)
       } catch (error) {
         console.error('Failed to fetch cart', error);
@@ -106,7 +106,7 @@ const Cart = () => {
           <button onClick={buyItems}>Buy Selected Items</button>
         </div>
       ) : (
-        <p>Loading cart...</p>
+        <p>No Items Found</p>
       )}
     </div>
   );

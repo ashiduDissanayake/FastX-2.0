@@ -37,6 +37,7 @@ const Shop = () => {
 
   // Handle product click for navigating to product detail page
   const handleProductClick = (productId) => {
+    // Navigate to product detail page
     navigate(`/product/${productId}`);
   };
 

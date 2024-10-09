@@ -7,8 +7,32 @@ const ProductDetail = () => {
   const [error, setError] = useState(null);
   const [selectedColor, setSelectedColor] = useState("black"); // Default color
   const [quantity, setQuantity] = useState(1); // Default quantity is 1
-
   const colors = ["black", "red", "blue", "green", "white"];
+
+  const addToCart = (productId) => {
+    // Add product to the cart
+    fetch("http://localhost:8080/user/addtocart", {
+      method: "POST",
+      credentials: 'include',
+      headers: {
+        "Content-Type": "application/json",
+        
+      },
+      body: JSON.stringify({ product_ID: productId, quantity: 1 }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          setError(data.error);
+        } else {
+          alert("Product added to cart successfully");
+        }
+      })
+      .catch((error) =>
+        setError(error.message)
+      );
+  };
+
 
   useEffect(() => {
     // Fetch product details from the backend
@@ -96,10 +120,12 @@ const ProductDetail = () => {
               className="ml-2 w-16 p-2 border rounded bg-gray-100 text-gray-700"
             />
           </div>
-
-          <button className="w-full bg-teal-600 text-white font-medium py-3 rounded hover:bg-teal-700 transition">
-            Add to Cart
-          </button>
+        <button
+          className="w-full bg-teal-600 text-white font-medium py-3 rounded hover:bg-teal-700 transition"
+          onClick={() => addToCart(productId)}
+        >
+          Add to Cart
+        </button>
         </div>
       </div>
     </div>

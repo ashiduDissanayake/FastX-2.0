@@ -226,3 +226,112 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+-- Get all cart Products by customer_ID
+DELIMITER $$
+CREATE PROCEDURE GetCartProductsByCustomerID(
+    IN customerID INT
+)
+BEGIN
+    -- Declare an exception handler for SQL errors
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        -- Handling SQL exception, return an error message
+        SELECT 'SQL Exception Occurred. Unable to fetch cart products.' AS error_message;
+    END;
+
+    -- Check if the customer exists
+    IF (SELECT COUNT(*) FROM Customer WHERE customer_ID = customerID) = 0 THEN
+        -- If the customer does not exist, return a message
+        SELECT 'Customer not found.' AS message;
+    ELSE
+        -- Retrieve specific columns with aliases
+        SELECT 
+            cp.product_ID AS id, 
+            p.product_Name AS name, 
+            p.price, 
+            p.image_link AS image, 
+            cp.quantity, 
+            cp.final_Price
+        FROM cart cp
+        JOIN Product p ON cp.product_ID = p.product_ID
+        JOIN Customer c ON cp.customer_ID = c.customer_ID
+        WHERE cp.customer_ID = customerID;
+    END IF;
+    
+END $$
+
+DELIMITER ;
+
+-- Add product to cart
+DELIMITER $$
+
+CREATE PROCEDURE AddProductToCart(
+    IN customerID INT,
+    IN productID INT,
+    IN quantity INT
+)
+BEGIN
+    DECLARE discount_id INT;
+    DECLARE discount_value DECIMAL(5,2);
+    DECLARE product_price DECIMAL(6,2);
+
+    -- Declare an exception handler for SQL errors
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        ROLLBACK;
+        SELECT 'Error occurred while adding product to cart' AS message;
+    END;
+
+    -- Start a transaction
+    START TRANSACTION;
+
+    -- Check if the product exists
+    IF (SELECT COUNT(*) FROM Product WHERE product_ID = productID) = 0 THEN
+        -- Product does not exist
+        SELECT 'Product not found.' AS message;
+    ELSE
+        -- Check if the customer exists
+        IF (SELECT COUNT(*) FROM Customer WHERE customer_ID = customerID) = 0 THEN
+            -- Customer does not exist
+            SELECT 'Customer not found.' AS message;
+        ELSE
+            -- Get the product price
+            SELECT price INTO product_price FROM Product WHERE product_ID = productID;
+
+            -- Check if the product is already in the cart
+            IF (SELECT COUNT(*) FROM Cart WHERE customer_ID = customerID AND product_ID = productID) > 0 THEN
+                -- If product is already in the cart, update the quantity and final price
+                UPDATE Cart 
+                SET quantity = quantity + quantity, 
+                    final_Price = product_price * (quantity + quantity)
+                WHERE customer_ID = customerID AND product_ID = productID;
+            ELSE
+                -- Insert product into cart
+                INSERT INTO Cart (customer_ID, product_ID, quantity, final_Price)
+                VALUES (customerID, productID, quantity, product_price * quantity);
+            END IF;
+
+            -- Calculate discount based on quantity and apply
+            SELECT discount_ID, discount INTO discount_id, discount_value
+            FROM discount
+            WHERE qty_Range <= quantity
+            ORDER BY qty_Range DESC
+            LIMIT 1;
+
+            -- Apply the discount
+            UPDATE Cart
+            SET discount_ID = discount_id,
+                final_Price = product_price * quantity * (1 - discount_value / 100)
+            WHERE customer_ID = customerID AND product_ID = productID;
+
+            -- Commit the transaction
+            COMMIT;
+
+            -- Success message
+            SELECT 'Product successfully added to cart with discount applied' AS message;
+        END IF;
+    END IF;
+END $$
+
+DELIMITER ;

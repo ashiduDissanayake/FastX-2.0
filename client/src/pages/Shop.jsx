@@ -27,7 +27,6 @@ const Shop = () => {
   }, []);
 
   const handleProductClick = (productId) => {
-    console.log(productId)
     // Navigate to product detail page
     navigate(`/product/${productId}`);
   };

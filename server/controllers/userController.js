@@ -2,7 +2,6 @@ const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const { get } = require("../routes/userRoute");
 
 // dotenv config
 dotenv.config();
@@ -94,7 +93,6 @@ const userController = {
       }
 
       // Create JWT token
-      console.log(user);
       const token = createToken(user.customer_ID);
       res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
       res.status(200).json({ user: user.customer_ID }); // Send user ID in response

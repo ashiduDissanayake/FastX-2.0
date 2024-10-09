@@ -5,7 +5,30 @@ const ProductDetail = () => {
   const { productId } = useParams(); // Get the product ID from the URL
   const [product, setProduct] = useState(null);
   const [error, setError] = useState(null);
-  console.log(productId);
+
+  const addToCart = (productId) => {
+    // Add product to the cart
+    fetch("http://localhost:8080/user/addtocart", {
+      method: "POST",
+      credentials: 'include',
+      headers: {
+        "Content-Type": "application/json",
+        
+      },
+      body: JSON.stringify({ product_ID: productId, quantity: 1 }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          setError(data.error);
+        } else {
+          alert("Product added to cart successfully");
+        }
+      })
+      .catch((error) =>
+        setError(error.message)
+      );
+  };
 
   useEffect(() => {
     // Fetch product details from the backend
@@ -47,7 +70,10 @@ const ProductDetail = () => {
         </h1>
         <p className="text-lg mb-4 text-gray-700">{product.longDescription}</p>
         <p className="text-xl font-bold text-gray-900 mb-4">${product.price}</p>
-        <button className="w-full bg-teal-600 text-white font-medium py-3 rounded hover:bg-teal-700 transition">
+        <button
+          className="w-full bg-teal-600 text-white font-medium py-3 rounded hover:bg-teal-700 transition"
+          onClick={() => addToCart(productId)}
+        >
           Add to Cart
         </button>
       </div>

@@ -10,9 +10,9 @@ VALUES ('P001', 'Product A', 250.00, 2, 10, 100),
 INSERT INTO `Admin` (`admin_ID`, `username`, `password`)
 VALUES ('A001', 'admin1', 'adminpass');
 
-INSERT INTO `Discount` (`discount_ID`, `qty_Range`, `discount`)
-VALUES ('D001', 10, 5),
-       ('D002', 20, 10);
+INSERT INTO `Discount` (`qty_Range`, `discount`)
+VALUES (10, 5),
+       (20, 10);
 
 INSERT INTO `Customer` (`customer_ID`, `first_name`, `last_name`, `password`, `username`, `phone_number`, `type`)
 VALUES ('C001', 'Supun', 'Perera', 'perera123', 'supunperera', '0712345678', 'Retailer'),

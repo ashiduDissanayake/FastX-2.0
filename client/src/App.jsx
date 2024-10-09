@@ -9,6 +9,7 @@ import DashBoard from "./Manager/pages/Dashboard";
 import ScheduleTrip from "./Manager/pages/ScheduleTip";
 import ProductDetail from "./components/ProductDetail";
 import Shop from "./pages/Shop";
+import Cart from "./pages/Cart";
 // import ActiveTrips from "./Manager/components/";
 
 function App() {
@@ -19,9 +20,13 @@ function App() {
           <Routes>
             {/* Public route - accessible only if not authenticated */}
             <Route path="/login" element={<LoginForm />} />
-            {/* Protected route - accessible only if authenticated */}
             <Route path="/signup" element={<SignUpForm />} />
-            <Route path="/product/:productId" element={<ProductDetail />} />
+            <Route path="/product/:productId" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
+
+            {/* Protected route - accessible only if authenticated */}
+            <Route path="/cart" element={<ProtectedRoute>
+              <Cart />
+            </ProtectedRoute>} />
 
             {/* Manager Route */}
             <Route path="/dashboard" element={<DashBoard/>} />

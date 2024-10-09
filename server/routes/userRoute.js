@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
+const cartController = require('../controllers/cartController')
+const authenticateToken = require('../middlewares/authMiddleware')
+
 
 // User routes
 router.post('/signup', userController.createUser);         // POST /user/signup - sign up the user
@@ -14,5 +17,9 @@ router.post('/postproduct', userController.postProduct); // POST /user/postprodu
 router.get('/getproduct/:id', userController.getProductById); // GET /user/getproduct/:id - get a product by id
 router.delete('/deleteproduct/:id', userController.deleteProduct); // DELETE /user/deleteproduct/:id - delete a product by id
 router.put('/updateproduct/:id', userController.updateProduct); // PUT /user/updateproduct/:id - update a product by id
+
+// Accesing Cart Routes
+router.get('/getcart', authenticateToken, cartController.getAllProducts) // GET /user/getcart - get all products in cart
+router.post('/addtocart', authenticateToken, cartController.addToCart); // POST /user/addtocart - add product to cart
 
 module.exports = router;

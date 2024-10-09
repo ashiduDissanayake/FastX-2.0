@@ -26,33 +26,22 @@ const Product = {
     });
   },
 
+  // /app/models/productModel.js
 
-// /app/models/productModel.js
-
-
-
- 
-
-getProductById : (id, callback) => {
-  const query = `
+  getProductById: (id, callback) => {
+    const query = `
     SELECT *
     FROM product 
     WHERE product_ID = ?;
   `;
 
-  db.query(query, [id], (err, results) => {
-    if (err) {
-      return callback(err, null);
-    }
-    return callback(null, results[0]); // Return the first product (since IDs are unique)
-  });
-},
-
-
-
-  
-  
-
+    db.query(query, [id], (err, results) => {
+      if (err) {
+        return callback(err, null);
+      }
+      return callback(null, results[0]); // Return the first product (since IDs are unique)
+    });
+  },
 
   // Create a new product in the database
   create: (product, callback) => {
@@ -120,58 +109,61 @@ getProductById : (id, callback) => {
     });
   },
 
-    // Delete a product by ID
-    delete: (productId, callback) => {
-      const query = "CALL DeleteProductByID(?)";
-      db.query(query, [productId], (err, result) => {
+  // Delete a product by ID
+  delete: (productId, callback) => {
+    const query = "CALL DeleteProductByID(?)";
+    db.query(query, [productId], (err, result) => {
+      if (err) {
+        console.error("Database query error:", err);
+        return callback({ message: "Database query failed", error: err }, null);
+      }
+      if (result[0] && result[0][0].message === "Product not found") {
+        return callback({ message: "Product not found" }, null);
+      }
+      return callback(null, { message: "Product deleted" });
+    });
+  },
+
+  // Update a product by ID
+  update: (productId, updatedData, callback) => {
+    const query = "CALL UpdateProductByID(?, ?, ?, ?, ?, ?, ?, ?)";
+
+    db.query(
+      query,
+      [
+        productId,
+        updatedData.product_Name, // Ensure this is under 20 characters
+        updatedData.price,
+        updatedData.image_link,
+        updatedData.description,
+        updatedData.weight,
+        updatedData.volume,
+        updatedData.available_Qty,
+      ],
+      (err, result) => {
         if (err) {
           console.error("Database query error:", err);
-          return callback({ message: "Database query failed", error: err }, null);
+          return callback(
+            { message: "Database query failed", error: err },
+            null
+          );
         }
-        if (result[0] && result[0][0].message === "Product not found") {
-          return callback({ message: "Product not found" }, null);
-        }
-        return callback(null, { message: "Product deleted" });
-      });
-    },
 
-    // Update a product by ID
-    update: (productId, updatedData, callback) => {
-        const query = "CALL UpdateProductByID(?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        db.query(
-            query,
-            [
-              productId,
-              updatedData.product_Name,  // Ensure this is under 20 characters
-              updatedData.price,
-              updatedData.image_link,
-              updatedData.description,
-              updatedData.weight,
-              updatedData.volume,
-              updatedData.available_Qty
-            ],
-            (err, result) => {
-              if (err) {
-                console.error("Database query error:", err);
-                return callback({ message: "Database query failed", error: err }, null);
-              }
-    
-              // Check if result exists and if there's a message
-              if (result && result[0] && result[0][0]) {
-                const message = result[0][0].message;
-    
-                if (message === 'Product not found') {
-                  return callback({ message: "Product not found" }, null);
-                } else {
-                  return callback(null, { message: message });
-                }
-              } else {
-                return callback(null, { message: "Unknown result from database" });
-              }
-            }
-        );
-    },    
+        // Check if result exists and if there's a message
+        if (result && result[0] && result[0][0]) {
+          const message = result[0][0].message;
+
+          if (message === "Product not found") {
+            return callback({ message: "Product not found" }, null);
+          } else {
+            return callback(null, { message: message });
+          }
+        } else {
+          return callback(null, { message: "Unknown result from database" });
+        }
+      }
+    );
+  },
 };
 
 module.exports = Product;

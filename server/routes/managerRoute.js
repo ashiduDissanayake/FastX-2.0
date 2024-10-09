@@ -10,8 +10,12 @@ router.get('/getstore', managerController.getStore);
 router.get('/getroute/:storeId', managerController.getRoute);   
 router.get('/getscheduletrip', managerController.getScheduleTrip);  
 router.get('/getstoreorders/:storeId', managerController.getStoreOrders);
-// router.get('/gettrips/:storeId', managerController.getTripsByStore);
+router.get('/getactivetrips/:storeId', managerController.getActiveTripsByStore);
+router.get('/getfinishedtrips/:storeId', managerController.getFinishedTripsByStore);
+router.get('/gettrainorders/:storeId', managerController.getTrainOrdersByStore);
 
+router.post('/updatetobranch', managerController.updateOrdersToBranch);
+router.post('/endtrip', managerController.endTrip);
 router.post('/scheduletrip', managerController.scheduleTrip);   
 
 module.exports = router;

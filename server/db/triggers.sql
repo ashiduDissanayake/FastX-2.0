@@ -21,39 +21,53 @@ END$$
 
 DELIMITER ;
 
--- Update total working hours of driver
+-- Update total working hours and status of driver 
 DELIMITER $$
 CREATE TRIGGER update_driver_hours
-	AFTER INSERT ON truck_schedule
+    AFTER INSERT ON truck_schedule
     FOR EACH ROW
 BEGIN
-	DECLARE route_duration INT;
+    DECLARE route_duration INT;
     
+    -- Get the maximum time (route duration) from the route table
     SELECT max_time INTO route_duration
     FROM route
     WHERE route_ID = NEW.route_ID;
     
-	UPDATE driver
-    SET current_working_time = current_working_time + route_duration
+    -- Update both the current working time and status of the driver
+    UPDATE driver
+    SET 
+        current_working_time = current_working_time + route_duration,
+        status = 'active'
     WHERE driver_ID = NEW.driver_ID;
+		
 END $$
 DELIMITER ;
 
 -- Update total working hours of driver assistant
 
 DELIMITER $$
-CREATE TRIGGER update_assistent_hours
-	AFTER INSERT ON truck_schedule
-    FOR EACH ROW
+CREATE TRIGGER update_assistant_hours
+AFTER INSERT ON truck_schedule
+FOR EACH ROW
 BEGIN
-	DECLARE route_duration INT;
-    
+    DECLARE route_duration INT;
+
+    -- Get the maximum time (route duration) from the route table
     SELECT max_time INTO route_duration
     FROM route
     WHERE route_ID = NEW.route_ID;
-    
-	UPDATE driver_assistant
-    SET current_working_time = current_working_time + route_duration
+
+    -- Update both the current working time and status of the driver
+    UPDATE driver_assistant
+    SET 
+        current_working_time = current_working_time + route_duration,
+        status = CASE 
+            WHEN status = 'inactive' THEN 'active1'
+            WHEN status = 'available' THEN 'active2'
+            ELSE status
+        END
     WHERE assistant_ID = NEW.assistant_ID;
 END $$
 DELIMITER ;
+

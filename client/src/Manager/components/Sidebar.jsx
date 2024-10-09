@@ -13,16 +13,19 @@ const Sidebar = ({ activePage, setActivePage }) => {
     // Navigate to the corresponding route
     switch (item) {
       case "Home":
-        navigate("/dashboard"); // Adjust the route as per your application structure
+        navigate("/manager-dashboard"); // Adjust the route as per your application structure
+        break;
+        case "View Orders":
+        navigate("/manager-view-orders");
         break;
       case "Schedule a New Trip":
-        navigate("/schedule-trip");
+        navigate("/manager-schedule-trip");
         break;
       case "Active Trips":
-        navigate("/active-trips");
+        navigate("/manager-active-trips");
         break;
       case "Finished Trips":
-        navigate("/finished-trips");
+        navigate("/manager-finished-trips");
         break;
       case "Reports":
         navigate("/reports");
@@ -49,6 +52,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
         <ul className="space-y-4">
           {[
             "Home",
+            "View Orders",
             "Schedule a New Trip",
             "Active Trips",
             "Finished Trips",

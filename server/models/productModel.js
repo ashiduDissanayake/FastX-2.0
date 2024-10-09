@@ -2,29 +2,31 @@ const db = require("../config/db");
 
 const Product = {
   // Get All Products with error handling
-  getAllProducts: (callback) => {
-    const query = "CALL GetAllProducts()";
-    db.query(query, (err, result) => {
-      if (err) {
-        // Log the error for debugging purposes
-        console.error("Database query error:", err);
-        // Pass error to the callback with a custom error message
-        return callback({ message: "Database query failed", error: err }, null);
+   getAllProducts : (search, category) => {
+    let query = `SELECT product_ID, product_Name, description, price, image_link, category FROM product`;
+    let params = [];
+  
+    if (search || category) {
+      query += ` WHERE`;
+      if (search) {
+        query += ` LOWER(product_Name) LIKE LOWER(?)`;
+        params.push(`%${search}%`);
       }
-
-      // Check if the result contains the 'message' field (meaning no products)
-      if (
-        result[0] &&
-        result[0][0] &&
-        result[0][0].message === "No products available."
-      ) {
-        return callback({ message: "No products available" }, null);
+      if (category) {
+        if (search) query += ` AND`;
+        query += ` LOWER(category) = LOWER(?)`;
+        params.push(category);
       }
-
-      // Return the products result on success
-      return callback(null, result[0]);
+    }
+  
+    return new Promise((resolve, reject) => {
+      db.query(query, params, (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
     });
   },
+   
 
   // /app/models/productModel.js
 

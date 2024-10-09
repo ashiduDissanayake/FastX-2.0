@@ -12,7 +12,6 @@ import ActiveTrips from "./Manager/pages/ActiveTrips";
 import FinishedTrips from "./Manager/pages/FinishedTrips";
 import ViewOrders from "./Manager/pages/ViewOrders";
 import ProductDetail from "./components/ProductDetail";
-import Shop from "./pages/Shop";
 
 
 function App() {

@@ -36,6 +36,9 @@ CREATE TABLE `Product` (
   PRIMARY KEY (`product_ID`) -- Primary key for product_ID
 );
 
+ALTER TABLE Product
+ADD category VARCHAR(255);
+
 -- 3. Create the Discount table
 CREATE TABLE `Discount` (
   `discount_ID` INT AUTO_INCREMENT,
@@ -190,9 +193,6 @@ CREATE TABLE `Admin` (
   `password` varchar(50),
   PRIMARY KEY (`admin_ID`)
 );
-
-ALTER TABLE product
-ADD category VARCHAR(255);
 
 
 

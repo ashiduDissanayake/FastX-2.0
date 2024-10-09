@@ -3,7 +3,7 @@ const db = require("../config/db");
 const Product = {
   // Get All Products with error handling
    getAllProducts : (search, category) => {
-    let query = `SELECT product_ID, product_Name, description, price, image_link, category FROM product`;
+    let query = `SELECT product_ID, product_Name, description, price, image_link, category FROM Product`;
     let params = [];
   
     if (search || category) {
@@ -33,7 +33,7 @@ const Product = {
   getProductById: (id, callback) => {
     const query = `
     SELECT *
-    FROM product 
+    FROM Product 
     WHERE product_ID = ?;
   `;
 

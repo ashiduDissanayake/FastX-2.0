@@ -34,8 +34,9 @@ const SignUpForm = () => {
     }
 
     try {
-      const res = await fetch('/api/user/signup', { // Adjusted API endpoint
+      const res = await fetch('http://localhost:8080/user/signup', { // Adjusted API endpoint
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, username, password, firstName, lastName, phoneNumber, userType }),
       });

@@ -19,6 +19,7 @@ const Shop = () => {
     try {
       const response = await fetch(`http://localhost:8080/user/getallproducts?search=${searchTerm}&category=${category}`, {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

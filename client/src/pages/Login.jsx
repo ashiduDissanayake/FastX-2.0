@@ -19,8 +19,9 @@ const LoginForm = () => {
     setPasswordError('');
 
     try {
-      const res = await fetch('/api/user/login', {
+      const res = await fetch('http://localhost:8080/user/login', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });

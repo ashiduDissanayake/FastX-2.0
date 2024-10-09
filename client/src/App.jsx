@@ -24,20 +24,32 @@ function App() {
             {/* Public route - accessible only if not authenticated */}
             <Route path="/login" element={<LoginForm />} />
             <Route path="/signup" element={<SignUpForm />} />
-            <Route path="/product/:productId" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
+            <Route
+              path="/product/:productId"
+              element={
+                <ProtectedRoute>
+                  <ProductDetail />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Protected route - accessible only if authenticated */}
-            <Route path="/cart" element={<ProtectedRoute>
-              <Cart />
-            </ProtectedRoute>} />
+            <Route
+              path="/cart"
+              element={
+                <ProtectedRoute>
+                  <Cart />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Manager Route */}
-            <Route path="/manager-dashboard" element={<ManagerDashBoard/>} />
-            <Route path="/manager-view-orders" element={<ViewOrders/>} />
-            <Route path="/manager-schedule-trip" element={<ScheduleTrip/>} />
-            <Route path="/manager-active-trips" element={<ActiveTrips/>} />
-            <Route path="/manager-finished-trips" element={<FinishedTrips/>} />
-              
+            <Route path="/manager-dashboard" element={<ManagerDashBoard />} />
+            <Route path="/manager-view-orders" element={<ViewOrders />} />
+            <Route path="/manager-schedule-trip" element={<ScheduleTrip />} />
+            <Route path="/manager-active-trips" element={<ActiveTrips />} />
+            <Route path="/manager-finished-trips" element={<FinishedTrips />} />
+
             {/* Other routes */}
             <Route
               path="/"

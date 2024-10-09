@@ -41,7 +41,7 @@ BEGIN
         SET MESSAGE_TEXT = 'That email is not registered';
     ELSE
         -- Select the user data
-        SELECT id, email, password FROM Customer WHERE email = userEmail;
+        SELECT customer_ID, email, password FROM Customer WHERE email = userEmail;
     END IF;
 END$$
 
@@ -253,7 +253,7 @@ BEGIN
             p.image_link AS image, 
             cp.quantity, 
             cp.final_Price
-        FROM cart cp
+        FROM Cart cp
         JOIN Product p ON cp.product_ID = p.product_ID
         JOIN Customer c ON cp.customer_ID = c.customer_ID
         WHERE cp.customer_ID = customerID;

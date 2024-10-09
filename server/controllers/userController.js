@@ -91,7 +91,6 @@ const userController = {
         const errors = handleErrors(err);
         return res.status(400).json({ errors }); // Send the error response
       }
-
       // Create JWT token
       const token = createToken(user.customer_ID);
       res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });

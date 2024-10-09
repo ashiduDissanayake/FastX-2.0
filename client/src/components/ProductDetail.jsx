@@ -16,7 +16,6 @@ const ProductDetail = () => {
       credentials: 'include',
       headers: {
         "Content-Type": "application/json",
-        
       },
       body: JSON.stringify({ product_ID: productId, quantity: quantity }),
     })

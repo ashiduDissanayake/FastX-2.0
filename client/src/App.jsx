@@ -11,6 +11,9 @@ import Shop from "./pages/Shop";
 import ActiveTrips from "./Manager/pages/ActiveTrips";
 import FinishedTrips from "./Manager/pages/FinishedTrips";
 import ViewOrders from "./Manager/pages/ViewOrders";
+import ProductDetail from "./components/ProductDetail";
+import Shop from "./pages/Shop";
+
 
 function App() {
   return (
@@ -22,6 +25,7 @@ function App() {
             <Route path="/login" element={<LoginForm />} />
             {/* Protected route - accessible only if authenticated */}
             <Route path="/signup" element={<SignUpForm />} />
+            <Route path="/product/:productId" element={<ProductDetail />} />
 
             {/* Manager Route */}
             <Route path="/manager-dashboard" element={<ManagerDashBoard/>} />

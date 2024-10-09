@@ -242,8 +242,7 @@ const managerController = {
     const sqlGet = `
       SELECT o.order_ID, o.route_ID, o.capacity
       FROM \`order\` o
-      JOIN  store s USING (store_ID)
-      WHERE s.store_ID = ? AND o.status = 'branch'
+      WHERE o.store_ID = ? AND o.status = 'branch'
       ORDER BY o.Route_ID
     `;
 
@@ -300,10 +299,10 @@ try {
     try {
         const currentTime = new Date().toISOString().slice(0, 19).replace('T', ' '); // Current timestamp
 
-        // Fetch the start_time, driver_ID, and assistant_ID from the trip
+        // Fetch the trip to ensure it exists and has a valid start_time
         const [tripData] = await db.promise().execute(`
-            SELECT start_time, driver_ID, assistant_ID 
-            FROM truck_schedule 
+            SELECT start_time
+            FROM truck_schedule
             WHERE schedule_ID = ?
         `, [schedule_ID]);
 
@@ -311,58 +310,15 @@ try {
             return res.status(404).send({ message: "Trip not found." });
         }
 
-        const { start_time, driver_ID, assistant_ID } = tripData[0];
-
-        // Parse the start_time as a UTC time and current time as well
-        const startTime = new Date(start_time);
-        const endTime = new Date();  // No need to format, use the raw JS Date object for accuracy
-
-        // Calculate the total working hours (end_time - start_time)
-        const diffMilliseconds = endTime.getTime() - startTime.getTime(); // Time difference in milliseconds
-        const diffHours = diffMilliseconds / (1000 * 60 * 60); // Convert to hours
-        const roundedDiffHours = Math.round(diffHours * 100) / 100; // Round to two decimal places
-
         // Update the truck schedule to set the end_time
         await db.promise().execute(`
             UPDATE truck_schedule
             SET end_time = ?
             WHERE schedule_ID = ?
-        `, [endTime.toISOString().slice(0, 19).replace('T', ' '), schedule_ID]); // Set accurate end time
+        `, [currentTime, schedule_ID]);
 
-        // Update the driver's working hours and set status to 'inactive'
-        await db.promise().execute(`
-            UPDATE driver
-            SET current_working_time = current_working_time + ?, status = 'inactive'
-            WHERE driver_ID = ?
-        `, [roundedDiffHours, driver_ID]);
-
-        // Check if an assistant is assigned and fetch assistant status
-        if (assistant_ID) {
-            const [assistantData] = await db.promise().execute(`
-                SELECT status
-                FROM driver_assistant
-                WHERE assistant_ID = ?
-            `, [assistant_ID]);
-
-            if (assistantData.length > 0) {
-                const assistantStatus = assistantData[0].status;
-                let newStatus = 'available'; // Default to available after trip
-
-                // Update assistant status based on their current status
-                if (assistantStatus === 'active2') {
-                    newStatus = 'inactive'; // Set to inactive if they are active2
-                }
-
-                // Update the assistant status
-                await db.promise().execute(`
-                    UPDATE driver_assistant
-                    SET status = ?
-                    WHERE assistant_ID = ?
-                `, [newStatus, assistant_ID]);
-            }
-        }
-
-        res.status(200).send({ message: "Trip ended successfully, driver and assistant updated!" });
+        // Respond with success message
+        res.status(200).send({ message: "Trip ended successfully!" });
 
     } catch (error) {
         console.error("Error ending trip:", error);
@@ -445,54 +401,84 @@ updateOrdersToBranch:async (req, res) => {
   }
 },
 
-  scheduleTrip: async (req, res) => {
-    const {
-        truck_ID,
-        driver_ID,
-        assistant_ID,
-        store_ID,
-        route_ID,
-        start_time,
-        end_time,
-        selectedOrders, // Get selected orders from the request body
-    } = req.body;
+scheduleTrip: async (req, res) => {
+  const {
+      truck_ID,
+      driver_ID,
+      assistant_ID,
+      store_ID,
+      route_ID,
+      start_time,
+      end_time,
+      selectedOrders, // Get selected orders from the request body
+  } = req.body;
 
-    if (!truck_ID || !driver_ID || !assistant_ID || !store_ID || !route_ID || !start_time || selectedOrders.length === 0) {
-        return res.status(400).send({ message: "All fields are required and at least one order must be selected." });
-    }
+  if (!truck_ID || !driver_ID || !assistant_ID || !store_ID || !route_ID || !start_time || selectedOrders.length === 0) {
+      return res.status(400).send({ message: "All fields are required and at least one order must be selected." });
+  }
 
-    try {
-        // Schedule the trip by inserting into truck_schedule
-        const currentDate = new Date().toISOString().split("T")[0]; // Get the current date in YYYY-MM-DD format
-        const formattedStartTime = `${currentDate} ${start_time}:00`;
+  try {
+      // Get the route max_time (duration) for the selected route
+      const getRouteMaxTimeQuery = "SELECT max_time FROM route WHERE route_ID = ?";
+      const [routeData] = await db.promise().execute(getRouteMaxTimeQuery, [route_ID]);
 
-        const scheduleQuery = `
-            INSERT INTO truck_schedule (truck_ID, driver_ID, assistant_ID, store_ID, route_ID, start_time, end_time)
-            VALUES (?, ?, ?, ?, ?, ?, ?);
-        `;
-        await db.promise().execute(scheduleQuery, [
-            truck_ID, driver_ID, assistant_ID, store_ID, route_ID, formattedStartTime, null
-        ]);
+      if (routeData.length === 0) {
+          return res.status(404).send({ message: 'Route not found.' });
+      }
+      
+      const routeMaxTime = routeData[0]?.max_time || 0; // Get the max_time from the result
 
-        // Convert selectedOrders array into a dynamic SQL placeholders string
-        const placeholders = selectedOrders.map(() => '?').join(', ');
+      // Calculate total working hours for the driver
+      const checkDriverHoursQuery = `SELECT current_working_time AS total_hours FROM driver WHERE driver_ID = ?`;
+      const [driverData] = await db.promise().execute(checkDriverHoursQuery, [driver_ID]);
+      const driverHours = driverData[0]?.total_hours || 0;
 
-        // Update the status of selected orders to 'delivered'
-        const orderUpdateQuery = `
-            UPDATE \`order\`
-            SET status = 'delivered'
-            WHERE order_ID IN (${placeholders})
-        `;
+      // Calculate total working hours for the assistant
+      const checkAssistantHoursQuery = `SELECT current_working_time AS total_hours FROM driver_assistant WHERE assistant_ID = ?`;
+      const [assistantData] = await db.promise().execute(checkAssistantHoursQuery, [assistant_ID]);
+      const assistantHours = assistantData[0]?.total_hours || 0;
 
-        // Execute the update query with selectedOrders
-        await db.promise().execute(orderUpdateQuery, selectedOrders);
+      // Check if adding this trip would exceed the limit for driver and assistant
+      if (driverHours + routeMaxTime > 40) {
+          return res.status(400).send({ message: 'Driver exceeds the 40-hour working limit.' });
+      }
 
-        res.status(200).send({ message: "Trip scheduled and orders updated successfully!" });
-    } catch (error) {
-        console.error("Error scheduling trip:", error);
-        res.status(500).send({ message: "Failed to schedule trip", error: error.message });
-    }
+      if (assistantHours + routeMaxTime > 60) {
+          return res.status(400).send({ message: 'Assistant exceeds the 60-hour working limit.' });
+      }
+
+      // Schedule the trip by inserting into truck_schedule
+      const currentDate = new Date().toISOString().split("T")[0]; // Get the current date in YYYY-MM-DD format
+      const formattedStartTime = `${currentDate} ${start_time}:00`;
+
+      const scheduleQuery = `
+          INSERT INTO truck_schedule (truck_ID, driver_ID, assistant_ID, store_ID, route_ID, start_time, end_time)
+          VALUES (?, ?, ?, ?, ?, ?, ?);
+      `;
+      await db.promise().execute(scheduleQuery, [
+          truck_ID, driver_ID, assistant_ID, store_ID, route_ID, formattedStartTime, null
+      ]);
+
+      // Convert selectedOrders array into a dynamic SQL placeholders string
+      const placeholders = selectedOrders.map(() => '?').join(', ');
+
+      // Update the status of selected orders to 'delivered'
+      const orderUpdateQuery = `
+          UPDATE \`order\`
+          SET status = 'delivered'
+          WHERE order_ID IN (${placeholders})
+      `;
+
+      // Execute the update query with selectedOrders
+      await db.promise().execute(orderUpdateQuery, selectedOrders);
+
+      res.status(200).send({ message: "Trip scheduled and orders updated successfully!" });
+  } catch (error) {
+      console.error("Error scheduling trip:", error);
+      res.status(500).send({ message: "Failed to schedule trip", error: error.message });
+  }
 },
+
 
 };
 

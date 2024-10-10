@@ -115,10 +115,10 @@ const Cart = {
     });
   },
 
-  placeOrder: (customerId) => {
+  placeOrder: (customerId, route_ID) => {
     return new Promise((resolve, reject) => {
-      const query = 'CALL PlaceOrder(?)';
-      db.query(query, [customerId], (err, result) => {
+      const query = 'CALL PlaceOrder(?, ?)';
+      db.query(query, [customerId, route_ID], (err, result) => {
         if (err) {
           reject(err);
         } else {

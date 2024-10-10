@@ -24,6 +24,34 @@ const Cart = {
       return callback(null, result);
     });
   },
+
+  // Delete product from cart
+  removeProduct: (customerId, productId) => {
+    return new Promise((resolve, reject) => {
+      const query = "CALL RemoveProductFromCart(?, ?)";
+      db.query(query, [customerId, productId], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result[0][0]); // Extract the message from the stored procedure result
+        }
+      });
+    });
+  },
+
+  // Update product in cart
+  updateCart: (customerId, productId, quantity) => {
+    return new Promise((resolve, reject) => {
+      const query = "CALL UpdateProductQuantityInCart(?, ?, ?)";
+      db.query(query, [customerId, productId, quantity], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result[0][0]); // Extract the message from the stored procedure result
+        }
+      });
+    });
+  },
 };
 
 module.exports = Cart;

@@ -61,12 +61,7 @@ CREATE TABLE `Cart` (
   FOREIGN KEY (`discount_ID`) REFERENCES `Discount`(`discount_ID`)
 );
 
-
-------------------------------------------------------------
-------------------------------------------------------------
-
-
--- 4. Create the Store table (needed for Product, Route, and other tables)
+-- 5. Create the Store table (needed for Product, Route, and other tables)
 CREATE TABLE `Store` (
   `store_ID` varchar(10),
   `order_ID` varchar(10),
@@ -76,6 +71,9 @@ CREATE TABLE `Store` (
   PRIMARY KEY (`store_ID`)
 );
 
+
+------------------------------------------------------------
+------------------------------------------------------------
 
 -- 6. Create the Order table (cart_ID references cart)
 CREATE TABLE `Order` (

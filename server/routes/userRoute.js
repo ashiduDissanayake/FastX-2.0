@@ -22,5 +22,8 @@ router.get('/getcategoryproducts', userController.getcategoryProducts);
 // Accesing Cart Routes
 router.get('/getcart', authenticateToken, cartController.getAllProducts) // GET /user/getcart - get all products in cart
 router.post('/addtocart', authenticateToken, cartController.addToCart); // POST /user/addtocart - add product to cart
+router.delete('/removecart', authenticateToken, cartController.removeFromCart); // DELETE /user/removecart - remove product from cart
+router.put('/updatecart', authenticateToken, cartController.updateProductInCart); // PUT /user/updatecart - update product in cart
+router.post('/placeorder', authenticateToken, cartController.placeOrder); // POST /user/buyitems - buy items in cart
 
 module.exports = router;

@@ -2,27 +2,46 @@ const db = require("../config/db");
 
 const Product = {
   // Get All Products with error handling
-  getAllProducts: (callback) => {
-    const query = "CALL GetAllProducts()";
-    db.query(query, (err, result) => {
+   getAllProducts : (search, category) => {
+    let query = `SELECT product_ID, product_Name, description, price, image_link, category FROM Product`;
+    let params = [];
+  
+    if (search || category) {
+      query += ` WHERE`;
+      if (search) {
+        query += ` LOWER(product_Name) LIKE LOWER(?)`;
+        params.push(`%${search}%`);
+      }
+      if (category) {
+        if (search) query += ` AND`;
+        query += ` LOWER(category) = LOWER(?)`;
+        params.push(category);
+      }
+    }
+  
+    return new Promise((resolve, reject) => {
+      db.query(query, params, (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    });
+  },
+   
+
+  // /app/models/productModel.js
+
+  getProductById: (id, callback) => {
+    const query = `
+    SELECT *
+    FROM Product 
+    WHERE product_ID = ?;
+  `;
+
+    db.query(query, [id], (err, results) => {
       if (err) {
-        // Log the error for debugging purposes
-        console.error("Database query error:", err);
-        // Pass error to the callback with a custom error message
-        return callback({ message: "Database query failed", error: err }, null);
+        return callback(err, null);
       }
-
-      // Check if the result contains the 'message' field (meaning no products)
-      if (
-        result[0] &&
-        result[0][0] &&
-        result[0][0].message === "No products available."
-      ) {
-        return callback({ message: "No products available" }, null);
-      }
-
-      // Return the products result on success
-      return callback(null, result[0]);
+      return callback(null, results[0]); // Return the first product (since IDs are unique)
     });
   },
 
@@ -92,58 +111,61 @@ const Product = {
     });
   },
 
-    // Delete a product by ID
-    delete: (productId, callback) => {
-      const query = "CALL DeleteProductByID(?)";
-      db.query(query, [productId], (err, result) => {
+  // Delete a product by ID
+  delete: (productId, callback) => {
+    const query = "CALL DeleteProductByID(?)";
+    db.query(query, [productId], (err, result) => {
+      if (err) {
+        console.error("Database query error:", err);
+        return callback({ message: "Database query failed", error: err }, null);
+      }
+      if (result[0] && result[0][0].message === "Product not found") {
+        return callback({ message: "Product not found" }, null);
+      }
+      return callback(null, { message: "Product deleted" });
+    });
+  },
+
+  // Update a product by ID
+  update: (productId, updatedData, callback) => {
+    const query = "CALL UpdateProductByID(?, ?, ?, ?, ?, ?, ?, ?)";
+
+    db.query(
+      query,
+      [
+        productId,
+        updatedData.product_Name, // Ensure this is under 20 characters
+        updatedData.price,
+        updatedData.image_link,
+        updatedData.description,
+        updatedData.weight,
+        updatedData.volume,
+        updatedData.available_Qty,
+      ],
+      (err, result) => {
         if (err) {
           console.error("Database query error:", err);
-          return callback({ message: "Database query failed", error: err }, null);
+          return callback(
+            { message: "Database query failed", error: err },
+            null
+          );
         }
-        if (result[0] && result[0][0].message === "Product not found") {
-          return callback({ message: "Product not found" }, null);
-        }
-        return callback(null, { message: "Product deleted" });
-      });
-    },
 
-    // Update a product by ID
-    update: (productId, updatedData, callback) => {
-        const query = "CALL UpdateProductByID(?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        db.query(
-            query,
-            [
-              productId,
-              updatedData.product_Name,  // Ensure this is under 20 characters
-              updatedData.price,
-              updatedData.image_link,
-              updatedData.description,
-              updatedData.weight,
-              updatedData.volume,
-              updatedData.available_Qty
-            ],
-            (err, result) => {
-              if (err) {
-                console.error("Database query error:", err);
-                return callback({ message: "Database query failed", error: err }, null);
-              }
-    
-              // Check if result exists and if there's a message
-              if (result && result[0] && result[0][0]) {
-                const message = result[0][0].message;
-    
-                if (message === 'Product not found') {
-                  return callback({ message: "Product not found" }, null);
-                } else {
-                  return callback(null, { message: message });
-                }
-              } else {
-                return callback(null, { message: "Unknown result from database" });
-              }
-            }
-        );
-    },    
+        // Check if result exists and if there's a message
+        if (result && result[0] && result[0][0]) {
+          const message = result[0][0].message;
+
+          if (message === "Product not found") {
+            return callback({ message: "Product not found" }, null);
+          } else {
+            return callback(null, { message: message });
+          }
+        } else {
+          return callback(null, { message: "Unknown result from database" });
+        }
+      }
+    );
+  },
 };
 
 module.exports = Product;

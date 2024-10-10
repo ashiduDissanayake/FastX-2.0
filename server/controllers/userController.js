@@ -2,7 +2,6 @@ const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const { get } = require("../routes/userRoute");
 
 // dotenv config
 dotenv.config();
@@ -92,9 +91,7 @@ const userController = {
         const errors = handleErrors(err);
         return res.status(400).json({ errors }); // Send the error response
       }
-
       // Create JWT token
-      console.log(user);
       const token = createToken(user.customer_ID);
       res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
       res.status(200).json({ user: user.customer_ID }); // Send user ID in response
@@ -120,21 +117,21 @@ const userController = {
 
   // Get all products
   // Get all products with error handling
-  getAllProducts: (req, res) => {
-    Product.getAllProducts((err, products) => {
-      if (err) {
-        // Handle database or other errors
-        return res.status(500).json({ error: err.message || "Database error" });
+   getAllProducts: async (req, res) => {
+    const search = req.query.search || "";
+    const category = req.query.category || "";
+  
+    try {
+      const results = await Product.getAllProducts(search, category);
+  
+      if (results.length === 0) {
+        return res.json({ message: "No products found" });
       }
-
-      if (!products) {
-        // Handle the case where no products are available
-        return res.status(404).json({ message: "No products found" });
-      }
-
-      // If everything is fine, return the products
-      res.json(products);
-    });
+  
+      return res.json(results);
+    } catch (err) {
+      return res.status(500).json({ error: "Database query error" });
+    }
   },
 
   // Post a product
@@ -201,14 +198,14 @@ const userController = {
   },
 
   // Get product by ID
-  getProductById: (req, res) => {
-    const productId = req.params.id;
-    Product.findById(productId, (err, product) => {
+   getProductById: (req, res) => {
+    const { id } = req.params;
+    Product.getProductById(id, (err, product) => {
       if (err) {
-        return res.status(500).json({ error: "Database error" });
+        return res.status(500).json({ error: 'Server error' });
       }
       if (!product) {
-        return res.status(404).json({ message: "Product not found" });
+        return res.status(404).json({ error: 'Product not found' });
       }
       res.json(product);
     });
@@ -236,6 +233,22 @@ const userController = {
       res.json({ message: "Product updated" });
     });
   },
+
+   async getcategoryProducts(req, res) {
+    const { search, category } = req.query; // Extract query parameters
+
+    try {
+      const products = await ProductModel.getcategoryProducts(search || '', category || '');
+      res.status(200).json(products);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error retrieving products' });
+    }
+  },
+
+
+
+
 
 
 

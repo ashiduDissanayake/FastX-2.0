@@ -17,6 +17,12 @@ export default function Navbar() {
         </li>
         {auth ? (
           <>
+          <li>
+              <Link to="/shop">Shop</Link>
+            </li>
+            <li>
+              <Link to="/cart">Cart</Link>
+            </li>
             <li>
               <Link to="/profile">Profile</Link>
             </li>
@@ -26,6 +32,12 @@ export default function Navbar() {
           </>
         ) : (
           <>
+          <li>
+              <Link to="/cart">Cart</Link>
+            </li>
+            <li>
+              <Link to="/shop">Shop</Link>
+            </li>
             <li>
               <Link to="/login">Login</Link>
             </li>

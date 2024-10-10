@@ -36,19 +36,37 @@ CREATE TABLE `Product` (
   PRIMARY KEY (`product_ID`) -- Primary key for product_ID
 );
 
+ALTER TABLE Product
+ADD category VARCHAR(255);
 
-------------------------------------------------------------
-------------------------------------------------------------
-
--- 2. Create the Discount table
+-- 3. Create the Discount table
 CREATE TABLE `Discount` (
-  `discount_ID` varchar(10),
+  `discount_ID` INT AUTO_INCREMENT,
   `qty_Range` INT,
   `discount` INT,
   PRIMARY KEY (`discount_ID`)
 );
 
--- 3. Create the Store table (needed for Product, Route, and other tables)
+-- 4. Create the cart table (customer_ID references Customer, product_ID references Product, discount_ID references Discount)
+CREATE TABLE `Cart` (
+  `cart_ID` INT AUTO_INCREMENT,
+  `customer_ID` INT,
+  `product_ID` INT,
+  `discount_ID` INT,
+  `quantity` INT,
+  `final_Price` numeric(6,2),
+  PRIMARY KEY (`cart_ID`),
+  FOREIGN KEY (`customer_ID`) REFERENCES `Customer`(`customer_ID`),
+  FOREIGN KEY (`product_ID`) REFERENCES `Product`(`product_ID`),
+  FOREIGN KEY (`discount_ID`) REFERENCES `Discount`(`discount_ID`)
+);
+
+
+------------------------------------------------------------
+------------------------------------------------------------
+
+
+-- 4. Create the Store table (needed for Product, Route, and other tables)
 CREATE TABLE `Store` (
   `store_ID` varchar(10),
   `order_ID` varchar(10),
@@ -58,21 +76,6 @@ CREATE TABLE `Store` (
   PRIMARY KEY (`store_ID`)
 );
 
-
-
--- 5. Create the cart table (customer_ID references Customer, product_ID references Product, discount_ID references Discount)
-CREATE TABLE `cart` (
-  `cart_ID` varchar(10),
-  `customer_ID` varchar(10),
-  `product_ID` varchar(10),
-  `discount_ID` varchar(10),
-  `quantity` INT,
-  `final_Price` numeric(6,2),
-  PRIMARY KEY (`cart_ID`),
-  FOREIGN KEY (`customer_ID`) REFERENCES `Customer`(`customer_ID`),
-  FOREIGN KEY (`product_ID`) REFERENCES `Product`(`product_ID`),
-  FOREIGN KEY (`discount_ID`) REFERENCES `Discount`(`discount_ID`)
-);
 
 -- 6. Create the Order table (cart_ID references cart)
 CREATE TABLE `Order` (
@@ -190,5 +193,6 @@ CREATE TABLE `Admin` (
   `password` varchar(50),
   PRIMARY KEY (`admin_ID`)
 );
+
 
 

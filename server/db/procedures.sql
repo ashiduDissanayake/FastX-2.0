@@ -41,7 +41,7 @@ BEGIN
         SET MESSAGE_TEXT = 'That email is not registered';
     ELSE
         -- Select the user data
-        SELECT id, email, password FROM Customer WHERE email = userEmail;
+        SELECT customer_ID, email, password FROM Customer WHERE email = userEmail;
     END IF;
 END$$
 
@@ -223,6 +223,128 @@ BEGIN
         ROLLBACK;
         SELECT 'Product not found' AS message;
     END IF;
+END $$
+
+DELIMITER ;
+
+-- Get all cart Products by customer_ID
+DELIMITER $$
+CREATE PROCEDURE GetCartProductsByCustomerID(
+    IN customerID INT
+)
+BEGIN
+    -- Declare an exception handler for SQL errors
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        -- Handling SQL exception, return an error message
+        SELECT 'SQL Exception Occurred. Unable to fetch cart products.' AS error_message;
+    END;
+
+    -- Check if the customer exists
+    IF (SELECT COUNT(*) FROM Customer WHERE customer_ID = customerID) = 0 THEN
+        -- If the customer does not exist, return a message
+        SELECT 'Customer not found.' AS message;
+    ELSE
+        -- Retrieve specific columns with aliases
+        SELECT 
+            cp.product_ID AS id, 
+            p.product_Name AS name, 
+            p.price, 
+            p.image_link AS image, 
+            cp.quantity, 
+            cp.final_Price
+        FROM Cart cp
+        JOIN Product p ON cp.product_ID = p.product_ID
+        JOIN Customer c ON cp.customer_ID = c.customer_ID
+        WHERE cp.customer_ID = customerID;
+    END IF;
+    
+END $$
+
+DELIMITER ;
+DELIMITER $$
+
+CREATE PROCEDURE AddProductToCart(
+    IN p_customer_ID INT,
+    IN p_product_ID INT,
+    IN p_quantity INT
+)
+BEGIN
+    DECLARE v_product_price DECIMAL(6,2);
+    DECLARE v_existing_quantity INT;
+    DECLARE v_available_quantity INT;
+
+    -- Declare an exception handler for SQL errors
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        ROLLBACK;
+        SELECT 'Error occurred while adding product to cart' AS message;
+    END;
+
+    -- Start a transaction
+    START TRANSACTION;
+
+    -- Check if the product exists and get its price and available quantity
+    SELECT price, available_Qty INTO v_product_price, v_available_quantity
+    FROM Product 
+    WHERE product_ID = p_product_ID;
+
+    IF v_product_price IS NULL THEN
+        SELECT 'Product not found.' AS message;
+        ROLLBACK;
+        EXIT;
+    END IF;
+
+    -- Check if the customer exists
+    IF NOT EXISTS (SELECT 1 FROM Customer WHERE customer_ID = p_customer_ID) THEN
+        SELECT 'Customer not found.' AS message;
+        ROLLBACK;
+        EXIT;
+    END IF;
+
+    -- Check if the requested quantity is available
+    IF p_quantity > v_available_quantity THEN
+        SELECT 'Insufficient quantity available.' AS message, 
+               v_available_quantity AS available_quantity;
+        ROLLBACK;
+        EXIT;
+    END IF;
+
+    -- Check if the product is already in the cart
+    SELECT quantity INTO v_existing_quantity
+    FROM Cart 
+    WHERE customer_ID = p_customer_ID AND product_ID = p_product_ID;
+
+    IF v_existing_quantity IS NOT NULL THEN
+        -- If product is already in the cart, check if the new total quantity is available
+        IF (v_existing_quantity + p_quantity) > v_available_quantity THEN
+            SELECT 'Insufficient quantity available.' AS message, 
+                   v_available_quantity AS available_quantity;
+            ROLLBACK;
+            EXIT;
+        END IF;
+
+        -- Update the quantity and final price
+        UPDATE Cart 
+        SET quantity = v_existing_quantity + p_quantity, 
+            final_Price = v_product_price * (v_existing_quantity + p_quantity)
+        WHERE customer_ID = p_customer_ID AND product_ID = p_product_ID;
+    ELSE
+        -- Insert new product into cart
+        INSERT INTO Cart (customer_ID, product_ID, quantity, final_Price)
+        VALUES (p_customer_ID, p_product_ID, p_quantity, v_product_price * p_quantity);
+    END IF;
+
+    -- Update the available quantity in the Product table
+    UPDATE Product
+    SET available_Qty = available_Qty - p_quantity
+    WHERE product_ID = p_product_ID;
+
+    -- Commit the transaction
+    COMMIT;
+
+    -- Success message
+    SELECT 'Product successfully added to cart' AS message;
 END $$
 
 DELIMITER ;

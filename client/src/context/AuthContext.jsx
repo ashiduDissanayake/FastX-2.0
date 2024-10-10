@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const res = await fetch('api/user/check-auth', {
+                const res = await fetch('http://localhost:8080/user/check-auth', {
                     method: 'GET',
                     credentials: 'include', // Make sure cookies are included in the request
                 });

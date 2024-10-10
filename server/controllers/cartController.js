@@ -94,6 +94,43 @@ const productController = {
       res.status(500).json({ error: "Database error" });
     }
   },
+  getStores: async (req, res) => {
+    try {
+      const stores = await Cart.getAllStores();
+      res.json(stores);
+    } catch (error) {
+      console.error('Error fetching store names:', error);
+      res.status(500).json({ error: 'Database error' });
+    }
+  },
+
+  getEndLocations: async (req, res) => {
+    const storeId = req.params.store;
+    try {
+      const endLocations = await Cart.getEndLocations(storeId);
+      res.json(endLocations);
+    } catch (error) {
+      console.error('Error fetching end locations:', error);
+      res.status(500).json({ error: 'Database error' });
+    }
+  },
+
+  getRouteImage: async (req, res) => {
+    const { store, endLocation } = req.query;
+    try {
+      const imageLink = await Cart.getRouteImage(store, endLocation);
+      res.json({ imageLink });
+    } catch (error) {
+      if (error.message === 'No image found for the selected route') {
+        res.status(404).json({ error: error.message });
+      } else {
+        console.error('Error fetching image link:', error);
+        res.status(500).json({ error: 'Database error' });
+      }
+    }
+  },
+
+
 };
 
 module.exports = productController;

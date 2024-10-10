@@ -15,6 +15,7 @@ import FinishedTrips from "./Manager/pages/FinishedTrips";
 import ViewOrders from "./Manager/pages/ViewOrders";
 import ProductDetail from "./components/ProductDetail";
 
+
 function App() {
   return (
     <>
@@ -49,6 +50,7 @@ function App() {
             <Route path="/manager-schedule-trip" element={<ScheduleTrip />} />
             <Route path="/manager-active-trips" element={<ActiveTrips />} />
             <Route path="/manager-finished-trips" element={<FinishedTrips />} />
+        
 
             {/* Other routes */}
             <Route

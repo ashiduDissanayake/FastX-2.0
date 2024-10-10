@@ -22,5 +22,7 @@ router.get('/getcategoryproducts', userController.getcategoryProducts);
 // Accesing Cart Routes
 router.get('/getcart', authenticateToken, cartController.getAllProducts) // GET /user/getcart - get all products in cart
 router.post('/addtocart', authenticateToken, cartController.addToCart); // POST /user/addtocart - add product to cart
-
+router.get('/stores', cartController.getStores);
+router.get('/end-locations/:store', cartController.getEndLocations);
+router.get('/route-image', cartController.getRouteImage);
 module.exports = router;

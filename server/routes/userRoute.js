@@ -26,5 +26,8 @@ router.delete('/removecart', authenticateToken, cartController.removeFromCart); 
 router.put('/updatecart', authenticateToken, cartController.updateProductInCart); // PUT /user/updatecart - update product in cart
 router.put('/updatecartstatus', authenticateToken, cartController.updateCartStatus);
 router.post('/placeorder', authenticateToken, cartController.placeOrder);
+router.get('/stores', cartController.getStores);
+router.get('/end-locations/:store', cartController.getEndLocations);
+router.get('/route-image', cartController.getRouteImage);
 
 module.exports = router;

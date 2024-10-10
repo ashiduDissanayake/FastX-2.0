@@ -15,6 +15,7 @@ import FinishedTrips from "./Manager/pages/FinishedTrips";
 import ViewOrders from "./Manager/pages/ViewOrders";
 import ProductDetail from "./components/ProductDetail";
 
+
 function App() {
   return (
     <>

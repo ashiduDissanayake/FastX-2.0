@@ -87,7 +87,7 @@ const ProductDetail = () => {
           <h1 className="text-4xl font-bold mb-4 text-gray-900">
             {product.product_Name}
           </h1>
-          <p className="text-lg mb-4 text-gray-700">{product.longDescription}</p>
+          <p className="text-lg mb-4 text-gray-700">{product.description}</p>
           <p className="text-xl font-bold text-gray-900 mb-4">${product.price}</p>
 
           {/* Color Selection */}

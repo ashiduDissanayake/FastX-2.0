@@ -48,37 +48,37 @@ const SelectRoute = () => {
     }
   };
 
-    // Handle purchasing the selected items
-    const placeOrder = async (selectedRouteID) => {
-      try {
-        const response = await axios.post(
-          "http://localhost:8080/user/placeorder",
-          { route_ID: selectedRouteID}, // No need to send products, as they're already marked in the database
-          { withCredentials: true }
+  // Handle purchasing the selected items
+  const placeOrder = async (selectedRouteID) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/user/placeorder",
+        { route_ID: selectedRouteID }, // No need to send products, as they're already marked in the database
+        { withCredentials: true }
+      );
+      if (response.data.success) {
+        alert("Order placed successfully!");
+      } else {
+        alert(
+          response.data.message || "Failed to place order. Please try again."
         );
-        if (response.data.success) {
-          alert("Order placed successfully!");
-        } else {
-          alert(
-            response.data.message || "Failed to place order. Please try again."
-          );
-        }
-      } catch (error) {
-        console.error("Order placement failed", error);
-        alert("An error occurred while placing the order.");
       }
-    };
+    } catch (error) {
+      console.error("Order placement failed", error);
+      alert("An error occurred while placing the order.");
+    }
+  };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl mb-4">Select Route</h1>
+    <div className="p-6 bg-black text-white">
+      <h1 className="text-4xl font-bold mb-6 text-center text-pink-500">Select Route</h1>
       
       {/* Store selection */}
-      <div className="mb-4">
-        <label htmlFor="storeSelect" className="block mb-2">Select Store:</label>
+      <div className="mb-6">
+        <label htmlFor="storeSelect" className="block mb-2 text-lg">Select Store:</label>
         <select
           id="storeSelect"
-          className="border rounded p-2 w-full"
+          className="border border-pink-500 rounded p-3 w-full bg-gray-800 text-white"
           value={selectedStore}
           onChange={(e) => {
             setSelectedStore(e.target.value);
@@ -96,11 +96,11 @@ const SelectRoute = () => {
 
       {/* End location selection */}
       {selectedStore && (
-        <div className="mb-4">
-          <label htmlFor="endLocationSelect" className="block mb-2">Select End Location:</label>
+        <div className="mb-6">
+          <label htmlFor="endLocationSelect" className="block mb-2 text-lg">Select End Location:</label>
           <select
             id="endLocationSelect"
-            className="border rounded p-2 w-full"
+            className="border border-pink-500 rounded p-3 w-full bg-gray-800 text-white"
             value={selectedEndLocation.route || ''}
             onChange={handleEndLocationChange}
           >
@@ -113,13 +113,13 @@ const SelectRoute = () => {
       )}
 
       <button 
-        className="bg-blue-500 text-white rounded p-2 w-full"
+        className="bg-pink-500 text-white font-semibold rounded p-3 w-full hover:bg-pink-600 transition duration-200"
         onClick={() => placeOrder(selectedRouteID)}
-      >Place the order</button>
+      >Place the Order</button>
 
       {/* Display selected details, route ID, and image */}
       {selectedStore && selectedEndLocation && (
-        <div>
+        <div className="mt-6 text-center">
           <p className="text-lg">
             You selected <strong>{selectedStore}</strong> with end location <strong>{selectedEndLocation.route}</strong> (Route ID: <strong>{selectedRouteID}</strong>).
           </p>

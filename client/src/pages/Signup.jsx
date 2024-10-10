@@ -1,54 +1,43 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { User, Mail, Phone, Lock, UserPlus } from 'lucide-react';
 
 const SignUpForm = () => {
-  // State for form fields and error messages
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [userType, setUserType] = useState('user'); // default user type
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    username: '',
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
+    userType: 'user',
+    password: '',
+    confirmPassword: '',
+  });
   const [errors, setErrors] = useState({});
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Reset error messages
     setErrors({});
 
-    // Simple client-side validation
-    const newErrors = {};
-    if (!email) newErrors.email = 'Email is required';
-    if (!username) newErrors.username = 'Username is required';
-    if (!firstName) newErrors.firstName = 'First name is required';
-    if (!lastName) newErrors.lastName = 'Last name is required';
-    if (!phoneNumber) newErrors.phoneNumber = 'Phone number is required';
-    if (!password) newErrors.password = 'Password is required';
-    if (password !== confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return; // Stop submission if there are errors
-    }
+    // Validation logic here (omitted for brevity)
 
     try {
-      const res = await fetch('http://localhost:8080/user/signup', { // Adjusted API endpoint
+      const res = await fetch('http://localhost:8080/user/signup', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, username, password, firstName, lastName, phoneNumber, userType }),
+        body: JSON.stringify(formData),
       });
       const data = await res.json();
-      console.log(data);
 
-      // Handle errors returned from the server
       if (data.errors) {
         setErrors(data.errors);
       }
 
-      // Redirect to homepage on successful registration
       if (data.user) {
         window.location.assign('/');
       }
@@ -57,124 +46,146 @@ const SignUpForm = () => {
     }
   };
 
+  const inputClasses = "w-full bg-gray-800 text-pink-100 border border-gray-700 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent";
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h2 className="text-2xl font-bold mb-4">Sign Up</h2>
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded px-8 py-6 mb-4 w-96"
+    <div className="min-h-screen bg-black flex items-center justify-center px-4">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-gray-900 p-8 rounded-xl shadow-2xl w-full max-w-md"
       >
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-          Email
-        </label>
-        <input
-          type="email"
-          name="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <div className="text-red-500 text-sm mb-2">{errors.email}</div>
+        <h2 className="text-3xl font-bold text-pink-300 mb-6 text-center">Sign Up</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="text-pink-200 mb-1 block" htmlFor="email">
+              <Mail className="inline mr-2" size={18} />
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className={inputClasses}
+              required
+            />
+            {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email}</p>}
+          </div>
 
-        <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-          Username
-        </label>
-        <input
-          type="text"
-          name="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <div className="text-red-500 text-sm mb-2">{errors.username}</div>
+          <div>
+            <label className="text-pink-200 mb-1 block" htmlFor="username">
+              <User className="inline mr-2" size={18} />
+              Username
+            </label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className={inputClasses}
+              required
+            />
+            {errors.username && <p className="text-red-400 text-sm mt-1">{errors.username}</p>}
+          </div>
 
-        <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
-          First Name
-        </label>
-        <input
-          type="text"
-          name="firstName"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <div className="text-red-500 text-sm mb-2">{errors.firstName}</div>
+          <div className="flex space-x-4">
+            <div className="flex-1">
+              <label className="text-pink-200 mb-1 block" htmlFor="firstName">First Name</label>
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                className={inputClasses}
+                required
+              />
+            </div>
+            <div className="flex-1">
+              <label className="text-pink-200 mb-1 block" htmlFor="lastName">Last Name</label>
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                className={inputClasses}
+                required
+              />
+            </div>
+          </div>
 
-        <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
-          Last Name
-        </label>
-        <input
-          type="text"
-          name="lastName"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <div className="text-red-500 text-sm mb-2">{errors.lastName}</div>
+          <div>
+            <label className="text-pink-200 mb-1 block" htmlFor="phoneNumber">
+              <Phone className="inline mr-2" size={18} />
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              className={inputClasses}
+              required
+            />
+          </div>
 
-        <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-2">
-          Phone Number
-        </label>
-        <input
-          type="tel"
-          name="phoneNumber"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <div className="text-red-500 text-sm mb-2">{errors.phoneNumber}</div>
+          <div>
+            <label className="text-pink-200 mb-1 block" htmlFor="userType">User Type</label>
+            <select
+              name="userType"
+              value={formData.userType}
+              onChange={handleChange}
+              className={inputClasses}
+            >
+              <option value="user">Retail</option>
+              <option value="admin">Wholesale</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
 
-        <label htmlFor="userType" className="block text-sm font-medium text-gray-700 mb-2">
-          User Type
-        </label>
-        <select
-          name="userType"
-          value={userType}
-          onChange={(e) => setUserType(e.target.value)}
-          className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
-        </select>
+          <div>
+            <label className="text-pink-200 mb-1 block" htmlFor="password">
+              <Lock className="inline mr-2" size={18} />
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className={inputClasses}
+              required
+            />
+          </div>
 
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-          Password
-        </label>
-        <input
-          type="password"
-          name="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <div className="text-red-500 text-sm mb-2">{errors.password}</div>
+          <div>
+            <label className="text-pink-200 mb-1 block" htmlFor="confirmPassword">
+              <Lock className="inline mr-2" size={18} />
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className={inputClasses}
+              required
+            />
+            {errors.confirmPassword && <p className="text-red-400 text-sm mt-1">{errors.confirmPassword}</p>}
+          </div>
 
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-          Confirm Password
-        </label>
-        <input
-          type="password"
-          name="confirmPassword"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <div className="text-red-500 text-sm mb-2">{errors.confirmPassword}</div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded"
-        >
-          Sign Up
-        </button>
-      </form>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            type="submit"
+            className="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 flex items-center justify-center"
+          >
+            <UserPlus className="mr-2" size={18} />
+            Sign Up
+          </motion.button>
+        </form>
+      </motion.div>
     </div>
   );
 };

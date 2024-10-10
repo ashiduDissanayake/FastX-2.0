@@ -2,6 +2,7 @@ const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const db = require("../config/db");
 
 // dotenv config
 dotenv.config();
@@ -115,18 +116,85 @@ const userController = {
     res.redirect("/");
   },
 
+  getProfile: async (req, res) => {
+    db.query(
+      "SELECT customer_ID, email, username, first_name, last_name, phone_number, type FROM Customer WHERE customer_ID = ?",
+      [req.user.id],
+      (error, results) => {
+        if (error) {
+          console.error("Detailed error:", error); // Log the full error object
+          return res
+            .status(500)
+            .json({
+              message: "Error fetching user profile",
+              error: error.message,
+            });
+        }
+
+        if (results.length > 0) {
+          res.json(results[0]);
+        } else {
+          res.status(404).json({ message: "User not found" });
+        }
+      }
+    );
+  },
+
+  updateProfile: async (req, res) => {
+    const { email, username, first_name, last_name, phone_number } = req.body;
+    db.query(
+      "UPDATE Customer SET email = ?, username = ?, first_name = ?, last_name = ?, phone_number = ? WHERE customer_ID = ?",
+      [email, username, first_name, last_name, phone_number, req.user.id],
+
+      (error, results) => {
+        if (error) {
+          console.error("Detailed error:", error); // Log the full error object
+        }
+
+        res.json(results);
+      }
+    );
+  },
+
+  getOrders: async (req, res) => {
+    db.query(
+      `SELECT c.cart_ID, c.status, p.product_Name, c.quantity, c.final_Price , p.image_link
+         FROM Cart c 
+         JOIN Product p ON c.product_ID = p.product_ID 
+         WHERE c.customer_ID = ? AND c.status = 'Ordered'
+         ORDER BY c.cart_ID DESC`,
+      [req.user.id],
+      (error, results) => {
+        if (error) {
+          console.error("Detailed error:", error); // Log the full error object
+          return res
+            .status(500)
+            .json({
+              message: "Error fetching user profile",
+              error: error.message,
+            });
+        }
+        if (results.length > 0) {
+          res.json(results);
+        } else {
+          res.status(404).json({ message: "User not found" });
+        }
+      }
+    );
+  },
+
   // Get all products with error handling
-   getAllProducts: async (req, res) => {
+  getAllProducts: async (req, res) => {
     const search = req.query.search || "";
     const category = req.query.category || "";
-  
+
     try {
       const results = await Product.getAllProducts(search, category);
-  
+
       if (results.length === 0) {
         return res.json({ message: "No products found" });
       }
-  
+
       return res.json(results);
     } catch (err) {
       return res.status(500).json({ error: "Database query error" });
@@ -165,12 +233,10 @@ const userController = {
       isNaN(volume) ||
       isNaN(available_Qty)
     ) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Price, weight, volume, and available quantity must be valid numbers",
-        });
+      return res.status(400).json({
+        error:
+          "Price, weight, volume, and available quantity must be valid numbers",
+      });
     }
 
     // Call the create function from the Product model with all necessary parameters
@@ -197,14 +263,14 @@ const userController = {
   },
 
   // Get product by ID
-   getProductById: (req, res) => {
+  getProductById: (req, res) => {
     const { id } = req.params;
     Product.getProductById(id, (err, product) => {
       if (err) {
-        return res.status(500).json({ error: 'Server error' });
+        return res.status(500).json({ error: "Server error" });
       }
       if (!product) {
-        return res.status(404).json({ error: 'Product not found' });
+        return res.status(404).json({ error: "Product not found" });
       }
       res.json(product);
     });
@@ -234,31 +300,20 @@ const userController = {
     });
   },
 
-   async getcategoryProducts(req, res) {
+  async getcategoryProducts(req, res) {
     const { search, category } = req.query; // Extract query parameters
 
     try {
-      const products = await ProductModel.getcategoryProducts(search || '', category || '');
+      const products = await ProductModel.getcategoryProducts(
+        search || "",
+        category || ""
+      );
       res.status(200).json(products);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Error retrieving products' });
+      res.status(500).json({ error: "Error retrieving products" });
     }
   },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   // Get all users
   getUsers: (req, res) => {

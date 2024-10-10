@@ -30,4 +30,9 @@ router.get('/stores', cartController.getStores);
 router.get('/end-locations/:store', cartController.getEndLocations);
 router.get('/route-image', cartController.getRouteImage);
 
+// Profile Section Routes
+router.get('/profile', authenticateToken, userController.getProfile);
+router.put('/profile', authenticateToken, userController.updateProfile);
+router.get('/orders', authenticateToken, userController.getOrders);
+
 module.exports = router;

@@ -24,6 +24,7 @@ import FinishedTrips from "./Manager/pages/FinishedTrips";
 import ViewOrders from "./Manager/pages/ViewOrders";
 import ProductDetail from "./components/ProductDetail";
 import SelectRoute from "./components/SelectRoute";
+import UserProfile from "./pages/UserProfile";
 
 function App() {
   return (
@@ -92,6 +93,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <SelectRoute />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <UserProfile />
                 </ProtectedRoute>
               }
             />

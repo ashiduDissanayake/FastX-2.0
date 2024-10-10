@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const [cart, setCart] = useState([]); // Initialize with an empty array to avoid null issues
@@ -69,32 +69,10 @@ const Cart = () => {
     }
   };
 
-  const placeorder = () => {
+  const placeOrder = () => {
     // Navigate to product detail page
     navigate(`/placeorder`);
   };
-
-  // // Handle purchasing the selected items
-  // const placeOrder = async () => {
-  //   try {
-  //     const response = await axios.post(
-  //       "http://localhost:8080/user/placeorder",
-  //       {}, // No need to send products, as they're already marked in the database
-  //       { withCredentials: true }
-  //     );
-  //     if (response.data.success) {
-  //       fetchCart();
-  //       alert("Order placed successfully!");
-  //     } else {
-  //       alert(
-  //         response.data.message || "Failed to place order. Please try again."
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.error("Order placement failed", error);
-  //     alert("An error occurred while placing the order.");
-  //   }
-  // };
 
   return (
     <div>

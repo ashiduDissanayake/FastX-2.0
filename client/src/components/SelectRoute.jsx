@@ -48,6 +48,27 @@ const SelectRoute = () => {
     }
   };
 
+    // Handle purchasing the selected items
+    const placeOrder = async (selectedRouteID) => {
+      try {
+        const response = await axios.post(
+          "http://localhost:8080/user/placeorder",
+          { route_ID: selectedRouteID}, // No need to send products, as they're already marked in the database
+          { withCredentials: true }
+        );
+        if (response.data.success) {
+          alert("Order placed successfully!");
+        } else {
+          alert(
+            response.data.message || "Failed to place order. Please try again."
+          );
+        }
+      } catch (error) {
+        console.error("Order placement failed", error);
+        alert("An error occurred while placing the order.");
+      }
+    };
+
   return (
     <div className="p-4">
       <h1 className="text-2xl mb-4">Select Route</h1>
@@ -90,6 +111,11 @@ const SelectRoute = () => {
           </select>
         </div>
       )}
+
+      <button 
+        className="bg-blue-500 text-white rounded p-2 w-full"
+        onClick={() => placeOrder(selectedRouteID)}
+      >Place the order</button>
 
       {/* Display selected details, route ID, and image */}
       {selectedStore && selectedEndLocation && (

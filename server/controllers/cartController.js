@@ -104,7 +104,8 @@ const productController = {
   placeOrder: async (req, res) => {
     try {
       const customerId = req.user.id;
-      const result = await Cart.placeOrder(customerId);
+      const { route_ID } = req.body;
+      const result = await Cart.placeOrder(customerId, route_ID);
       res.json(result);
     } catch (err) {
       console.error('Error placing order:', err);

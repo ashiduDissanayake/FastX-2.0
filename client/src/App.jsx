@@ -23,7 +23,7 @@ import ActiveTrips from "./Manager/pages/ActiveTrips";
 import FinishedTrips from "./Manager/pages/FinishedTrips";
 import ViewOrders from "./Manager/pages/ViewOrders";
 import ProductDetail from "./components/ProductDetail";
-
+import SelectRoute from "./components/SelectRoute";
 
 function App() {
   return (
@@ -45,29 +45,21 @@ function App() {
               }
             />
 
-            {/* Manager Route */}
-
-            <Route path="/dashboard" element={<DashBoard/>} />
-            <Route path="/schedule-trip" element={<ScheduleTrip/>} />
-
             {/* Admin  Route*/}
-            <Route path="/admin" element={<AdminDashboard/>} />
-            <Route path="/admindriver" element={<Driver/>} />
-            <Route path="/adminprofile" element={<Profile/>} />
-            <Route path="/admincustomer" element={<Customer/>} />
-            <Route path="/adminassistentdriver" element={<AssistentDriver/>} />
-            <Route path="/adminmanager" element={<Manager/>} />
-            <Route path="/adminreport" element={<Report/>} />
-            
-              
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admindriver" element={<Driver />} />
+            <Route path="/adminprofile" element={<Profile />} />
+            <Route path="/admincustomer" element={<Customer />} />
+            <Route path="/adminassistentdriver" element={<AssistentDriver />} />
+            <Route path="/adminmanager" element={<Manager />} />
+            <Route path="/adminreport" element={<Report />} />
 
+            {/* Manager Route */}
             <Route path="/manager-dashboard" element={<ManagerDashBoard />} />
             <Route path="/manager-view-orders" element={<ViewOrders />} />
             <Route path="/manager-schedule-trip" element={<ScheduleTrip />} />
             <Route path="/manager-active-trips" element={<ActiveTrips />} />
             <Route path="/manager-finished-trips" element={<FinishedTrips />} />
-        
-
 
             {/* Other routes */}
             <Route
@@ -87,24 +79,23 @@ function App() {
                 </PublicRoute>
               }
             />
+            <Route
+              path="/product/:productId"
+              element={
+                <ProtectedRoute>
+                  <ProductDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/placeorder"
+              element={
+                <ProtectedRoute>
+                  <SelectRoute />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
-          <Route
-            path="/product/:productId"
-            element={
-              <ProtectedRoute>
-                <ProductDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/placeorder"
-            element={
-              <ProtectedRoute>
-                <ProductDetail />
-              </ProtectedRoute>
-            }
-          />
-
         </Router>
       </AuthProvider>
     </>

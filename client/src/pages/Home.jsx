@@ -6,9 +6,9 @@ import SelectRoute from "../components/SelectRoute";
 export default function Home() {
   return (
     <div>
-      
-    
-      <SelectRoute/>
+      <Slider/>
+      <Sales/>
+  
       
     </div>
   );

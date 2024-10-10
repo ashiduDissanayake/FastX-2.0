@@ -8,6 +8,13 @@ import { AuthProvider } from "./context/AuthContext";
 import DashBoard from "./Manager/pages/Dashboard";
 import ScheduleTrip from "./Manager/pages/ScheduleTip";
 import Shop from "./pages/Shop";
+import AdminDashboard from "../src/components/Admin/pages/AdminDashboard";
+import Driver from "../src/components/Admin/pages/Driver";
+import Profile from "../src/components/Admin/pages/Profile";
+import Customer from "../src/components/Admin/pages/Customer";
+import AssistentDriver from "../src/components/Admin/pages/AssistentDriver";
+import Manager from "../src/components/Admin/pages/Manager";
+import Report from "../src/components/Admin/pages/Report";
 
 function App() {
   return (
@@ -23,6 +30,16 @@ function App() {
             {/* Manager Route */}
             <Route path="/dashboard" element={<DashBoard/>} />
             <Route path="/schedule-trip" element={<ScheduleTrip/>} />
+
+            {/* Admin  Route*/}
+            <Route path="/admin" element={<AdminDashboard/>} />
+            <Route path="/admindriver" element={<Driver/>} />
+            <Route path="/adminprofile" element={<Profile/>} />
+            <Route path="/admincustomer" element={<Customer/>} />
+            <Route path="/adminassistentdriver" element={<AssistentDriver/>} />
+            <Route path="/adminmanager" element={<Manager/>} />
+            <Route path="/adminreport" element={<Report/>} />
+            
               
             {/* Other routes */}
             <Route

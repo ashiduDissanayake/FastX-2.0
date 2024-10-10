@@ -348,3 +348,119 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+-- Remove product from cart
+DELIMITER $$
+CREATE PROCEDURE RemoveProductFromCart(
+    IN p_customer_ID INT,
+    IN p_product_ID INT
+)
+BEGIN
+    DECLARE v_existing_quantity INT;
+    DECLARE v_product_price DECIMAL(6,2);
+
+    -- Declare an exception handler for SQL errors
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        ROLLBACK;
+        SELECT 'Error occurred while removing product from cart' AS message;
+    END;
+
+    -- Start a transaction
+    START TRANSACTION;
+
+    -- Check if the product is in the cart
+    SELECT quantity INTO v_existing_quantity
+    FROM Cart 
+    WHERE customer_ID = p_customer_ID AND product_ID = p_product_ID;
+
+    IF v_existing_quantity IS NULL THEN
+        SELECT 'Product not found in cart.' AS message;
+        ROLLBACK;
+    END IF;
+
+    -- Get the price of the product
+    SELECT price INTO v_product_price
+    FROM Product 
+    WHERE product_ID = p_product_ID;
+
+    -- Update the available quantity in the Product table
+    UPDATE Product
+    SET available_Qty = available_Qty + v_existing_quantity
+    WHERE product_ID = p_product_ID;
+
+    -- Delete the product from the cart
+    DELETE FROM Cart 
+    WHERE customer_ID = p_customer_ID AND product_ID = p_product_ID;
+
+    -- Commit the transaction
+    COMMIT;
+
+    -- Success message
+    SELECT 'Product successfully removed from cart' AS message;
+END $$
+DELIMITER ;
+
+-- Update product quantity in cart
+DELIMITER $$
+CREATE PROCEDURE UpdateProductQuantityInCart(
+    IN p_customer_ID INT,
+    IN p_product_ID INT,
+    IN p_quantity INT
+)
+BEGIN
+    DECLARE v_existing_quantity INT;
+    DECLARE v_product_price DECIMAL(6,2);
+    DECLARE v_available_quantity INT;
+
+    -- Declare an exception handler for SQL errors
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        ROLLBACK;
+        SELECT 'Error occurred while updating product quantity in cart' AS message;
+    END;
+
+    -- Start a transaction
+    START TRANSACTION;
+
+    -- Check if the product is in the cart
+    SELECT quantity INTO v_existing_quantity
+    FROM Cart 
+    WHERE customer_ID = p_customer_ID AND product_ID = p_product_ID;
+
+    IF v_existing_quantity IS NULL THEN
+        SELECT 'Product not found in cart.' AS message;
+        ROLLBACK;
+    END IF;
+
+    -- Get the price of the product
+    SELECT price, available_Qty INTO v_product_price, v_available_quantity
+    FROM Product 
+    WHERE product_ID = p_product_ID;
+
+    -- Check if the requested quantity is available
+    IF p_quantity > v_available_quantity THEN
+        SELECT 'Insufficient quantity available.' AS message, 
+               v_available_quantity AS available_quantity;
+        ROLLBACK;
+        EXIT;
+    END IF;
+
+    -- Update the available quantity in the Product table
+    UPDATE Product
+    SET available_Qty = available_Qty + v_existing_quantity - p_quantity
+    WHERE product_ID = p_product_ID;
+
+    -- Update the quantity and final price in the Cart table
+    UPDATE Cart 
+    SET quantity = p_quantity, 
+        final_Price = v_product_price * p_quantity
+    WHERE customer_ID = p_customer_ID AND product_ID = p_product_ID;
+
+    -- Commit the transaction
+    COMMIT;
+
+    -- Success message
+    SELECT 'Product quantity in cart successfully updated' AS message;
+END $$
+DELIMITER ;

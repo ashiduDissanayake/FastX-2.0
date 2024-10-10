@@ -115,7 +115,6 @@ const userController = {
     res.redirect("/");
   },
 
-  // Get all products
   // Get all products with error handling
    getAllProducts: async (req, res) => {
     const search = req.query.search || "";
@@ -214,6 +213,7 @@ const userController = {
   // Delete product
   deleteProduct: (req, res) => {
     const productId = req.params.id;
+    console.log(productId);
     Product.delete(productId, (err, result) => {
       if (err) {
         return res.status(500).json({ error: "Database error" });

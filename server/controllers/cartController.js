@@ -63,23 +63,42 @@ const productController = {
     });
   },
 
-  // Update product
-  updateProduct: async (req, res) => {
+  // Delete product
+  removeFromCart: async (req, res) => {
     try {
-      await Product.update(req.params.id, req.body);
-      res.json({ message: "Product updated" });
+      const { productId } = req.body;
+      const result = await Cart.removeProduct(req.user.id, productId);
+      res.json(result);
     } catch (err) {
-      res.status(500).json({ error: "Database error" });
+      console.error('Error removing product from cart:', err);
+      res.status(500).json({ error: "An error occurred while removing the product from the cart" });
     }
   },
 
-  // Delete product
-  deleteProduct: async (req, res) => {
+  // Update product
+  updateProductInCart: async (req, res) => {
     try {
-      await Product.delete(req.params.id);
-      res.json({ message: "Product deleted" });
+      const { productId, quantity } = req.body;
+      const customerId = req.user.id; // Assuming the user ID is stored in the token
+      const result = await Cart.updateCart(customerId, productId, quantity);
+      res.json(result);
     } catch (err) {
-      res.status(500).json({ error: "Database error" });
+      console.error('Error updating cart:', err);
+      res.status(500).json({ error: "An error occurred while updating the cart" });
+    }
+  },
+
+  // Place order
+  placeOrder: async (req, res) => {
+    try {
+      const { products } = req.body;
+      const customerId = req.user.id; // Assuming the user ID is stored in the token
+      // Call the Cart model function to place order
+      const result = await Cart.placeOrder(customerId, products);
+      res.json(result);
+    } catch (err) {
+      console.error('Error placing order:', err);
+      res.status(500).json({ error: "An error occurred while placing the order" });
     }
   },
 
@@ -94,6 +113,7 @@ const productController = {
       res.status(500).json({ error: "Database error" });
     }
   },
+  
   getStores: async (req, res) => {
     try {
       const stores = await Cart.getAllStores();
@@ -129,7 +149,6 @@ const productController = {
       }
     }
   },
-
 
 };
 

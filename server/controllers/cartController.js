@@ -38,15 +38,15 @@ const handleErrors = (err) => {
 // Product controller to handle product-related operations
 const productController = {
   // Get all products
-  getAllProducts: async (req, res) => {
-    // Get all products using customer_ID in mysql
-    const customerId = req.user.id;
-    Cart.findByCustomerId(customerId, (err, results) => {
-      if (err) {
-        return res.status(500).json({ error: "Database error" });
-      }
-      res.json({ cart: results });
-    });
+  getCart: async (req, res) => {
+    try {
+      const customerId = req.user.id;
+      const result = await Cart.getCart(customerId);
+      res.json({ cart: result });
+    } catch (err) {
+      console.error('Error fetching cart:', err);
+      res.status(500).json({ error: "An error occurred while fetching the cart" });
+    }
   },
 
   // Add product to cart
@@ -88,13 +88,23 @@ const productController = {
     }
   },
 
-  // Place order
+  // Update cart status
+  updateCartStatus: async (req, res) => {
+    try {
+      const { productId, status } = req.body;
+      const customerId = req.user.id;
+      const result = await Cart.updateStatus(customerId, productId, status);
+      res.json(result);
+    } catch (err) {
+      console.error('Error updating cart status:', err);
+      res.status(500).json({ error: "An error occurred while updating the cart status" });
+    }
+  },
+
   placeOrder: async (req, res) => {
     try {
-      const { products } = req.body;
-      const customerId = req.user.id; // Assuming the user ID is stored in the token
-      // Call the Cart model function to place order
-      const result = await Cart.placeOrder(customerId, products);
+      const customerId = req.user.id;
+      const result = await Cart.placeOrder(customerId);
       res.json(result);
     } catch (err) {
       console.error('Error placing order:', err);

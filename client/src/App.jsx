@@ -34,14 +34,6 @@ function App() {
             {/* Public route - accessible only if not authenticated */}
             <Route path="/login" element={<LoginForm />} />
             <Route path="/signup" element={<SignUpForm />} />
-            <Route
-              path="/product/:productId"
-              element={
-                <ProtectedRoute>
-                  <ProductDetail />
-                </ProtectedRoute>
-              }
-            />
 
             {/* Protected route - accessible only if authenticated */}
             <Route
@@ -96,6 +88,23 @@ function App() {
               }
             />
           </Routes>
+          <Route
+            path="/product/:productId"
+            element={
+              <ProtectedRoute>
+                <ProductDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/placeorder"
+            element={
+              <ProtectedRoute>
+                <ProductDetail />
+              </ProtectedRoute>
+            }
+          />
+
         </Router>
       </AuthProvider>
     </>

@@ -61,6 +61,11 @@ CREATE TABLE `Cart` (
   FOREIGN KEY (`discount_ID`) REFERENCES `Discount`(`discount_ID`)
 );
 
+-- Update Cart table to include a status column with three possible states
+ALTER TABLE `Cart` 
+ADD COLUMN `status` ENUM('Active', 'Selected', 'Ordered') DEFAULT 'Active';
+
+
 -- 5. Create the Store table (needed for Product, Route, and other tables)
 CREATE TABLE `Store` (
   `store_ID` varchar(10),

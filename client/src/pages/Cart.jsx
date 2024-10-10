@@ -1,19 +1,17 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const [cart, setCart] = useState([]); // Initialize with an empty array to avoid null issues
-  const [selectedItems, setSelectedItems] = useState([]); // State to track selected items for purchase
+  const navigate = useNavigate();
 
   const fetchCart = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:8080/user/getcart/",
-        {
-          withCredentials: true, // Include cookies in the request
-        }
-      );
-      setCart(response.data.cart[0]); // Set cart data (first element is the array of items)
+      const response = await axios.get("http://localhost:8080/user/getcart/", {
+        withCredentials: true, // Include cookies in the request
+      });
+      setCart(response.data.cart); // Set cart data (first element is the array of items)
     } catch (error) {
       console.error("Failed to fetch cart", error);
     }
@@ -58,29 +56,45 @@ const Cart = () => {
     }
   };
 
-  // Handle purchasing the selected items
-  const placeOrder = async () => {
-    if (selectedItems.length === 0) {
-      alert("Please select at least one item to buy.");
-      return;
-    }
+  const updateItemStatus = async (productId, status) => {
     try {
-      const response = await axios.post(
-        "http://localhost:8080/user/placeorder",
-        {
-          products: selectedItems, // Send selected productIds to purchase
-        },
-        {
-          withCredentials: true, // Include credentials
-        }
+      await axios.put(
+        "http://localhost:8080/user/updatecartstatus",
+        { productId, status },
+        { withCredentials: true }
       );
-      setCart(response.data.cart[0]); // Update cart after purchase
-      setSelectedItems([]); // Clear selected items
-      alert("Order Placed successfully!");
+      fetchCart();
     } catch (error) {
-      console.error("Order placing failed", error);
+      console.error("Failed to update item status", error);
     }
   };
+
+  const placeorder = () => {
+    // Navigate to product detail page
+    navigate(`/placeorder`);
+  };
+
+  // // Handle purchasing the selected items
+  // const placeOrder = async () => {
+  //   try {
+  //     const response = await axios.post(
+  //       "http://localhost:8080/user/placeorder",
+  //       {}, // No need to send products, as they're already marked in the database
+  //       { withCredentials: true }
+  //     );
+  //     if (response.data.success) {
+  //       fetchCart();
+  //       alert("Order placed successfully!");
+  //     } else {
+  //       alert(
+  //         response.data.message || "Failed to place order. Please try again."
+  //       );
+  //     }
+  //   } catch (error) {
+  //     console.error("Order placement failed", error);
+  //     alert("An error occurred while placing the order.");
+  //   }
+  // };
 
   return (
     <div>
@@ -105,6 +119,18 @@ const Cart = () => {
                     {item.name} - Price: ${item.price} - Quantity:{" "}
                     {item.quantity}
                   </p>
+                  {item.status === "Active" && (
+                    <button
+                      onClick={() => updateItemStatus(item.id, "Selected")}
+                    >
+                      Select for Order
+                    </button>
+                  )}
+                  {item.status === "Selected" && (
+                    <button onClick={() => updateItemStatus(item.id, "Active")}>
+                      Unselect
+                    </button>
+                  )}
                   {/* Action buttons for remove and quantity adjustment */}
                   <button onClick={() => removeItem(item.id)}>Remove</button>
                   <button
@@ -117,20 +143,6 @@ const Cart = () => {
                   >
                     Decrease
                   </button>
-                  {/* Checkbox for selecting items for purchase */}
-                  <input
-                    type="checkbox"
-                    checked={selectedItems.includes(item.id)} // Check if the item is selected
-                    onChange={(e) => {
-                      const isChecked = e.target.checked;
-                      setSelectedItems(
-                        isChecked
-                          ? [...selectedItems, item.id] // Add to selected items
-                          : selectedItems.filter((id) => id !== item.id) // Remove from selected items
-                      );
-                    }}
-                  />
-                  <label>Select for purchase</label>
                 </div>
               )
             )

@@ -2,14 +2,16 @@ const db = require("../config/db");
 
 const Cart = {
   // Get all products with the customer_ID
-  findByCustomerId: (customer_ID, callback) => {
-    const query = `CALL GetCartProductsByCustomerID(?)`;
-
-    db.query(query, [customer_ID], (err, results) => {
-      if (err) {
-        return callback(err, null);
-      }
-      return callback(null, results);
+  getCart: (customerId) => {
+    return new Promise((resolve, reject) => {
+      const query = 'CALL GetCart(?)';
+      db.query(query, [customerId], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result[0]);
+        }
+      });
     });
   },
 
@@ -48,6 +50,32 @@ const Cart = {
           reject(err);
         } else {
           resolve(result[0][0]); // Extract the message from the stored procedure result
+        }
+      });
+    });
+  },
+
+  updateStatus: (customerId, productId, status) => {
+    return new Promise((resolve, reject) => {
+      const query = 'CALL UpdateCartStatus(?, ?, ?)';
+      db.query(query, [customerId, productId, status], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result[0][0]);
+        }
+      });
+    });
+  },
+
+  placeOrder: (customerId) => {
+    return new Promise((resolve, reject) => {
+      const query = 'CALL PlaceOrder(?)';
+      db.query(query, [customerId], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result[0][0]);
         }
       });
     });

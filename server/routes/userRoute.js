@@ -25,5 +25,8 @@ router.post('/addtocart', authenticateToken, cartController.addToCart); // POST 
 router.delete('/removecart', authenticateToken, cartController.removeFromCart); // DELETE /user/removecart - remove product from cart
 router.put('/updatecart', authenticateToken, cartController.updateProductInCart); // PUT /user/updatecart - update product in cart
 router.post('/placeorder', authenticateToken, cartController.placeOrder); // POST /user/buyitems - buy items in cart
+router.get('/stores', cartController.getStores);
+router.get('/end-locations/:store', cartController.getEndLocations);
+router.get('/route-image', cartController.getRouteImage);
 
 module.exports = router;

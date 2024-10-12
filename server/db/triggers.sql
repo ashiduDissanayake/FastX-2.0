@@ -24,7 +24,7 @@ DELIMITER ;
 -- update driver status on start of a trip
 DELIMITER $$
 CREATE TRIGGER update_driver_status_on_start
-    AFTER INSERT ON truck_schedule
+    AFTER INSERT ON TruckSchedule
     FOR EACH ROW
 BEGIN
     -- Update the driver's status to active when a trip starts
@@ -38,7 +38,7 @@ DELIMITER ;
 -- update driver status and woking hours on end of a trip
 DELIMITER $$
 CREATE TRIGGER update_driver_status_on_end
-    AFTER UPDATE ON truck_schedule
+    AFTER UPDATE ON TruckSchedule
     FOR EACH ROW
 BEGIN
     -- Only proceed if the trip has ended (end_time is set)
@@ -47,7 +47,7 @@ BEGIN
         SET @route_duration = TIMESTAMPDIFF(SECOND, NEW.start_time, NEW.end_time) / 3600;
 
         -- Update the driver's working hours and set status to inactive
-        UPDATE driver
+        UPDATE Driver
         SET 
             current_working_time = current_working_time + @route_duration,
             status = 'inactive'  -- Set status to inactive when the trip ends
@@ -59,11 +59,11 @@ DELIMITER ;
 -- update assistant status on start of a trip
 DELIMITER $$
 CREATE TRIGGER update_assistant_status_on_start
-    AFTER INSERT ON truck_schedule
+    AFTER INSERT ON TruckSchedule
     FOR EACH ROW
 BEGIN
     -- When a trip starts, set the assistant's status based on current state
-    UPDATE driver_assistant
+    UPDATE DriverAssistant
     SET 
         status = CASE 
                     WHEN status = 'inactive' THEN 'active1'
@@ -76,7 +76,7 @@ DELIMITER ;
 -- update assistant status and working hours on end of a trip
 DELIMITER $$
 CREATE TRIGGER update_assistant_status_on_end
-    AFTER UPDATE ON truck_schedule
+    AFTER UPDATE ON TruckSchedule
     FOR EACH ROW
 BEGIN
     -- Only proceed if the trip has ended (end_time is set)
@@ -85,7 +85,7 @@ BEGIN
         SET @route_duration = TIMESTAMPDIFF(SECOND, NEW.start_time, NEW.end_time) / 3600;
 
         -- Update the assistant's working hours and adjust the status
-        UPDATE driver_assistant
+        UPDATE DriverAssistant
         SET 
             current_working_time = current_working_time + @route_duration,
             status = CASE 
@@ -100,7 +100,7 @@ DELIMITER ;
 -- update truck status on start of a trip
 DELIMITER $$
 CREATE TRIGGER update_truck_status_on_start
-    AFTER INSERT ON truck_schedule
+    AFTER INSERT ON TruckSchedule
     FOR EACH ROW
 BEGIN
     -- Update the truck's status to active when a trip starts
@@ -114,7 +114,7 @@ DELIMITER ;
 -- update truck status on end of a trip
 DELIMITER $$
 CREATE TRIGGER update_truck_status_on_end
-    AFTER UPDATE ON truck_schedule
+    AFTER UPDATE ON TruckSchedule
     FOR EACH ROW
 BEGIN
     -- Only proceed if the trip has ended (end_time is set)

@@ -177,7 +177,7 @@ const managerController = {
   // get driver details
   getDriver: (req, res) => {
     const storeId = req.params.storeId; // Get the storeId from the request parameters
-    const sqlGet = "SELECT * FROM driver WHERE store_ID = ?";
+    const sqlGet = "SELECT * FROM Driver WHERE store_ID = ?";
     db.query(sqlGet, [storeId], (error, result) => {
       if (error) {
         return res
@@ -191,7 +191,7 @@ const managerController = {
   //get driver assistant details
   getDriverAssistant: (req, res) => {
     const storeId = req.params.storeId; // Get the storeId from the request parameters
-    const sqlGet = "SELECT * FROM driver_assistant WHERE store_ID = ?";
+    const sqlGet = "SELECT * FROM DriverAssistant WHERE store_ID = ?";
     db.query(sqlGet, [storeId], (error, result) => {
       if (error) {
         return res
@@ -205,7 +205,7 @@ const managerController = {
   //get truck details
   getTruck: (req, res) => {
     const storeId = req.params.storeId;
-    const sqlGet = "SELECT * FROM truck WHERE store_ID = ?";
+    const sqlGet = "SELECT * FROM Truck WHERE store_ID = ?";
     db.query(sqlGet, [storeId], (error, result) => {
       if (error) {
         return res
@@ -217,7 +217,7 @@ const managerController = {
   },
 
   getStore: (req, res) => {
-    const sqlGet = "SELECT * FROM store";
+    const sqlGet = "SELECT * FROM Store";
     db.query(sqlGet, (error, result) => {
       res.send(result);
     });
@@ -225,7 +225,7 @@ const managerController = {
 
   getRoute: (req, res) => {
     const storeId = req.params.storeId;
-    const sqlGet = "SELECT * FROM route WHERE store_ID = ?";
+    const sqlGet = "SELECT * FROM Route WHERE store_ID = ?";
     db.query(sqlGet, [storeId], (error, result) => {
       if (error) {
         return res
@@ -241,7 +241,7 @@ const managerController = {
 
     const sqlGet = `
       SELECT o.order_ID, o.route_ID, o.capacity
-      FROM \`order\` o
+      FROM Order o
       WHERE o.store_ID = ? AND o.status = 'branch'
       ORDER BY o.Route_ID
     `;
@@ -262,7 +262,7 @@ const storeID = req.params.storeId;
 try {
     const query = `
         SELECT schedule_ID, truck_ID, driver_ID, assistant_ID, route_ID, start_time
-        FROM truck_schedule
+        FROM TruckSchedule
         WHERE store_ID = ? AND end_time IS NULL
     `;
     const [trips] = await db.promise().execute(query, [storeID]);
@@ -302,7 +302,7 @@ try {
         // Fetch the trip to ensure it exists and has a valid start_time
         const [tripData] = await db.promise().execute(`
             SELECT start_time
-            FROM truck_schedule
+            FROM TruckSchedule
             WHERE schedule_ID = ?
         `, [schedule_ID]);
 
@@ -312,7 +312,7 @@ try {
 
         // Update the truck schedule to set the end_time
         await db.promise().execute(`
-            UPDATE truck_schedule
+            UPDATE TruckSchedule
             SET end_time = ?
             WHERE schedule_ID = ?
         `, [currentTime, schedule_ID]);
@@ -332,7 +332,7 @@ getFinishedTripsByStore: async (req, res) => {
   try {
       const query = `
           SELECT schedule_ID, truck_ID, driver_ID, assistant_ID, route_ID, start_time, end_time
-          FROM truck_schedule
+          FROM TruckSchedule
           WHERE store_ID = ? AND end_time IS NOT NULL
           ORDER BY end_time DESC
       `;
@@ -363,8 +363,8 @@ getTrainOrdersByStore: async (req, res) => {
   try {
     const query = `
       SELECT order_ID, route_ID, capacity 
-      FROM \`order\`
-      WHERE store_ID = ? AND status = 'train'
+      FROM Order
+      WHERE store_ID = ? AND status = 'Shipped'
     `;
     const [orders] = await db.promise().execute(query, [storeID]);
 
@@ -388,9 +388,9 @@ updateOrdersToBranch:async (req, res) => {
 
   try {
     const query = `
-      UPDATE \`order\`
-      SET status = 'branch'
-      WHERE store_ID = ? AND status = 'train'
+      UPDATE Order
+      SET status = 'Branch'
+      WHERE store_ID = ? AND status = 'Shipped'
     `;
     await db.promise().execute(query, [storeID]);
 
@@ -419,7 +419,7 @@ scheduleTrip: async (req, res) => {
 
   try {
       // Get the route max_time (duration) for the selected route
-      const getRouteMaxTimeQuery = "SELECT max_time FROM route WHERE route_ID = ?";
+      const getRouteMaxTimeQuery = "SELECT max_time FROM Route WHERE route_ID = ?";
       const [routeData] = await db.promise().execute(getRouteMaxTimeQuery, [route_ID]);
 
       if (routeData.length === 0) {
@@ -429,12 +429,12 @@ scheduleTrip: async (req, res) => {
       const routeMaxTime = routeData[0]?.max_time || 0; // Get the max_time from the result
 
       // Calculate total working hours for the driver
-      const checkDriverHoursQuery = `SELECT current_working_time AS total_hours FROM driver WHERE driver_ID = ?`;
+      const checkDriverHoursQuery = `SELECT current_working_time AS total_hours FROM Driver WHERE driver_ID = ?`;
       const [driverData] = await db.promise().execute(checkDriverHoursQuery, [driver_ID]);
       const driverHours = driverData[0]?.total_hours || 0;
 
       // Calculate total working hours for the assistant
-      const checkAssistantHoursQuery = `SELECT current_working_time AS total_hours FROM driver_assistant WHERE assistant_ID = ?`;
+      const checkAssistantHoursQuery = `SELECT current_working_time AS total_hours FROM DriverAssistant WHERE assistant_ID = ?`;
       const [assistantData] = await db.promise().execute(checkAssistantHoursQuery, [assistant_ID]);
       const assistantHours = assistantData[0]?.total_hours || 0;
 
@@ -452,7 +452,7 @@ scheduleTrip: async (req, res) => {
       const formattedStartTime = `${currentDate} ${start_time}:00`;
 
       const scheduleQuery = `
-          INSERT INTO truck_schedule (truck_ID, driver_ID, assistant_ID, store_ID, route_ID, start_time, end_time)
+          INSERT INTO TruckSchedule (truck_ID, driver_ID, assistant_ID, store_ID, route_ID, start_time, end_time)
           VALUES (?, ?, ?, ?, ?, ?, ?);
       `;
       await db.promise().execute(scheduleQuery, [
@@ -464,8 +464,8 @@ scheduleTrip: async (req, res) => {
 
       // Update the status of selected orders to 'delivered'
       const orderUpdateQuery = `
-          UPDATE \`order\`
-          SET status = 'delivered'
+          UPDATE Order
+          SET status = 'Delivered'
           WHERE order_ID IN (${placeholders})
       `;
 

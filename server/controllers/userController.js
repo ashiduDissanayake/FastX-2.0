@@ -158,11 +158,12 @@ const userController = {
 
   getOrders: async (req, res) => {
     db.query(
-      `SELECT c.cart_ID, c.status, p.product_Name, c.quantity, c.final_Price , p.image_link
-         FROM Cart c 
-         JOIN Product p ON c.product_ID = p.product_ID 
-         WHERE c.customer_ID = ? AND c.status = 'Ordered'
-         ORDER BY c.cart_ID DESC`,
+      `SELECT oi.order_item_id, o.status, p.product_Name, oi.quantity, oi.price, p.image_link
+       FROM OrderItem oi
+       JOIN Product p ON oi.product_id = p.product_ID
+       JOIN \`Order\` o ON oi.order_id = o.order_id
+       WHERE o.customer_id = ? 
+       ORDER BY oi.order_item_id DESC`,
       [req.user.id],
       (error, results) => {
         if (error) {

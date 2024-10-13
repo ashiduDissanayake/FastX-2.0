@@ -262,8 +262,8 @@ BEGIN
 END $$
 
 DELIMITER ;
-DELIMITER $$
 
+DELIMITER $$
 CREATE PROCEDURE AddProductToCart(
     IN p_customer_ID INT,
     IN p_product_ID INT,
@@ -313,7 +313,7 @@ BEGIN
     -- Check if the product is already in the cart
     SELECT quantity INTO v_existing_quantity
     FROM Cart 
-    WHERE customer_ID = p_customer_ID AND product_ID = p_product_ID;
+    WHERE customer_ID = p_customer_ID AND product_ID = p_product_ID AND status != 'Ordered';
 
     IF v_existing_quantity IS NOT NULL THEN
         -- If product is already in the cart, check if the new total quantity is available

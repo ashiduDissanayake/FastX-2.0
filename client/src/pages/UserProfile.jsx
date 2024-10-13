@@ -27,7 +27,7 @@ const FuturisticButton = ({ children, onClick }) => (
 
 // Holographic Order Display
 const HolographicOrder = ({ order }) => {
-  const stages = ['Quantum Preparation', 'Molecular Assembly', 'Teleportation', 'Destination Materialization', 'Delivered'];
+  const stages = ['Pending','Processing','Shipped','In Branch','Delivered'];
   const currentStageIndex = stages.indexOf(order.status);
 
   return (
@@ -38,8 +38,6 @@ const HolographicOrder = ({ order }) => {
       className="bg-black bg-opacity-50 backdrop-blur-lg rounded-xl p-6 text-white mb-8"
     >
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-2xl font-bold">Order #{order.cart_ID}</h3>
-        <span className="text-lg">{order.status}</span>
       </div>
       <div className="flex items-center space-x-6 mb-6">
         <div className="relative w-32 h-32">
@@ -49,7 +47,7 @@ const HolographicOrder = ({ order }) => {
         <div>
           <p className="text-xl font-semibold">{order.product_Name}</p>
           <p>Quantity: {order.quantity}</p>
-          <p>Price: ${parseFloat(order.final_Price).toFixed(2)}</p>
+          <p>Price: ${parseFloat(order.price).toFixed(2)}</p>
         </div>
       </div>
       <div className="flex items-center justify-between">
@@ -62,11 +60,11 @@ const HolographicOrder = ({ order }) => {
                 index <= currentStageIndex ? 'bg-gradient-to-r from-purple-500 to-pink-500' : 'bg-gray-600'
               }`}
             >
-              {index === 0 && <Package size={20} />}
-              {index === 1 && <Brain size={20} />}
-              {index === 2 && <Rocket size={20} />}
-              {index === 3 && <Zap size={20} />}
-              {index === 4 && <Sparkles size={20} />}
+              {index === 0 && <Package size={30} />}
+              {index === 1 && <Brain size={30} />}
+              {index === 2 && <Rocket size={30} />}
+              {index === 3 && <Zap size={30} />}
+              {index === 4 && <Sparkles size={30} />}
             </motion.div>
             <p className="text-xs mt-2">{stage}</p>
           </div>

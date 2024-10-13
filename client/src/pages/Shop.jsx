@@ -87,7 +87,7 @@ const Shop = () => {
         transition={{ type: "spring", stiffness: 100 }}
       >
         <div className="p-4">
-          <h2 className="text-xl font-bold mb-4 text-pink-300">Refine Selection</h2>
+          <h2 className="text-xl font-bold mb-4 text-pink-300 pt-20">Refine Selection</h2>
 
           <input
             type="text"

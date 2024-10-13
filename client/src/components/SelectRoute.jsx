@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { MapPin, Truck, ShoppingBag } from 'lucide-react';
+import CustomAlert from './CustomeAlert'; // Import the custom Alert component
 
 const SelectRoute = () => {
   const [stores, setStores] = useState([]);
@@ -8,127 +10,178 @@ const SelectRoute = () => {
   const [selectedEndLocation, setSelectedEndLocation] = useState('');
   const [imageLink, setImageLink] = useState('');
   const [selectedRouteID, setSelectedRouteID] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  // Fetch stores on component mount
   useEffect(() => {
-    axios.get('http://localhost:8080/user/stores')
-      .then(response => setStores(response.data))
-      .catch(error => console.error('Error fetching stores:', error));
+    fetchStores();
   }, []);
 
-  // Fetch end locations when a store is selected
   useEffect(() => {
-    if (selectedStore) {
-      axios.get(`http://localhost:8080/user/end-locations/${selectedStore}`)
-        .then(response => setEndLocations(response.data))
-        .catch(error => console.error('Error fetching end locations:', error));
-    }
+    if (selectedStore) fetchEndLocations(selectedStore);
   }, [selectedStore]);
 
-  // Fetch image link when store and end location are selected
   useEffect(() => {
-    if (selectedStore && selectedEndLocation) {
-      axios.get('http://localhost:8080/user/route-image', {
-        params: {
-          store: selectedStore,
-          endLocation: selectedEndLocation.route // Accessing the selected route object
-        }
-      })
-      .then(response => setImageLink(response.data.imageLink))
-      .catch(error => console.error('Error fetching image link:', error));
-    }
+    if (selectedStore && selectedEndLocation) fetchRouteImage();
   }, [selectedStore, selectedEndLocation]);
 
-  // Handle end location change
+  const fetchStores = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('http://localhost:8080/user/stores');
+      setStores(response.data);
+    } catch (error) {
+      setError('Error fetching stores. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchEndLocations = async (storeId) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`http://localhost:8080/user/end-locations/${storeId}`);
+      setEndLocations(response.data);
+    } catch (error) {
+      setError('Error fetching end locations. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchRouteImage = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('http://localhost:8080/user/route-image', {
+        params: {
+          store: selectedStore,
+          endLocation: selectedEndLocation.route
+        }
+      });
+      setImageLink(response.data.imageLink);
+    } catch (error) {
+      setError('Error fetching route image. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleEndLocationChange = (e) => {
     const selected = endLocations.find(location => location.route === e.target.value);
     setSelectedEndLocation(selected);
     if (selected) {
-      setSelectedRouteID(selected.route_ID); // Set the selected route ID
+      setSelectedRouteID(selected.route_ID);
     }
   };
 
-  // Handle purchasing the selected items
-  const placeOrder = async (selectedRouteID) => {
+  const placeOrder = async () => {
     try {
+      setLoading(true);
       const response = await axios.post(
         "http://localhost:8080/user/placeorder",
-        { route_ID: selectedRouteID }, // No need to send products, as they're already marked in the database
+        { route_ID: selectedRouteID },
         { withCredentials: true }
       );
       if (response.data.success) {
         alert("Order placed successfully!");
       } else {
-        alert(
-          response.data.message || "Failed to place order. Please try again."
-        );
+        setError(response.data.message || "Failed to place order. Please try again.");
       }
     } catch (error) {
-      console.error("Order placement failed", error);
-      alert("An error occurred while placing the order.");
+      setError("An error occurred while placing the order.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="p-6 bg-black text-white">
-      <h1 className="text-4xl font-bold mb-6 text-center text-pink-500">Select Route</h1>
+    <div className="min-h-screen bg-gray-900 text-white p-8 pt-20">
+      <h1 className="text-5xl font-extrabold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-pink-300 to-rose-400">
+        Where to deliver?
+      </h1>
       
-      {/* Store selection */}
-      <div className="mb-6">
-        <label htmlFor="storeSelect" className="block mb-2 text-lg">Select Store:</label>
-        <select
-          id="storeSelect"
-          className="border border-pink-500 rounded p-3 w-full bg-gray-800 text-white"
-          value={selectedStore}
-          onChange={(e) => {
-            setSelectedStore(e.target.value);
-            setSelectedEndLocation('');  // Clear end location when store changes
-            setImageLink('');  // Clear image when store changes
-            setSelectedRouteID(''); // Clear route ID when store changes
-          }}
-        >
-          <option value="">--Select a store--</option>
-          {stores.map((store, index) => (
-            <option key={index} value={store.store_ID}>{store.city}</option> // Adjusted to use store_ID
-          ))}
-        </select>
-      </div>
+      <div className="max-w-3xl mx-auto bg-black/40 backdrop-blur-lg rounded-lg shadow-xl p-8">
+        <div className="space-y-6">
+          <div>
+            <label htmlFor="storeSelect" className="block text-lg font-medium mb-2 flex items-center text-pink-200">
+              <MapPin className="mr-2" /> Select Store
+            </label>
+            <select
+              id="storeSelect"
+              className="w-full bg-black/30 border border-pink-300 rounded-md p-3 focus:ring-2 focus:ring-pink-400 transition"
+              value={selectedStore}
+              onChange={(e) => {
+                setSelectedStore(e.target.value);
+                setSelectedEndLocation('');
+                setImageLink('');
+                setSelectedRouteID('');
+              }}
+            >
+              <option value="">--Select a store--</option>
+              {stores.map((store, index) => (
+                <option key={index} value={store.store_ID}>{store.city}</option>
+              ))}
+            </select>
+          </div>
 
-      {/* End location selection */}
-      {selectedStore && (
-        <div className="mb-6">
-          <label htmlFor="endLocationSelect" className="block mb-2 text-lg">Select End Location:</label>
-          <select
-            id="endLocationSelect"
-            className="border border-pink-500 rounded p-3 w-full bg-gray-800 text-white"
-            value={selectedEndLocation.route || ''}
-            onChange={handleEndLocationChange}
-          >
-            <option value="">--Select an end location--</option>
-            {endLocations.map((location, index) => (
-              <option key={index} value={location.route}>{location.route}</option>
-            ))}
-          </select>
-        </div>
-      )}
+          {selectedStore && (
+            <div>
+              <label htmlFor="endLocationSelect" className="block text-lg font-medium mb-2 flex items-center text-pink-200">
+                <Truck className="mr-2" /> Select End Location
+              </label>
+              <select
+                id="endLocationSelect"
+                className="w-full bg-black/30 border border-pink-300 rounded-md p-3 focus:ring-2 focus:ring-pink-400 transition"
+                value={selectedEndLocation.route || ''}
+                onChange={handleEndLocationChange}
+              >
+                <option value="">--Select an end location--</option>
+                {endLocations.map((location, index) => (
+                  <option key={index} value={location.route}>{location.route}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
-      <button 
-        className="bg-pink-500 text-white font-semibold rounded p-3 w-full hover:bg-pink-600 transition duration-200"
-        onClick={() => placeOrder(selectedRouteID)}
-      >Place the Order</button>
-
-      {/* Display selected details, route ID, and image */}
-      {selectedStore && selectedEndLocation && (
-        <div className="mt-6 text-center">
-          <p className="text-lg">
-            You selected <strong>{selectedStore}</strong> with end location <strong>{selectedEndLocation.route}</strong> (Route ID: <strong>{selectedRouteID}</strong>).
-          </p>
-          {imageLink && (
-            <div className="mt-4">
-              <img src={imageLink} alt={`Route image for ${selectedStore} to ${selectedEndLocation.route}`} className="max-w-full h-auto rounded" />
+          {selectedStore && selectedEndLocation && (
+            <div className="text-center space-y-4">
+              <p className="text-lg text-pink-200">
+                Selected route: <span className="font-bold">{selectedStore}</span> to <span className="font-bold">{selectedEndLocation.route}</span>
+              </p>
+              <p className="text-sm">Route ID: {selectedRouteID}</p>
+              {imageLink && (
+                <div className="mt-4 relative group">
+                  <img 
+                    src={imageLink} 
+                    alt={`Route from ${selectedStore} to ${selectedEndLocation.route}`} 
+                    className="w-full h-64 object-cover rounded-lg transition duration-300 group-hover:opacity-75"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
+                    <span className="bg-black bg-opacity-60 text-white px-4 py-2 rounded">View Larger</span>
+                  </div>
+                </div>
+              )}
+              <button 
+                className="bg-gradient-to-r from-pink-300 to-rose-400 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:from-pink-400 hover:to-rose-500 transition duration-300 flex items-center justify-center w-full"
+                onClick={placeOrder}
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="animate-spin mr-2">⏳</span>
+                ) : (
+                  <ShoppingBag className="mr-2" />
+                )}
+                {loading ? 'Processing...' : 'Place Order'}
+              </button>
             </div>
           )}
         </div>
+      </div>
+
+      {error && (
+        <CustomAlert title="Error" variant="destructive">
+          {error}
+        </CustomAlert>
       )}
     </div>
   );

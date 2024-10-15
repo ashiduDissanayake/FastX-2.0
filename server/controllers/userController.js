@@ -156,33 +156,63 @@ const userController = {
     );
   },
 
-  getOrders: async (req, res) => {
-    db.query(
-      `SELECT oi.order_item_id, o.status, p.product_Name, oi.quantity, oi.price, p.image_link
-       FROM OrderItem oi
-       JOIN Product p ON oi.product_id = p.product_ID
-       JOIN \`Order\` o ON oi.order_id = o.order_id
-       WHERE o.customer_id = ? 
-       ORDER BY oi.order_item_id DESC`,
-      [req.user.id],
-      (error, results) => {
-        if (error) {
-          console.error("Detailed error:", error); // Log the full error object
-          return res
-            .status(500)
-            .json({
-              message: "Error fetching user profile",
-              error: error.message,
-            });
+  getOrders: (req, res) => {
+    const customerId = req.user.id;
+  
+    return new Promise((resolve, reject) => {
+      db.query(
+        `SELECT 
+          o.order_id, o.order_date, o.status, o.total_amount,
+          p.product_Name, p.image_link, oi.quantity, oi.price
+        FROM \`Order\` o
+        JOIN OrderItem oi ON o.order_id = oi.order_id
+        JOIN Product p ON oi.product_id = p.product_ID
+        WHERE o.customer_id = ?
+        ORDER BY o.order_date DESC`,
+        [customerId],
+        (error, results) => {
+          if (error) {
+            return reject(error);
+          }
+          resolve(results);
         }
-        if (results.length > 0) {
-          res.json(results);
-        } else {
-          res.status(404).json({ message: "User not found" });
-        }
-      }
-    );
-  },
+      );
+    })
+      .then((orders) => {
+        const groupedOrders = orders.reduce((acc, order) => {
+          const {
+            order_id, order_date, status, total_amount,
+            product_Name, image_link, quantity, price
+          } = order;
+  
+          if (!acc[order_id]) {
+            acc[order_id] = {
+              order_id,
+              order_date,
+              status,
+              total_amount,
+              items: []
+            };
+          }
+  
+          acc[order_id].items.push({
+            product_Name,
+            image_link,
+            quantity,
+            price
+          });
+  
+          return acc;
+        }, {});
+  
+        res.status(200).json(Object.values(groupedOrders));
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).json({ message: 'Error retrieving orders' });
+      });
+  }
+  ,
 
   // Get all products with error handling
   getAllProducts: async (req, res) => {

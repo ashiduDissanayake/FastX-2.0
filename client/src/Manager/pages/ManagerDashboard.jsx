@@ -42,13 +42,6 @@ const ManagerDashBoard = () => {
       icon: <FaClipboardList />,
       navigateTo: "/manager-finished-trips",
     },
-    {
-      title: "Reports",
-      description: "Generate and analyze performance reports.",
-      bgColor: "bg-gradient-to-r from-purple-700 to-purple-900",
-      icon: <FaFileAlt />,
-      navigateTo: "/reports",
-    },
   ];
 
   return (
@@ -64,7 +57,7 @@ const ManagerDashBoard = () => {
         </div>
 
         {/* Cards Section */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 p-5">
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 p-6">
           {cards.map((card) => (
             <div
               key={card.title}

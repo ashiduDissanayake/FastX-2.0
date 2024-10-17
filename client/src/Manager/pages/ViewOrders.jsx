@@ -109,14 +109,14 @@ const ViewOrders = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {orders.map((order) => (
                   <div
-                    key={order.order_ID}
+                    key={order.order_id}
                     className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-lg shadow-lg hover:shadow-2xl transition-transform duration-300 transform hover:-translate-y-1"
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold text-gray-800">Order ID:</span> {order.order_ID}
+                      <span className="font-semibold text-gray-800">Order ID:</span> {order.order_id}
                     </div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold text-gray-800">Route ID:</span> {order.route_ID}
+                      <span className="font-semibold text-gray-800">Route ID:</span> {order.route_id}
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-gray-800">Capacity:</span> {order.capacity}

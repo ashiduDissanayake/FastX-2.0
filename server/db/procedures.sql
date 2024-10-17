@@ -464,3 +464,384 @@ BEGIN
     SELECT 'Product quantity in cart successfully updated' AS message;
 END $$
 DELIMITER ;
+
+
+
+--  ---------------------------------------------------------------------------------------
+--                                  Manager Procedures
+--  ---------------------------------------------------------------------------------------
+
+-- Get Active Trips
+DELIMITER $$
+
+CREATE PROCEDURE GetActiveTripsByStore(
+    IN storeID INT
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        SELECT 'SQL Exception Occurred. Unable to fetch active trips.' AS error_message;
+    END;
+
+    IF (SELECT COUNT(*) FROM Store WHERE store_ID = storeID) = 0 THEN
+        SELECT 'Store not found.' AS message;
+    ELSE
+        SELECT 
+            schedule_ID, 
+            truck_ID, 
+            driver_ID, 
+            assistant_ID, 
+            route_ID, 
+            start_time
+        FROM TruckSchedule
+        WHERE store_ID = storeID AND end_time IS NULL;
+    END IF;
+    
+END $$
+
+DELIMITER ;
+
+-- Get Finished Trips
+DELIMITER $$
+
+CREATE PROCEDURE GetFinishedTripsByStore(
+    IN storeID INT
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        SELECT 'SQL Exception Occurred. Unable to fetch finished trips.' AS error_message;
+    END;
+
+    IF (SELECT COUNT(*) FROM Store WHERE store_ID = storeID) = 0 THEN
+        SELECT 'Store not found.' AS message;
+    ELSE
+        SELECT 
+            schedule_ID, 
+            truck_ID, 
+            driver_ID, 
+            assistant_ID, 
+            route_ID, 
+            start_time, 
+            end_time
+        FROM TruckSchedule
+        WHERE store_ID = storeID AND end_time IS NOT NULL
+        ORDER BY end_time DESC;
+    END IF;
+
+END $$
+
+DELIMITER ;
+
+-- Get Train Orders 
+DELIMITER $$
+
+CREATE PROCEDURE GetTrainOrdersByStore(
+    IN storeID INT
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        SELECT 'SQL Exception Occurred. Unable to fetch train orders.' AS error_message;
+    END;
+
+    IF (SELECT COUNT(*) FROM Store WHERE store_ID = storeID) = 0 THEN
+        SELECT 'Store not found.' AS message;
+    ELSE
+        SELECT 
+            o.order_id, 
+            o.route_id, 
+            SUM(oi.quantity) AS capacity
+        FROM `Order` o
+        JOIN Route r ON o.route_id = r.route_ID
+        LEFT JOIN OrderItem oi USING(order_id)
+        WHERE r.store_ID = storeID AND o.status = 'Shipped'
+        GROUP BY o.order_id;
+    END IF;
+
+END $$
+
+DELIMITER ;
+
+-- get stores
+DELIMITER $$
+
+CREATE PROCEDURE GetAllStores()
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        SELECT 'SQL Exception Occurred. Unable to fetch stores.' AS error_message;
+    END;
+
+    SELECT * FROM Store;
+END $$
+
+DELIMITER ;
+
+-- Get Store Orders
+DELIMITER $$
+
+CREATE PROCEDURE GetStoreOrdersByStore(
+    IN storeID INT
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        SELECT 'SQL Exception Occurred. Unable to fetch train orders.' AS error_message;
+    END;
+
+    IF (SELECT COUNT(*) FROM Store WHERE store_ID = storeID) = 0 THEN
+        SELECT 'Store not found.' AS message;
+    ELSE
+        SELECT 
+            o.order_id, 
+            o.route_id, 
+            SUM(oi.quantity) AS capacity
+        FROM `Order` o
+        JOIN Route r ON o.route_id = r.route_ID
+        LEFT JOIN OrderItem oi USING(order_id)
+        WHERE r.store_ID = storeID AND o.status = 'In Branch'
+        GROUP BY o.order_id;
+    END IF;
+
+END $$
+
+DELIMITER ;
+
+-- Get  drivers
+DELIMITER $$
+
+CREATE PROCEDURE GetDriversByStoreID(
+    IN storeID INT
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        SELECT 'SQL Exception Occurred. Unable to fetch drivers.' AS error_message;
+    END;
+
+    SELECT * FROM Driver WHERE store_ID = storeID; 
+END $$
+
+DELIMITER ;
+
+-- get driver assistants
+DELIMITER $$
+
+CREATE PROCEDURE GetDriverAssistantsByStoreID(
+    IN storeID INT
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        SELECT 'SQL Exception Occurred. Unable to fetch driver assistants.' AS error_message;
+    END;
+
+    SELECT * FROM DriverAssistant WHERE store_ID = storeID; 
+END $$
+
+DELIMITER ;
+
+-- get trucks
+DELIMITER $$
+
+CREATE PROCEDURE GetTrucksByStoreID(
+    IN storeID INT
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        SELECT 'SQL Exception Occurred. Unable to fetch trucks.' AS error_message;
+    END;
+
+    SELECT * FROM Truck WHERE store_ID = storeID; 
+END $$
+
+DELIMITER ;
+
+-- get routes
+DELIMITER $$
+
+CREATE PROCEDURE GetRoutesByStoreID(
+    IN storeID INT
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        SELECT 'SQL Exception Occurred. Unable to fetch routes.' AS error_message;
+    END;
+
+    SELECT * FROM Route WHERE store_ID = storeID;
+END $$
+
+DELIMITER ;
+
+-- update orders to branch 
+DELIMITER $$
+
+CREATE PROCEDURE UpdateOrdersToBranchByStoreID(
+    IN storeID INT
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        SELECT 'SQL Exception Occurred. Unable to update orders.' AS error_message;
+        ROLLBACK; 
+    END;
+
+    START TRANSACTION; 
+
+    UPDATE `Order`
+    SET status = 'In Branch'
+    WHERE route_id IN (
+        SELECT route_ID 
+        FROM Route 
+        WHERE store_ID = storeID
+    ) 
+    AND status = 'Shipped';
+
+    COMMIT; 
+
+    SELECT 'Orders updated successfully.' AS success_message; 
+
+END $$
+
+DELIMITER ;
+
+
+-- end trip 
+DELIMITER $$
+
+CREATE PROCEDURE EndTripByID(IN scheduleID INT)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        SELECT 'SQL Exception Occurred. Unable to end trip.' AS error_message;
+    END;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM TruckSchedule WHERE schedule_ID = scheduleID
+    ) THEN
+        SELECT 'Trip not found.' AS error_message;
+    END IF;
+
+    UPDATE TruckSchedule
+    SET end_time = NOW() 
+    WHERE schedule_ID = scheduleID;
+
+    SELECT 'Trip ended successfully!' AS success_message; 
+END $$
+
+DELIMITER ;
+
+
+-- schedule trip
+
+
+DELIMITER $$
+
+CREATE PROCEDURE GetRouteMaxTime(IN routeID INT)
+BEGIN
+    DECLARE maxTime INT DEFAULT NULL;  
+    DECLARE exit_code INT DEFAULT 0;  
+
+    -- Retrieve the max_time for the specified route
+    SELECT max_time INTO maxTime FROM Route WHERE route_ID = routeID;
+
+    -- Check if max_time was found
+    IF maxTime IS NULL THEN
+        SET exit_code = 1;  
+        -- Output an error message and code
+        SELECT 'Route not found.' AS error_message, exit_code;  
+    ELSE
+        -- If found, output the max_time and exit_code
+        SELECT maxTime, exit_code;  
+    END IF;
+
+END $$
+
+-- Procedure to check driver hours
+CREATE PROCEDURE CheckDriverHours(IN driverID INT)
+BEGIN
+    DECLARE total_hours INT;
+
+    SELECT current_working_time INTO total_hours FROM Driver WHERE driver_ID = driverID;
+
+    IF total_hours IS NULL THEN
+        SELECT 'Driver not found.' AS error_message, 1; 
+    END IF;
+
+    SELECT total_hours, 0;  
+END $$
+
+-- Procedure to check assistant hours
+CREATE PROCEDURE CheckAssistantHours(IN assistantID INT)
+BEGIN
+    DECLARE total_hours INT;
+
+    SELECT current_working_time INTO total_hours FROM DriverAssistant WHERE assistant_ID = assistantID;
+
+    IF total_hours IS NULL THEN
+        SELECT 'Assistant not found.' AS error_message, 1; 
+    END IF;
+
+    SELECT total_hours, 0;  
+END $$
+
+-- Procedure to schedule the trip
+CREATE PROCEDURE ScheduleTrip(
+    IN truckID INT,
+    IN driverID INT,
+    IN assistantID INT,
+    IN storeID INT,
+    IN routeID INT,
+    IN startTime DATETIME
+)
+BEGIN
+    DECLARE exit_code INT DEFAULT 0;  
+    DECLARE error_message VARCHAR(255);
+
+    INSERT INTO TruckSchedule (truck_ID, driver_ID, assistant_ID, store_ID, route_ID, start_time, end_time)
+    VALUES (truckID, driverID, assistantID, storeID, routeID, startTime, NULL);
+
+    IF ROW_COUNT() = 0 THEN
+        SET error_message = 'Failed to schedule trip.';
+        SET exit_code = 1;  
+    END IF;
+
+    SELECT error_message, exit_code;  
+END $$
+
+DELIMITER ;
+
+
+-- Procedure to update order status
+DELIMITER $$
+
+CREATE PROCEDURE UpdateOrderStatus(IN orderIds VARCHAR(255))
+BEGIN
+    DECLARE exit_code INT DEFAULT 0;  
+    DECLARE error_message VARCHAR(255) DEFAULT '';
+
+    START TRANSACTION;
+
+    UPDATE `Order` 
+    SET status = 'Delivered' 
+    WHERE order_id IN (SELECT CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(orderIds, ',', numbers.n), ',', -1) AS UNSIGNED) 
+                         FROM (SELECT 1 n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 
+                               UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 
+                               UNION ALL SELECT 9 UNION ALL SELECT 10) numbers
+                         WHERE CHAR_LENGTH(orderIds) - CHAR_LENGTH(REPLACE(orderIds, ',', '')) >= numbers.n - 1);
+
+    IF ROW_COUNT() = 0 THEN
+        SET error_message = 'No orders were updated. Check if the order IDs are valid.';
+        SET exit_code = 1;  
+        ROLLBACK;  
+    ELSE
+        COMMIT;  
+    END IF;
+
+    SELECT error_message AS message, exit_code;  
+END $$
+
+DELIMITER ;

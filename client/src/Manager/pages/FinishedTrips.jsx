@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
-import { FaCheckCircle } from "react-icons/fa"; // Import the tick icon
+import { FaCheckCircle } from "react-icons/fa";
 
 const FinishedTrips = () => {
   const [storeID, setStoreID] = useState("");
   const [stores, setStores] = useState([]);
   const [trips, setTrips] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const [activePage, setActivePage] = useState("Finished Trips");
 
   // Load stores for the dropdown when the component mounts
@@ -28,29 +29,35 @@ const FinishedTrips = () => {
 
   const handleStoreIDChange = (e) => {
     setStoreID(e.target.value);
+    setTrips([]); // Clear previous trips when the store changes
+    setErrorMessage(""); // Clear any previous error message
   };
 
-  // Fetch finished trips for the selected storeID
   const fetchTrips = async () => {
     if (!storeID) {
       setErrorMessage("Please select a valid Store.");
+      setTrips([]); // Clear trips if no valid store is selected
       return;
     }
 
+    setLoading(true); // Set loading state
     try {
       const response = await axios.get(
         `http://localhost:8080/manager/getfinishedtrips/${storeID}`
       );
       if (response.data.length === 0) {
-        setErrorMessage(`No finished trips found for Store ID: ${storeID}`);
-        setTrips([]);
+        setErrorMessage(""); // Clear previous error messages
+        setTrips([]); // Clear trips if no finished trips found
       } else {
-        setErrorMessage("");
+        setErrorMessage(""); // Clear error message if trips are found
         setTrips(response.data);
       }
     } catch (error) {
       setErrorMessage("Error fetching trips. Please try again.");
       console.error("Error fetching trips:", error);
+      setTrips([]); // Clear trips on error
+    } finally {
+      setLoading(false); // Reset loading state
     }
   };
 
@@ -58,6 +65,7 @@ const FinishedTrips = () => {
     <div className="flex min-h-screen bg-gradient-to-r from-purple-100 to-blue-100">
       {/* Sidebar */}
       <Sidebar activePage={activePage} setActivePage={setActivePage} />
+
       {/* Main Content */}
       <div className="w-3/4 p-8">
         <div className="flex flex-col items-center">
@@ -89,14 +97,14 @@ const FinishedTrips = () => {
             onClick={fetchTrips}
             className="w-full max-w-md bg-blue-500 text-white text-lg font-medium px-6 py-3 rounded-lg hover:bg-blue-600 transition-all duration-300 shadow-lg transform hover:-translate-y-1"
           >
-            View Finished Trips
+            {loading ? "Loading..." : "View Finished Trips"}
           </button>
 
           {/* Error Message */}
           {errorMessage && <p className="text-red-600 mt-4">{errorMessage}</p>}
 
           {/* Display Finished Trips */}
-          {trips.length > 0 && (
+          {trips.length > 0 ? (
             <div className="mt-6">
               <h2 className="text-2xl font-bold mb-4 text-gray-800">
                 Finished Trips for Store ID: {storeID}
@@ -118,14 +126,10 @@ const FinishedTrips = () => {
                         Trip ID: {trip.schedule_ID}
                       </h3>
                       <p className="text-gray-600">Driver ID: {trip.driver_ID}</p>
-                      <p className="text-gray-600">
-                        Assistant ID: {trip.assistant_ID}
-                      </p>
+                      <p className="text-gray-600">Assistant ID: {trip.assistant_ID}</p>
                       <p className="text-gray-600">Truck ID: {trip.truck_ID}</p>
                       <p className="text-gray-600">Route ID: {trip.route_ID}</p>
-                      <p className="text-gray-600">
-                        Start Time: {trip.start_time}
-                      </p>
+                      <p className="text-gray-600">Start Time: {trip.start_time}</p>
                       <p className="text-gray-600">End Time: {trip.end_time}</p>
                       <p className="text-gray-600">Duration: {trip.duration}</p>
                     </div>
@@ -133,6 +137,12 @@ const FinishedTrips = () => {
                 ))}
               </div>
             </div>
+          ) : (
+            storeID && ( // Only show the message if a store has been selected
+              <p className="text-red-600 mt-4">
+                No finished trips found for Store ID: {storeID}
+              </p>
+            )
           )}
         </div>
       </div>

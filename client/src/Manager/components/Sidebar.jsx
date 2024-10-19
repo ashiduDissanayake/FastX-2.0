@@ -27,9 +27,6 @@ const Sidebar = ({ activePage, setActivePage }) => {
       case "Finished Trips":
         navigate("/manager-finished-trips");
         break;
-      case "Reports":
-        navigate("/reports");
-        break;
       case "Logout":
         // Implement logout logic here, e.g., clear auth tokens
         navigate("/login"); // Redirect to login or home page after logout
@@ -56,7 +53,6 @@ const Sidebar = ({ activePage, setActivePage }) => {
             "Schedule a New Trip",
             "Active Trips",
             "Finished Trips",
-            "Reports",
             "Logout",
           ].map((item) => (
             <li

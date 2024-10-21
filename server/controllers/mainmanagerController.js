@@ -1,9 +1,12 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const db = require('../config/db')
+const db = require('../config/db');
+const MainManagerModel = require('../models/mainManagermodel');
+
 
 // dotenv config
 dotenv.config();
+
 
 // handle errors
 const handleErrors = (err) => {
@@ -38,6 +41,9 @@ const handleErrors = (err) => {
 
   return errors;
 };
+
+
+
 
 // // create json web token
 // const maxAge = 3 * 24 * 60 * 60;
@@ -154,6 +160,53 @@ const mainmanagerController = {
 
   // Manager 
   // get driver details
+   mainManagerLogin : (req, res) => {
+    const { username, password } = req.body;
+
+    // Call the model to interact with the database
+    MainManagerModel.login(username, password, (err, result) => {
+        if (err) {
+            console.error('Error during login:', err);
+            return res.status(500).json({ message: 'Error occurred during login' });
+        }
+
+        const rows = result[0];
+
+        // Check if login was successful
+        if (rows.length > 0 && rows[0].message === 'Successful login') {
+            const mainmanager_id = rows[0].manager_id;
+
+            // Generate a JWT token
+            const token = jwt.sign(
+                { mainmanager_id, username }, // Payload with some user info
+                process.env.SECRET, // Secret key
+                { expiresIn: '1h' } // Token expiry (e.g., 1 hour)
+            );
+
+            // Set the token as an HTTP-only cookie (more secure)
+            res.cookie('token', token, {
+                httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
+                secure: process.env.NODE_ENV === 'production', // Use secure cookies in production (HTTPS)
+                maxAge: 3600000, // 1 hour in milliseconds
+            });
+
+            // Send response with login success and token
+            return res.status(200).json({
+                message: 'Login successful',
+                mainmanager_id,
+                token, // Optional: Send the token in the response too
+            });
+        } else {
+            return res.status(401).json({
+                message: rows[0] ? rows[0].message : 'Login failed: Incorrect username or password',
+            });
+        }
+    });
+},
+
+
+
+
   getDriver: (req, res) => {
     const storeId = req.params.storeId; // Get the storeId from the request parameters
     const sqlGet = "SELECT * FROM driver WHERE store_ID = ?"; 

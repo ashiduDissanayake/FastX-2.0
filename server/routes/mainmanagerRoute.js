@@ -11,5 +11,6 @@ router.get('/getroute/:storeId', mainmanagerController.getRoute);
 router.get('/getscheduletrip', mainmanagerController.getScheduleTrip);  
 
 router.post('/scheduletrip', mainmanagerController.scheduleTrip);   
+router.post('/mainmanagerlogin', mainmanagerController.mainManagerLogin);
 
 module.exports = router;

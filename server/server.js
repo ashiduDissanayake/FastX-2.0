@@ -10,7 +10,6 @@ const userRoutes = require('./routes/userRoute');
 const managerRoutes = require('./routes/managerRoute');
 const mainmanagerRoutes = require('./routes/mainmanagerRoute');
 
-
 // dotenv config
 dotenv.config();
 
@@ -51,7 +50,7 @@ app.use((req, res, next) => {
 });
 
 // Port
-const port = process.env.PORT;
+const port = process.env.PORT || 5000;
 
 // Routes
 // User routes
@@ -59,13 +58,12 @@ app.use('/user', userRoutes);
 app.use('/manager', managerRoutes);
 app.use('/mainmanager', mainmanagerRoutes);
 
-
 // Root route (for testing)
 app.get('/', (req, res) => {
   res.send('Welcome to the Express App!');
 });
 
-// Get all stores
+// Updated Login Route: Use the existing database connection
 
 
 // Start the server

@@ -26,6 +26,8 @@ import ProductDetail from "./components/ProductDetail";
 import SelectRoute from "./components/SelectRoute";
 import UserProfile from "./pages/UserProfile";
 import Orders from "./pages/Orders";
+import Mainmanagerlogin from "./MainManager/Mainmanagerlogin";
+import MainManagerDashboard from "./MainManager/MainManagerDashboard";
 
 function App() {
   return (
@@ -62,6 +64,9 @@ function App() {
             <Route path="/manager-schedule-trip" element={<ScheduleTrip />} />
             <Route path="/manager-active-trips" element={<ActiveTrips />} />
             <Route path="/manager-finished-trips" element={<FinishedTrips />} />
+            <Route path="/mainmanager-login" element={<Mainmanagerlogin />} />
+            <Route path="/mainmanager-dashboard" element={<MainManagerDashboard />} />
+            
 
             {/* Other routes */}
             <Route

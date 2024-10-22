@@ -1,5 +1,7 @@
 const User = require("../models/userModel");
 const Product = require("../models/productModel");
+const Cart = require("../models/cartModel")
+const Order = require("../models/orderModel");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const db = require("../config/db");
@@ -23,7 +25,7 @@ const handleErrors = (err) => {
   }
 
   // duplicate email error
-  if (err.message === "email already registered") {
+  if (err.message === "Email already registered") {
     errors.email = "that email is already registered";
     return errors;
   }
@@ -57,46 +59,55 @@ const userController = {
       email,
       username,
       password,
-      firstname,
-      lastname,
-      phonenumber,
-      type,
+      firstName,
+      lastName,
+      phoneNumber,
+      userType,
     } = req.body;
 
-    // Call the create function from the user model
-    User.create(
-      { email, username, password, firstname, lastname, phonenumber, type },
-      (err, result) => {
-        if (err) {
-          const errors = handleErrors(err);
-          return res.status(400).json({ errors });
-        }
+    try {
+      // Call the create function from the user model
+      const userId = await User.create({
+        email,
+        username,
+        password,
+        firstName,
+        lastName,
+        phoneNumber,
+        userType,
+      });
 
-        // Assuming your stored procedure returns the user ID
-        const userId = result;
+      // Create JWT token after user is created
+      const token = createToken(userId);
+      res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
 
-        // Create JWT token
-        const token = createToken(userId);
-        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-        res.status(201).json({ user: userId });
-      }
-    );
+      res.status(201).json({ user: userId });
+    } catch (err) {
+      const errors = handleErrors(err);
+      return res.status(400).json({ errors });
+    }
   },
 
-  // Login user
-  loginUser: (req, res) => {
+  // loginUser: async function with Promises
+  loginUser: async (req, res) => {
     const { email, password } = req.body;
 
-    User.login(email, password, (err, user) => {
-      if (err) {
-        const errors = handleErrors(err);
-        return res.status(400).json({ errors }); // Send the error response
-      }
+    try {
+      // Attempt to login the user by calling User.login which returns a promise
+      const user = await User.login(email, password);
+
       // Create JWT token
       const token = createToken(user.customer_ID);
+
+      // Set the token as an HTTP-only cookie
       res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-      res.status(200).json({ user: user.customer_ID }); // Send user ID in response
-    });
+
+      // Respond with the user ID
+      res.status(200).json({ user: user.customer_ID });
+    } catch (err) {
+      const errors = handleErrors(err);
+      return res.status(400).json({ errors }); // Send error response
+    }
   },
 
   // Check Auth
@@ -110,10 +121,30 @@ const userController = {
     });
   },
 
-  // Logout user
-  logoutUser: (req, res) => {
-    res.cookie("jwt", "", { maxAge: 1 });
-    res.redirect("/");
+  // Logout user and save cart
+  logoutUser: async (req, res) => {
+    const { cartItems } = req.body; // Get cart items from the request body
+    const userId = req.user.id; // Assuming the user ID is available in req.user
+
+    try {
+      // If cartItems are provided, save them using the model
+      if (Array.isArray(cartItems) && cartItems.length > 0) {
+        // Save each cart item using the stored procedure via the model
+        for (const item of cartItems) {
+          const { productId, quantity } = item;
+          await Cart.saveCartItem(userId, productId, quantity); // Call the model function
+        }
+      }
+
+      // Clear the JWT cookie to log out the user
+      res.cookie("jwt", "", { maxAge: 1 });
+
+      // Send success response
+      res.status(200).json({ message: "Cart saved and user logged out" });
+    } catch (err) {
+      console.error("Error during logout and cart save:", err);
+      res.status(500).json({ error: "Failed to save cart or log out user" });
+    }
   },
 
   getProfile: async (req, res) => {
@@ -123,12 +154,10 @@ const userController = {
       (error, results) => {
         if (error) {
           console.error("Detailed error:", error); // Log the full error object
-          return res
-            .status(500)
-            .json({
-              message: "Error fetching user profile",
-              error: error.message,
-            });
+          return res.status(500).json({
+            message: "Error fetching user profile",
+            error: error.message,
+          });
         }
 
         if (results.length > 0) {
@@ -158,7 +187,7 @@ const userController = {
 
   getOrders: (req, res) => {
     const customerId = req.user.id;
-  
+
     return new Promise((resolve, reject) => {
       db.query(
         `SELECT 
@@ -181,39 +210,43 @@ const userController = {
       .then((orders) => {
         const groupedOrders = orders.reduce((acc, order) => {
           const {
-            order_id, order_date, status, total_amount,
-            product_Name, image_link, quantity, price
+            order_id,
+            order_date,
+            status,
+            total_amount,
+            product_Name,
+            image_link,
+            quantity,
+            price,
           } = order;
-  
+
           if (!acc[order_id]) {
             acc[order_id] = {
               order_id,
               order_date,
               status,
               total_amount,
-              items: []
+              items: [],
             };
           }
-  
+
           acc[order_id].items.push({
             product_Name,
             image_link,
             quantity,
-            price
+            price,
           });
-  
+
           return acc;
         }, {});
-  
+
         res.status(200).json(Object.values(groupedOrders));
       })
       .catch((error) => {
         console.error(error);
-        res.status(500).json({ message: 'Error retrieving orders' });
+        res.status(500).json({ message: "Error retrieving orders" });
       });
-  }
-  ,
-
+  },
   // Get all products with error handling
   getAllProducts: async (req, res) => {
     const search = req.query.search || "";
@@ -392,6 +425,43 @@ const userController = {
       res.json({ message: "User deleted" });
     });
   },
+
+  // Payment
+  payment: async (req, res) => {
+    const { amount } = req.body;
+
+    // Call the payment function from the model
+    const { status, transactionId } = await User.payment(amount);
+
+    if (status === "success") {
+      res.json({ status, transactionId });
+    } else {
+      res.status(400).json({ status });
+    }
+  },
+
+  // Place order
+  placeOrder: async (req, res) => {
+    const { route_ID, store_ID, cartItems } = req.body; // Get cart items from local storage
+    
+    const userId = req.user.id; // Authenticated user ID from the token
+
+    try {
+        // Check if cart has items
+        if (!cartItems || cartItems.length === 0) {
+            return res.status(400).json({ error: 'Cart is empty' });
+        }
+
+        // Start the order process, use stored procedures for DB interactions
+        const result = await Order.placeOrder(userId, route_ID, store_ID, cartItems);
+
+        // Return success message and order ID
+        return res.status(200).json({ success: true, orderId: result.orderId });
+    } catch (err) {
+        console.error('Order placement failed:', err);
+        return res.status(500).json({ error: 'Failed to place order' });
+    }
+},
 };
 
 module.exports = userController;

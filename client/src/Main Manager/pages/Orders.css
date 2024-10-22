@@ -1,0 +1,62 @@
+.styled-table {
+    border-collapse: collapse;
+    margin: auto;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    max-width: 800px;
+    box-shadow: rgb(25, 83, 72), alpha;
+}
+
+.styled-table thead tr {
+    background-color:rgb(36, 150, 141);
+    color:aliceblue;
+    text-align: left;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 12px 15px;
+}
+
+.styled-table tbody tr {
+    border-bottom: 1px solid aliceblue;
+}
+
+.styled-table tbody tr:nth-of-type(even){
+    background-color: antiquewhite;
+}
+
+.styled-table tbody tr:last-of-type{
+    border-bottom: 2px solid rgb(59, 228, 228);
+}
+
+.btn {
+    border: none;
+    color: white;
+    padding: 5px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 5px;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.btn-edit {
+    background-color: rgb(0, 157, 255);
+}
+
+.btn-shipped {
+    background-color: rgb(252, 47, 47)
+}
+
+.btn-view {
+    background-attachment: rgb(223, 241, 220);
+    color: #0d0202;
+}
+
+.btn-contact {
+    background-color: rgb(235, 52, 107);
+    margin: 10px;
+}

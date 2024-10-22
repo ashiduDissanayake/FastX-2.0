@@ -1,51 +1,83 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Mail, Lock, LogIn } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Mail, Lock, LogIn } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const VogueNestLogin = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
   const [errors, setErrors] = useState({});
-  const { login } = useAuth();
+  const { login } = useAuth(); // Auth context
   const navigate = useNavigate();
 
+  // Handle input change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
 
     try {
-      const res = await fetch('http://localhost:8080/user/login', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+      const res = await fetch("http://localhost:8080/user/login", {
+        method: "POST",
+        credentials: "include", // Include cookies
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData), // Send the login form data
       });
       const data = await res.json();
-      console.log(data)
 
       if (data.errors) {
-        setErrors(data.errors);
+        setErrors(data.errors); // Show any validation errors
       }
 
       if (data.user) {
-        login(data.user);
-        navigate('/');
+        login(data.user); // Log in the user using the context
+
+        // After login, sync the cart with the backend
+        const cartResponse = await fetch("http://localhost:8080/user/getcart", {
+          credentials: "include",
+        });
+        const dbCartItems = await cartResponse.json();
+
+        const localCart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        // Merge backend cart with local cart
+        const mergedCart = [...localCart];
+
+        // Ensure dbCartItems is an array and has items before merging
+        if (Array.isArray(dbCartItems) && dbCartItems.length > 0) {
+          dbCartItems.forEach((dbItem) => {
+            const localItem = mergedCart.find(
+              (item) => item.productId === dbItem.product_id
+            );
+            if (localItem) {
+              localItem.quantity += dbItem.quantity; // Update quantity if it exists in both
+            } else {
+              mergedCart.push({
+                productId: dbItem.product_id,
+                quantity: dbItem.quantity,
+              });
+            }
+          });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(mergedCart)); // Sync the merged cart to local storage
+
+        navigate("/"); // Redirect to home page after login
       }
     } catch (err) {
-      console.error(err);
+      console.error("Login failed", err); // Catch and display any network errors
     }
   };
 
   const inputClasses =
-    'w-full bg-black/30 border-b-2 border-pink-300 py-2 px-4 focus:outline-none focus:border-pink-500 transition-colors duration-300 text-white';
+    "w-full bg-black/30 border-b-2 border-pink-300 py-2 px-4 focus:outline-none focus:border-pink-500 transition-colors duration-300 text-white";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 flex items-center justify-center px-4">
@@ -120,7 +152,7 @@ const VogueNestLogin = () => {
           </a>
         </div>
         <p className="mt-4 text-center text-sm text-pink-200">
-          Don't have an account?{' '}
+          Don't have an account?{" "}
           <a
             href="/signup"
             className="font-medium text-pink-400 hover:text-pink-500 transition"

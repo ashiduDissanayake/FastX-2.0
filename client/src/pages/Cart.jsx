@@ -9,13 +9,42 @@ const Cart = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Fetch cart from local storage and merge with backend cart if logged in
   const fetchCart = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const response = await axios.get("http://localhost:8080/user/getcart/", {
+      // Get cart from local storage
+      const localCart = JSON.parse(localStorage.getItem("cart")) || [];
+
+      // If user is logged in, fetch cart from backend and merge
+      const response = await axios.get("http://localhost:8080/user/getcart", {
         withCredentials: true,
       });
-      setCart(response.data.cart);
+
+      if (response.data.cart) {
+        const backendCart = response.data.cart;
+
+        // Merge the local and backend cart items
+        const mergedCart = [...localCart];
+        if (backendCart.length > 0) {
+          backendCart.forEach((backendItem) => {
+            const localItem = mergedCart.find(
+              (item) => item.productId === backendItem.productId
+            );
+            if (localItem) {
+              localItem.quantity += backendItem.quantity;
+            } else {
+              mergedCart.push(backendItem);
+            }
+          });
+        }
+
+        setCart(mergedCart);
+        // Update the cart in local storage
+        localStorage.setItem("cart", JSON.stringify(mergedCart));
+      } else {
+        setCart(localCart);
+      }
     } catch (error) {
       console.error("Failed to fetch cart", error);
     } finally {
@@ -27,52 +56,52 @@ const Cart = () => {
     fetchCart();
   }, []);
 
+  // Remove item from local storage and backend if logged in
   const removeItem = async (productId) => {
-    try {
-      await axios.delete("http://localhost:8080/user/removecart", {
-        data: { productId },
-        withCredentials: true,
-      });
-      fetchCart();
-    } catch (error) {
-      console.error("Failed to remove product", error);
-    }
+    const updatedCart = cart.filter((item) => item.productId !== productId);
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+    // try {
+    //   // Also remove item from backend if logged in
+    //   await axios.delete("http://localhost:8080/user/removecart", {
+    //     data: { productId },
+    //     withCredentials: true,
+    //   });
+    // } catch (error) {
+    //   console.error("Failed to remove product", error);
+    // }
   };
 
+  // Update quantity in local storage and backend if logged in
   const updateQuantity = async (productId, quantity) => {
     if (quantity < 1) return;
-    try {
-      await axios.put(
-        "http://localhost:8080/user/updatecart",
-        { productId, quantity },
-        { withCredentials: true }
-      );
-      fetchCart();
-    } catch (error) {
-      console.error("Failed to update quantity", error);
-    }
+
+    const updatedCart = cart.map((item) =>
+      item.productId === productId ? { ...item, quantity } : item
+    );
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+    // try {
+    //   // Update quantity in backend if logged in
+    //   await axios.put(
+    //     "http://localhost:8080/user/updatecart",
+    //     { productId, quantity },
+    //     { withCredentials: true }
+    //   );
+    // } catch (error) {
+    //   console.error("Failed to update quantity", error);
+    // }
   };
 
-  const updateItemStatus = async (productId, status) => {
-    try {
-      await axios.put(
-        "http://localhost:8080/user/updatecartstatus",
-        { productId, status },
-        { withCredentials: true }
-      );
-      fetchCart();
-    } catch (error) {
-      console.error("Failed to update item status", error);
-    }
-  };
-
-  const placeOrder = () => {
+  // Place the order by syncing the cart with the backend
+  const placeOrder = async () => {
     navigate(`/placeorder`);
   };
 
   const calculateTotal = () => {
     return cart
-      .filter((item) => item.status === "Selected")
       .reduce((total, item) => total + item.price * item.quantity, 0)
       .toFixed(2);
   };
@@ -100,7 +129,7 @@ const Cart = () => {
           <AnimatePresence>
             {cart.map((item) => (
               <motion.div
-                key={item.id}
+                key={item.productId} // Ensure productId is unique for each item
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
@@ -122,7 +151,9 @@ const Cart = () => {
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      onClick={() =>
+                        updateQuantity(item.productId, item.quantity - 1)
+                      }
                       className="bg-pink-500 text-white p-2 rounded-full hover:bg-pink-600 transition"
                     >
                       <Minus className="w-4 h-4" />
@@ -131,32 +162,19 @@ const Cart = () => {
                       {item.quantity}
                     </span>
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      onClick={() =>
+                        updateQuantity(item.productId, item.quantity + 1)
+                      }
                       className="bg-pink-500 text-white p-2 rounded-full hover:bg-pink-600 transition"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
                   <button
-                    onClick={() => removeItem(item.id)}
+                    onClick={() => removeItem(item.productId)}
                     className="text-pink-300 hover:text-pink-400 transition"
                   >
                     <Trash2 className="w-6 h-6" />
-                  </button>
-                  <button
-                    onClick={() =>
-                      updateItemStatus(
-                        item.id,
-                        item.status === "Active" ? "Selected" : "Active"
-                      )
-                    }
-                    className={`px-4 py-2 rounded-full transition ${
-                      item.status === "Selected"
-                        ? "bg-pink-500 text-white hover:bg-pink-600"
-                        : "bg-gray-700 text-pink-300 hover:bg-gray-600"
-                    }`}
-                  >
-                    {item.status === "Selected" ? "Selected" : "Select"}
                   </button>
                 </div>
               </motion.div>

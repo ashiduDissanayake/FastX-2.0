@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const ProductDetail = () => {
   const { productId } = useParams(); // Get the product ID from the URL
@@ -8,47 +8,52 @@ const ProductDetail = () => {
   const [selectedColor, setSelectedColor] = useState("black"); // Default color
   const [quantity, setQuantity] = useState(1); // Default quantity is 1
   const colors = ["black", "red", "blue", "green", "white"];
+  const navigate = useNavigate();
 
   const addToCart = (productId, quantity) => {
-    // Add product to the cart
-    fetch("http://localhost:8080/user/addtocart", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ product_ID: productId, quantity: quantity }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          setError(data.error);
-        } else {
-          alert("Product added to cart successfully");
-        }
-      })
-      .catch((error) => setError(error.message));
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const existingProduct = cart.find((item) => item.productId === productId);
+
+    if (existingProduct) {
+      existingProduct.quantity += quantity;
+    } else {
+      cart.push({
+        productId,
+        name: product.product_Name,
+        price: product.price,
+        quantity,
+        color: selectedColor,
+        image: product.image_link,
+      });
+    }
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert("Product added to cart successfully");
+    navigate("/cart"); // Optionally navigate to the cart page
   };
 
   useEffect(() => {
-    // Fetch product details from the backend
-    fetch(`http://localhost:8080/user/getproduct/${productId}`, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          setError(data.error);
-        } else {
-          setProduct(data);
-        }
-      })
-      .catch((error) => setError("Error fetching product: " + error.message));
+    fetchProductDetails();
   }, [productId]);
+
+  const fetchProductDetails = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/user/getproduct/${productId}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+      const data = await response.json();
+      if (data.error) {
+        setError(data.error);
+      } else {
+        setProduct(data);
+      }
+    } catch (error) {
+      setError("Error fetching product: " + error.message);
+    }
+  };
 
   if (error) {
     return <div className="text-center text-red-400 text-2xl">{error}</div>;
@@ -62,19 +67,9 @@ const ProductDetail = () => {
     );
   }
 
-  const handleColorSelect = (color) => {
-    setSelectedColor(color);
-  };
-
-  const handleQuantityChange = (event) => {
-    const value = parseInt(event.target.value, 10);
-    if (value >= 1) setQuantity(value); // Ensure quantity is at least 1
-  };
-
   return (
     <div className="bg-black min-h-screen p-8 pt-20">
       <div className="max-w-4xl mx-auto bg-gray-900 rounded-lg shadow-lg p-6 flex flex-col md:flex-row text-pink-100">
-        {/* Product Image */}
         <div className="md:w-1/2">
           <img
             src={product.image_link}
@@ -83,7 +78,6 @@ const ProductDetail = () => {
           />
         </div>
 
-        {/* Product Details */}
         <div className="md:w-1/2 md:pl-8">
           <h1 className="text-4xl font-bold mb-4 text-pink-300">
             {product.product_Name}
@@ -91,9 +85,10 @@ const ProductDetail = () => {
           <p className="text-lg mb-4 text-pink-200">{product.description}</p>
           <p className="text-2xl font-bold text-pink-400 mb-4">${product.price}</p>
 
-          {/* Color Selection */}
           <div className="mb-4">
-            <label className="text-lg font-medium text-pink-200">Select Color:</label>
+            <label className="text-lg font-medium text-pink-200">
+              Select Color:
+            </label>
             <div className="flex space-x-3 mt-4">
               {colors.map((color) => (
                 <div
@@ -104,13 +99,12 @@ const ProductDetail = () => {
                       : "border-2 border-pink-200"
                   } shadow-md hover:scale-105`}
                   style={{ backgroundColor: color }}
-                  onClick={() => handleColorSelect(color)}
+                  onClick={() => setSelectedColor(color)}
                 ></div>
               ))}
             </div>
           </div>
 
-          {/* Quantity Selection */}
           <div className="mb-6">
             <label className="text-lg font-medium text-pink-200">Quantity:</label>
             <div className="flex items-center mt-2">
@@ -124,7 +118,7 @@ const ProductDetail = () => {
                 type="number"
                 value={quantity}
                 min="1"
-                onChange={handleQuantityChange}
+                onChange={(e) => setQuantity(parseInt(e.target.value))}
                 className="w-16 p-2 border-t border-b border-gray-700 text-center bg-gray-800 text-pink-100"
               />
               <button
@@ -136,7 +130,6 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          {/* Add to Cart Button */}
           <button
             className="w-full bg-pink-500 text-white font-medium py-3 rounded hover:bg-pink-600 transition"
             onClick={() => addToCart(productId, quantity)}

@@ -56,7 +56,8 @@ const port = process.env.PORT || 5000;
 // User routes
 app.use('/user', userRoutes);
 app.use('/manager', managerRoutes);
-app.use('/mainmanager', mainmanagerRoutes);
+app.use('/mainmanager', mainmanagerRoutes)
+
 
 // Root route (for testing)
 app.get('/', (req, res) => {

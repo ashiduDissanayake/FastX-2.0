@@ -19,14 +19,16 @@ const Shop = () => {
 
   const fetchProducts = async (searchTerm = "", category = "") => {
     try {
-      const response = await fetch(`http://localhost:8080/user/getallproducts?search=${searchTerm}&category=${category}`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
+      const response = await fetch(
+        `http://localhost:8080/user/getallproducts?search=${searchTerm}&category=${category}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      );
       const data = await response.json();
       if (data.error) {
         setError(data.error);
@@ -45,7 +47,7 @@ const Shop = () => {
   };
 
   const handleProductClick = (productId) => {
-    navigate(`/product/${productId}`);
+    navigate(`/product/${productId}`); // Navigate to product detail page
   };
 
   const handleSearch = (event) => {
@@ -62,7 +64,6 @@ const Shop = () => {
 
   return (
     <div className="bg-black min-h-screen p-8 pt-20 text-pink-100 relative">
-      {/* Adding a black margin for visual separation */}
       <div className="absolute top-0 left-0 w-full h-20 bg-black"></div>
 
       <div className="flex justify-between items-center mb-6">
@@ -77,7 +78,6 @@ const Shop = () => {
         </motion.button>
       </div>
 
-      {/* Filter Sidebar */}
       <motion.div
         className={`fixed inset-y-0 left-0 z-40 w-64 bg-gray-900 shadow-lg transition-transform transform ${
           isFilterOpen ? "translate-x-0" : "-translate-x-full"
@@ -87,8 +87,9 @@ const Shop = () => {
         transition={{ type: "spring", stiffness: 100 }}
       >
         <div className="p-4">
-          <h2 className="text-xl font-bold mb-4 text-pink-300 pt-20">Refine Selection</h2>
-
+          <h2 className="text-xl font-bold mb-4 text-pink-300 pt-20">
+            Refine Selection
+          </h2>
           <input
             type="text"
             placeholder="Search by name or category"
@@ -96,7 +97,6 @@ const Shop = () => {
             onChange={handleSearch}
             className="w-full px-4 py-2 bg-gray-800 text-pink-100 border border-pink-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-pink-400"
           />
-
           <select
             value={category}
             onChange={handleCategoryChange}
@@ -109,7 +109,6 @@ const Shop = () => {
             <option value="Refrigerators">Refrigerators</option>
             <option value="Fans">Fans</option>
           </select>
-
           <button
             onClick={() => setIsFilterOpen(false)}
             className="mt-4 w-full bg-pink-500 text-white font-medium py-2 rounded hover:bg-pink-600 transition"
@@ -119,7 +118,6 @@ const Shop = () => {
         </div>
       </motion.div>
 
-      {/* Product Grid */}
       {error ? (
         <div className="text-center text-red-400 text-2xl">{error}</div>
       ) : message ? (
@@ -130,7 +128,7 @@ const Shop = () => {
             <motion.div
               key={product.product_ID}
               className="bg-gray-900 rounded-lg shadow-md overflow-hidden hover:shadow-pink-300/20 transition-shadow cursor-pointer"
-              onClick={() => handleProductClick(product.product_ID)}
+              onClick={() => handleProductClick(product.product_ID)} // Click to view details
               whileHover={{ scale: 1.03 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
@@ -147,10 +145,6 @@ const Shop = () => {
                 <p className="text-lg font-bold text-pink-400 mb-4">
                   ${product.price}
                 </p>
-                <button className="w-full bg-pink-500 text-white font-medium py-2 rounded hover:bg-pink-600 transition flex items-center justify-center">
-                  <ShoppingBag className="w-5 h-5 mr-2" />
-                  Add to Cart
-                </button>
               </div>
             </motion.div>
           ))}

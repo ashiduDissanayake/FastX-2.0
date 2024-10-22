@@ -1,12 +1,18 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import PublicRoute from "./layouts/PublicLayout";
-import ProtectedRoute from "./layouts/ProtectedLayout";
+//import ProtectedRoute from "./layouts/ProtectedLayout";
 import Home from "./pages/Home";
+import MainHome from "./Main Manager/pages/Home";
 import LoginForm from "./pages/Login";
 import SignUpForm from "./pages/Signup";
 import { AuthProvider } from "./context/AuthContext";
+import ManagerDashBoard from "./Manager/pages/ManagerDashboard";
+import ScheduleTrip from "./Manager/pages/ScheduleTrip";
 import Shop from "./pages/Shop";
-
+import Store from "./Main Manager/pages/Store";
+import TrainSchedule from "./Main Manager/pages/TrainSchedule";
+import Orders from "./Main Manager/pages/Orders";
+import ProtectedRoute from "./layouts/ProtectedLayout";
 import AdminDashboard from "../src/components/Admin/pages/AdminDashboard";
 import Driver from "../src/components/Admin/pages/Driver";
 import Profile from "../src/components/Admin/pages/Profile";
@@ -26,7 +32,7 @@ import ScheduleTrip from "./Manager/pages/ScheduleTrip";
 import ProductDetail from "./components/ProductDetail";
 import SelectRoute from "./components/SelectRoute";
 import UserProfile from "./pages/UserProfile";
-import Orders from "./pages/Orders";
+import OrdersDetails from "./pages/Orders";
 import Mainmanagerlogin from "./MainManager/Mainmanagerlogin";
 import MainManagerDashboard from "./MainManager/MainManagerDashboard";
 
@@ -60,6 +66,14 @@ function App() {
             <Route path="/adminmanager" element={<Manager />} />
             <Route path="/adminreport" element={<Report />} />
 
+            
+
+            {/* Main manager */}
+            <Route path="/maindashboard" element={<MainHome/>} />
+            <Route path="/store" element={<Store/>} />
+            <Route path="/trainschedule" element={<TrainSchedule/>} />
+            <Route path="/orders" element={<Orders/>} />
+              
             {/* Manager Route */}
             <Route path="/manager-dashboard" element={<ManagerDashBoard />} />
             <Route path="/manager-view-orders" element={<ViewOrders />} />
@@ -117,7 +131,7 @@ function App() {
               path="/orders"
               element={
                 <ProtectedRoute>
-                  <Orders />
+                  <OrdersDetails />
                 </ProtectedRoute>
               }
             />

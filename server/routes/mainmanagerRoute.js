@@ -9,8 +9,16 @@ router.get('/gettruck/:storeId', mainmanagerController.getTruck);
 router.get('/getorder', mainmanagerController.getorder);     
 router.get('/getroute/:storeId', mainmanagerController.getRoute);   
 router.get('/getscheduletrip', mainmanagerController.getScheduleTrip);  
-
-router.post('/scheduletrip', mainmanagerController.scheduleTrip);   
+router.post('/scheduletrip', mainmanagerController.scheduleTrip);  
+router.post('/getorder/:storeId', mainmanagerController.getselectorder);
+router.get('/gettrainschedule', mainmanagerController.getTrainSchedule);  
+router.get('/getTrainCapacity/:storeId', mainmanagerController.getTrainCapacity);   
+// router.put("/updateTrainSchedule", mainmanagerController.updateTrainSchedule);
+router.put('/updateTrainSchedule', mainmanagerController.updateTrainSchedule);
+router.put('/updateOrderStatus/:orderId', mainmanagerController.updateOrderStatus);
 router.post('/mainmanagerlogin', mainmanagerController.mainManagerLogin);
-
+// router.get('//:storeId', mainmanagerController.getDriver);
 module.exports = router;
+
+
+

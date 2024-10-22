@@ -1,13 +1,11 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const db = require('../config/db');
-const MainManagerModel = require('../models/mainManagermodel');
-
+const db = require('../config/db')
 
 // dotenv config
 dotenv.config();
 
-
+const MainManagerModel = require('../models/mainManagermodel');
 // handle errors
 const handleErrors = (err) => {
   // console.log(err.message, err.code);
@@ -38,12 +36,8 @@ const handleErrors = (err) => {
       errors[properties.path] = properties.message;
     });
   }
-
   return errors;
 };
-
-
-
 
 // // create json web token
 // const maxAge = 3 * 24 * 60 * 60;
@@ -76,9 +70,6 @@ const mainmanagerController = {
   //         return res.status(400).json({ errors });
   //       }
 
-  //       // Assuming your stored procedure returns the user ID
-  //       const userId = result;
-
   //       // Create JWT token
   //       const token = createToken(userId);
   //       res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
@@ -86,11 +77,6 @@ const mainmanagerController = {
   //     }
   //   );
   // },
-
-  // // Login user
-  // loginUser: (req, res) => {
-  //   const { email, password } = req.body;
-
   //   User.login(email, password, (err, user) => {
   //     if (err) {
   //       const errors = handleErrors(err);
@@ -157,6 +143,10 @@ const mainmanagerController = {
   //     res.json({ message: "User updated" });
   //   });
   // },
+
+  // Manager 
+  // get driver details
+
 
   // Manager 
   // get driver details
@@ -242,6 +232,7 @@ const mainmanagerController = {
     });
   },
 
+
     //get order details
     getorder:(req, res) => {
         const sqlGet="SELECT * FROM orders";
@@ -251,29 +242,174 @@ const mainmanagerController = {
     );
     },
 
-  getStore:(req, res) => {
-    const sqlGet="SELECT * FROM store";
-    db.query(sqlGet,(error,result) => {
-        res.send(result);
-    });
+    getselectorder: (req, res) => {
+      const storeId = req.params.storeId;
+      const sqlGet = "SELECT * FROM `\order\` WHERE store_ID = ? AND status='branch'"; 
+      
+      db.query(sqlGet, [storeId], (error, result) => {
+          if (error) {
+              return res.status(500).json({ message: "Error retrieving orders", error });
+          }
+          res.send(result);  
+      });
+    },
+
+  //   getTrainSchedule:(req, res) => {
+  //     const sqlGet="SELECT * FROM train_schedule";
+  //     db.query(sqlGet,(error,result) => {
+  //         res.send(result);
+  //     }
+  // );
+  // },
+
+  
+    getStore:(req, res) => {
+      const sqlGet="SELECT * FROM store";
+      db.query(sqlGet,(error,result) => {
+          res.send(result);
+      });
+    },
+    getRoute:(req,res) => {
+      const storeId = req.params.storeId; 
+      const sqlGet="SELECT * FROM route WHERE store_ID = ?"; 
+      db.query(sqlGet, [storeId], (error, result) => {
+          if (error) {
+              return res.status(500).send({ message: "Error retrieving routes", error });
+          }
+          res.send(result); 
+      });
+    },
+    getScheduleTrip:(req,res) => {
+      console.log('GET request received');
+      res.send("Schedule Trip Endpoint");
+    },
+
+    // Add this function to mainmanagerController
+    getTrainCapacity: (req, res) => {
+      const storeId = req.params.storeId;
+      const sqlGet = "SELECT capacity FROM TrainSchedule WHERE store_ID = ?";
+      
+      db.query(sqlGet, [storeId], (error, result) => {
+          if (error) {
+              return res.status(500).json({ message: "Error retrieving train capacity", error });
+          }
+          res.send(result[0]); // Assuming the result contains capacity in the first object
+      });
   },
 
-  getRoute:(req,res) => {
-    const storeId = req.params.storeId; 
-    const sqlGet="SELECT * FROM route WHERE store_ID = ?"; 
-    db.query(sqlGet, [storeId], (error, result) => {
-        if (error) {
-            return res.status(500).send({ message: "Error retrieving routes", error });
-        }
-        res.send(result); 
-    });
+//   // Get train schedule
+// getTrainSchedule: (req, res) => {
+//   const sqlGet = "SELECT * FROM train_schedule";
+//   db.query(sqlGet, (error, result) => {
+//       if (error) {
+//           return res.status(500).json({ message: "Error retrieving train schedule", error });
+//       }
+//       res.status(200).json(result);
+//   });
+// },
 
-  },
 
-  getScheduleTrip:(req,res) => {
-    console.log('GET request received');
-    res.send("Schedule Trip Endpoint");
-  },
+
+
+// // Update train schedule
+// updateTrainSchedule: (req, res) => {
+//   const { schedule_ID, departure_Time, arrival_Time } = req.body; // Expecting schedule_ID in the request body
+
+//   // Validate input
+//   if (!schedule_ID || !departure_Time || !arrival_Time) {
+//       return res.status(400).json({ message: "All fields are required" });
+//   }
+
+//   // Ensure that departure_Time and arrival_Time are in the correct format
+//   // Example: "2024-10-18 16:42:00"
+//   const formattedDepartureTime = departure_Time; // Assume it's already in the correct format
+//   const formattedArrivalTime = arrival_Time; // Assume it's already in the correct format
+
+//   // Update query
+//   const sqlUpdate = "UPDATE train_schedule SET departure_Time = ?, arrival_Time = ? WHERE schedule_ID = ?"; 
+//   db.query(sqlUpdate, [formattedDepartureTime, formattedArrivalTime, schedule_ID], (error, result) => {
+//       if (error) {
+//           console.error("Error updating train schedule:", error);
+//           return res.status(500).json({ message: "Error updating train schedule", error });
+//       }
+
+//       if (result.affectedRows === 0) {
+//           return res.status(404).json({ message: "Schedule ID not found" });
+//       }
+
+//       res.status(200).send({ message: "Train schedule updated successfully!" });
+//   });
+// },
+getTrainSchedule: (req, res) => {
+  const sqlGet = "SELECT * FROM `TrainSchedule`"; // Adjust the table name as needed
+
+  db.query(sqlGet, (error, result) => {
+      if (error) {
+          return res.status(500).json({ message: "Error retrieving train schedule", error });
+      }
+      res.send(result);  
+  });
+},
+updateTrainSchedule: (req, res) => {
+  const { schedule_ID, departure_Time, arrival_Time } = req.body; // Destructure incoming data
+  const sqlUpdate = "UPDATE `TrainSchedule` SET departure_Time = ?, arrival_Time = ? WHERE schedule_ID = ?"; // Adjust table name as needed
+
+  db.query(sqlUpdate, [departure_Time, arrival_Time, schedule_ID], (error, result) => {
+      if (error) {
+          return res.status(500).json({ message: "Error updating train schedule", error });
+      }
+      if (result.affectedRows === 0) {
+          return res.status(404).json({ message: "Train schedule not found" });
+      }
+      res.status(200).json({ message: "Train schedule updated successfully" });
+  });
+},
+
+// Backend code for updating order status
+updateOrderStatus: (req, res) => {
+  const { orderId } = req.params;
+  const { status } = req.body; // Expects { status: 'Shipped' }
+
+  const sqlUpdate = "UPDATE orders SET status = ? WHERE order_ID = ?";
+  db.query(sqlUpdate, [status, orderId], (error, result) => {
+      if (error) {
+          return res.status(500).json({ message: "Error updating order status", error });
+      }
+      res.status(200).json({ message: "Order status updated successfully" });
+  });
+},
+
+
+
+
+
+
+
+
+    scheduleTrip: async (req, res) => {
+      const { truck_ID, driver_ID, assistant_ID, store_ID, route_ID, start_time, end_time } = req.body;
+      if (!truck_ID || !driver_ID || !assistant_ID || !store_ID || !route_ID || !start_time) {
+          return res.status(400).send({ message: 'All fields are required.' });
+      }
+      try {
+          const currentDate = new Date().toISOString().split('T')[0]; // Get the current date in YYYY-MM-DD format
+          const formattedStartTime = `${currentDate} ${start_time}:00`;
+          const query = `INSERT INTO truck_schedule ( truck_ID, driver_ID, assistant_ID, store_ID, route_ID, start_time, end_time)
+          VALUES ( ?, ?, ?, ?, ?, ?, ?);`;
+          await db.promise().execute(query, [truck_ID, driver_ID, assistant_ID, store_ID, route_ID, formattedStartTime, null]);
+          res.status(200).send({ message: 'Trip scheduled successfully!' });
+      } catch (error) {
+          console.error('Error scheduling trip:', error);
+          res.status(500).send({ message: 'Failed to schedule trip', error: error.message });
+      }
+      }
+    };
+    
+    
+    
+    
+    module.exports = mainmanagerController;
+
 
   scheduleTrip: async (req, res) => {
     const { truck_ID, driver_ID, assistant_ID, store_ID, route_ID, start_time, end_time } = req.body;
@@ -297,9 +433,6 @@ const mainmanagerController = {
         res.status(500).send({ message: 'Failed to schedule trip', error: error.message });
     }
     }
-  };
-  
-  
-  
   
   module.exports = mainmanagerController;
+

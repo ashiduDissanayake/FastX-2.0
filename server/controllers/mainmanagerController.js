@@ -433,10 +433,6 @@ updateOrderStatus: (req, res) => {
         res.status(500).send({ message: 'Failed to schedule trip', error: error.message });
     }
     }
-  };
-  
-  
-  
   
   module.exports = mainmanagerController;
 

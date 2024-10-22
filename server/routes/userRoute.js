@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const cartController = require('../controllers/cartController')
+const cartController = require('../controllers/cartController');
+const productController = require('../controllers/productController');
 const authenticateToken = require('../middlewares/authMiddleware')
 
 
@@ -18,6 +19,7 @@ router.get('/getproduct/:id', userController.getProductById); // GET /user/getpr
 router.delete('/deleteproduct/:id', userController.deleteProduct); // DELETE /user/deleteproduct/:id - delete a product by id
 router.put('/updateproduct/:id', userController.updateProduct); // PUT /user/updateproduct/:id - update a product by id
 router.get('/getcategoryproducts', userController.getcategoryProducts);
+router.get('/products/:criteria', productController.getProducts);
 
 // Accesing Cart Routes
 router.get('/getcart', authenticateToken, cartController.getCart);

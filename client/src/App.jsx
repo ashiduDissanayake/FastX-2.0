@@ -12,7 +12,7 @@ import Shop from "./pages/Shop";
 import Store from "./Main Manager/pages/Store";
 import TrainSchedule from "./Main Manager/pages/TrainSchedule";
 import Orders from "./Main Manager/pages/Orders";
-
+import ProtectedRoute from "./layouts/ProtectedLayout";
 import AdminDashboard from "../src/components/Admin/pages/AdminDashboard";
 import Driver from "../src/components/Admin/pages/Driver";
 import Profile from "../src/components/Admin/pages/Profile";
@@ -28,7 +28,7 @@ import ViewOrders from "./Manager/pages/ViewOrders";
 import ProductDetail from "./components/ProductDetail";
 import SelectRoute from "./components/SelectRoute";
 import UserProfile from "./pages/UserProfile";
-import Orders from "./pages/Orders";
+import OrdersDetails from "./pages/Orders";
 import Mainmanagerlogin from "./MainManager/Mainmanagerlogin";
 import MainManagerDashboard from "./MainManager/MainManagerDashboard";
 
@@ -125,7 +125,7 @@ function App() {
               path="/orders"
               element={
                 <ProtectedRoute>
-                  <Orders />
+                  <OrdersDetails />
                 </ProtectedRoute>
               }
             />

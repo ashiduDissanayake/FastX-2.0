@@ -10,8 +10,8 @@ const FinishedTrips = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [activePage, setActivePage] = useState("Finished Trips");
+  const [hasClicked, setHasClicked] = useState(false); // Track button click
 
-  // Load stores for the dropdown when the component mounts
   useEffect(() => {
     const fetchStores = async () => {
       try {
@@ -29,35 +29,35 @@ const FinishedTrips = () => {
 
   const handleStoreIDChange = (e) => {
     setStoreID(e.target.value);
-    setTrips([]); // Clear previous trips when the store changes
-    setErrorMessage(""); // Clear any previous error message
   };
 
   const fetchTrips = async () => {
     if (!storeID) {
       setErrorMessage("Please select a valid Store.");
-      setTrips([]); // Clear trips if no valid store is selected
       return;
     }
 
-    setLoading(true); // Set loading state
+    setHasClicked(true); // Set button click state to true
+    setLoading(true); // Start loading
+    setTrips([]); // Clear previous trips to avoid showing outdated results
+    setErrorMessage(""); // Clear previous error messages
+
     try {
       const response = await axios.get(
         `http://localhost:8080/manager/getfinishedtrips/${storeID}`
       );
       if (response.data.length === 0) {
-        setErrorMessage(""); // Clear previous error messages
-        setTrips([]); // Clear trips if no finished trips found
+        // Set error message if no trips are found
+        setErrorMessage(`No finished trips found for Store ID: ${storeID}`);
+        setTrips([]);
       } else {
         setErrorMessage(""); // Clear error message if trips are found
         setTrips(response.data);
       }
     } catch (error) {
-      setErrorMessage("Error fetching trips. Please try again.");
-      console.error("Error fetching trips:", error);
-      setTrips([]); // Clear trips on error
+      setErrorMessage("");
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false); // End loading
     }
   };
 
@@ -138,7 +138,7 @@ const FinishedTrips = () => {
               </div>
             </div>
           ) : (
-            storeID && ( // Only show the message if a store has been selected
+            hasClicked && !loading && ( // Show message only if button is clicked and no trips found
               <p className="text-red-600 mt-4">
                 No finished trips found for Store ID: {storeID}
               </p>

@@ -121,8 +121,8 @@ const managerController = {
         console.log('Query result:', rows); // Log the result from the stored procedure
 
         // Check if login was successful
-        if (rows.length > 0 && rows[0].message === 'Successful login') {
-            const manager_ID = rows[0].manager_id;
+        if (rows.length > 0 && rows[0].login_message === 'Login successful') {
+            const manager_ID = rows[0].ManagerID;
 
             // Generate a JWT token
             const token = jwt.sign(

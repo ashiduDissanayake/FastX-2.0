@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mainmanagerController = require('../controllers/mainmanagerController');
+
 // User routes
 router.get('/getdriver/:storeId', mainmanagerController.getDriver);         
 router.get('/getdriverassistant/:storeId', mainmanagerController.getDriverAssistant);      
@@ -15,5 +16,9 @@ router.get('/getTrainCapacity/:storeId', mainmanagerController.getTrainCapacity)
 // router.put("/updateTrainSchedule", mainmanagerController.updateTrainSchedule);
 router.put('/updateTrainSchedule', mainmanagerController.updateTrainSchedule);
 router.put('/updateOrderStatus/:orderId', mainmanagerController.updateOrderStatus);
+router.post('/mainmanagerlogin', mainmanagerController.mainManagerLogin);
 // router.get('//:storeId', mainmanagerController.getDriver);
 module.exports = router;
+
+
+

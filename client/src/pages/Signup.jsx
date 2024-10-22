@@ -1,179 +1,229 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { User, Mail, Phone, Lock, ShoppingBag } from "lucide-react";
+import { useAuth } from '../context/AuthContext';
 
 const SignUpForm = () => {
-  // State for form fields and error messages
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [userType, setUserType] = useState('user'); // default user type
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: "",
+    username: "",
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    userType: "Retail",
+    password: "",
+    confirmPassword: "",
+  });
   const [errors, setErrors] = useState({});
+  const { login } = useAuth();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Reset error messages
     setErrors({});
-
-    // Simple client-side validation
-    const newErrors = {};
-    if (!email) newErrors.email = 'Email is required';
-    if (!username) newErrors.username = 'Username is required';
-    if (!firstName) newErrors.firstName = 'First name is required';
-    if (!lastName) newErrors.lastName = 'Last name is required';
-    if (!phoneNumber) newErrors.phoneNumber = 'Phone number is required';
-    if (!password) newErrors.password = 'Password is required';
-    if (password !== confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return; // Stop submission if there are errors
+    if (formData.password !== formData.confirmPassword) {
+      setErrors({ confirmPassword: "Passwords do not match" });
+      return;
     }
 
     try {
-      const res = await fetch('/api/user/signup', { // Adjusted API endpoint
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, username, password, firstName, lastName, phoneNumber, userType }),
+      const res = await fetch("http://localhost:8080/user/signup", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
       const data = await res.json();
-      console.log(data);
 
-      // Handle errors returned from the server
       if (data.errors) {
         setErrors(data.errors);
       }
 
-      // Redirect to homepage on successful registration
       if (data.user) {
-        window.location.assign('/');
+        // After successful sign up, clear or create the cart in local storage
+        localStorage.setItem("cart", JSON.stringify([])); // Initialize empty cart
+        login();
+        window.location.assign("/");
       }
     } catch (err) {
       console.error(err);
     }
   };
 
+  const inputClasses =
+    "w-full bg-black/30 border-b-2 border-pink-300 py-2 px-4 focus:outline-none focus:border-pink-500 transition-colors duration-300 text-white";
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h2 className="text-2xl font-bold mb-4">Sign Up</h2>
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded px-8 py-6 mb-4 w-96"
+    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 flex items-center justify-center px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-black/80 p-8 rounded-lg shadow-2xl w-full max-w-md"
       >
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-          Email
-        </label>
-        <input
-          type="email"
-          name="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <div className="text-red-500 text-sm mb-2">{errors.email}</div>
+        <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-rose-400 mb-6 text-center">
+          Join VogueNest
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label
+              className="text-sm font-medium text-pink-300 flex items-center"
+              htmlFor="email"
+            >
+              <Mail className="mr-2" size={18} />
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className={inputClasses}
+              required
+            />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+            )}
+          </div>
 
-        <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-          Username
-        </label>
-        <input
-          type="text"
-          name="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <div className="text-red-500 text-sm mb-2">{errors.username}</div>
+          <div>
+            <label
+              className="text-sm font-medium text-pink-300 flex items-center"
+              htmlFor="username"
+            >
+              <User className="mr-2" size={18} />
+              Username
+            </label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className={inputClasses}
+              required
+            />
+            {errors.username && (
+              <p className="text-red-500 text-xs mt-1">{errors.username}</p>
+            )}
+          </div>
 
-        <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
-          First Name
-        </label>
-        <input
-          type="text"
-          name="firstName"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <div className="text-red-500 text-sm mb-2">{errors.firstName}</div>
+          <div className="flex space-x-4">
+            <div className="flex-1">
+              <label
+                className="text-sm font-medium text-pink-300"
+                htmlFor="firstName"
+              >
+                First Name
+              </label>
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                className={inputClasses}
+                required
+              />
+            </div>
+            <div className="flex-1">
+              <label
+                className="text-sm font-medium text-pink-300"
+                htmlFor="lastName"
+              >
+                Last Name
+              </label>
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                className={inputClasses}
+                required
+              />
+            </div>
+          </div>
 
-        <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
-          Last Name
-        </label>
-        <input
-          type="text"
-          name="lastName"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <div className="text-red-500 text-sm mb-2">{errors.lastName}</div>
+          <div>
+            <label
+              className="text-sm font-medium text-pink-300 flex items-center"
+              htmlFor="phoneNumber"
+            >
+              <Phone className="mr-2" size={18} />
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              className={inputClasses}
+              required
+            />
+          </div>
 
-        <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-2">
-          Phone Number
-        </label>
-        <input
-          type="tel"
-          name="phoneNumber"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <div className="text-red-500 text-sm mb-2">{errors.phoneNumber}</div>
+          <div>
+            <label
+              className="text-sm font-medium text-pink-300 flex items-center"
+              htmlFor="password"
+            >
+              <Lock className="mr-2" size={18} />
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className={inputClasses}
+              required
+            />
+          </div>
 
-        <label htmlFor="userType" className="block text-sm font-medium text-gray-700 mb-2">
-          User Type
-        </label>
-        <select
-          name="userType"
-          value={userType}
-          onChange={(e) => setUserType(e.target.value)}
-          className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
-        </select>
+          <div>
+            <label
+              className="text-sm font-medium text-pink-300 flex items-center"
+              htmlFor="confirmPassword"
+            >
+              <Lock className="mr-2" size={18} />
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className={inputClasses}
+              required
+            />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.confirmPassword}
+              </p>
+            )}
+          </div>
 
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-          Password
-        </label>
-        <input
-          type="password"
-          name="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <div className="text-red-500 text-sm mb-2">{errors.password}</div>
-
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-          Confirm Password
-        </label>
-        <input
-          type="password"
-          name="confirmPassword"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          className="shadow-sm border border-gray-300 rounded-md w-full py-2 px-3 text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-        <div className="text-red-500 text-sm mb-2">{errors.confirmPassword}</div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded"
-        >
-          Sign Up
-        </button>
-      </form>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            type="submit"
+            className="w-full bg-gradient-to-r from-pink-400 to-rose-500 text-white font-bold py-3 px-4 rounded-full transition duration-300 flex items-center justify-center"
+          >
+            <ShoppingBag className="mr-2" size={18} />
+            Create Account
+          </motion.button>
+        </form>
+        <p className="mt-4 text-center text-sm text-pink-200">
+          Already have an account?{" "}
+          <a
+            href="/login"
+            className="font-medium text-pink-400 hover:text-pink-500 transition"
+          >
+            Sign in
+          </a>
+        </p>
+      </motion.div>
     </div>
   );
 };

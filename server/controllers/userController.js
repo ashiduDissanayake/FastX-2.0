@@ -1,8 +1,10 @@
 const User = require("../models/userModel");
 const Product = require("../models/productModel");
+const Cart = require("../models/cartModel")
+const Order = require("../models/orderModel");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const { get } = require("../routes/userRoute");
+const db = require("../config/db");
 
 // dotenv config
 dotenv.config();
@@ -23,7 +25,7 @@ const handleErrors = (err) => {
   }
 
   // duplicate email error
-  if (err.message === "email already registered") {
+  if (err.message === "Email already registered") {
     errors.email = "that email is already registered";
     return errors;
   }
@@ -57,48 +59,55 @@ const userController = {
       email,
       username,
       password,
-      firstname,
-      lastname,
-      phonenumber,
-      type,
+      firstName,
+      lastName,
+      phoneNumber,
+      userType,
     } = req.body;
 
-    // Call the create function from the user model
-    User.create(
-      { email, username, password, firstname, lastname, phonenumber, type },
-      (err, result) => {
-        if (err) {
-          const errors = handleErrors(err);
-          return res.status(400).json({ errors });
-        }
+    try {
+      // Call the create function from the user model
+      const userId = await User.create({
+        email,
+        username,
+        password,
+        firstName,
+        lastName,
+        phoneNumber,
+        userType,
+      });
 
-        // Assuming your stored procedure returns the user ID
-        const userId = result;
+      // Create JWT token after user is created
+      const token = createToken(userId);
+      res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
 
-        // Create JWT token
-        const token = createToken(userId);
-        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-        res.status(201).json({ user: userId });
-      }
-    );
+      res.status(201).json({ user: userId });
+    } catch (err) {
+      const errors = handleErrors(err);
+      return res.status(400).json({ errors });
+    }
   },
 
-  // Login user
-  loginUser: (req, res) => {
+  // loginUser: async function with Promises
+  loginUser: async (req, res) => {
     const { email, password } = req.body;
 
-    User.login(email, password, (err, user) => {
-      if (err) {
-        const errors = handleErrors(err);
-        return res.status(400).json({ errors }); // Send the error response
-      }
+    try {
+      // Attempt to login the user by calling User.login which returns a promise
+      const user = await User.login(email, password);
 
       // Create JWT token
-      console.log(user);
       const token = createToken(user.customer_ID);
+
+      // Set the token as an HTTP-only cookie
       res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-      res.status(200).json({ user: user.customer_ID }); // Send user ID in response
-    });
+
+      // Respond with the user ID
+      res.status(200).json({ user: user.customer_ID });
+    } catch (err) {
+      const errors = handleErrors(err);
+      return res.status(400).json({ errors }); // Send error response
+    }
   },
 
   // Check Auth
@@ -112,29 +121,148 @@ const userController = {
     });
   },
 
-  // Logout user
-  logoutUser: (req, res) => {
-    res.cookie("jwt", "", { maxAge: 1 });
-    res.redirect("/");
+  // Logout user and save cart
+  logoutUser: async (req, res) => {
+    const { cartItems } = req.body; // Get cart items from the request body
+    const userId = req.user.id; // Assuming the user ID is available in req.user
+
+    try {
+      // If cartItems are provided, save them using the model
+      if (Array.isArray(cartItems) && cartItems.length > 0) {
+        // Save each cart item using the stored procedure via the model
+        for (const item of cartItems) {
+          const { productId, quantity } = item;
+          await Cart.saveCartItem(userId, productId, quantity); // Call the model function
+        }
+      }
+
+      // Clear the JWT cookie to log out the user
+      res.cookie("jwt", "", { maxAge: 1 });
+
+      // Send success response
+      res.status(200).json({ message: "Cart saved and user logged out" });
+    } catch (err) {
+      console.error("Error during logout and cart save:", err);
+      res.status(500).json({ error: "Failed to save cart or log out user" });
+    }
   },
 
-  // Get all products
+  getProfile: async (req, res) => {
+    db.query(
+      "SELECT customer_ID, email, username, first_name, last_name, phone_number, type FROM Customer WHERE customer_ID = ?",
+      [req.user.id],
+      (error, results) => {
+        if (error) {
+          console.error("Detailed error:", error); // Log the full error object
+          return res.status(500).json({
+            message: "Error fetching user profile",
+            error: error.message,
+          });
+        }
+
+        if (results.length > 0) {
+          res.json(results[0]);
+        } else {
+          res.status(404).json({ message: "User not found" });
+        }
+      }
+    );
+  },
+
+  updateProfile: async (req, res) => {
+    const { email, username, first_name, last_name, phone_number } = req.body;
+    db.query(
+      "UPDATE Customer SET email = ?, username = ?, first_name = ?, last_name = ?, phone_number = ? WHERE customer_ID = ?",
+      [email, username, first_name, last_name, phone_number, req.user.id],
+
+      (error, results) => {
+        if (error) {
+          console.error("Detailed error:", error); // Log the full error object
+        }
+
+        res.json(results);
+      }
+    );
+  },
+
+  getOrders: (req, res) => {
+    const customerId = req.user.id;
+
+    return new Promise((resolve, reject) => {
+      db.query(
+        `SELECT 
+          o.order_id, o.order_date, o.status, o.total_amount,
+          p.product_Name, p.image_link, oi.quantity, oi.price
+        FROM \`Order\` o
+        JOIN OrderItem oi ON o.order_id = oi.order_id
+        JOIN Product p ON oi.product_id = p.product_ID
+        WHERE o.customer_id = ?
+        ORDER BY o.order_date DESC`,
+        [customerId],
+        (error, results) => {
+          if (error) {
+            return reject(error);
+          }
+          resolve(results);
+        }
+      );
+    })
+      .then((orders) => {
+        const groupedOrders = orders.reduce((acc, order) => {
+          const {
+            order_id,
+            order_date,
+            status,
+            total_amount,
+            product_Name,
+            image_link,
+            quantity,
+            price,
+          } = order;
+
+          if (!acc[order_id]) {
+            acc[order_id] = {
+              order_id,
+              order_date,
+              status,
+              total_amount,
+              items: [],
+            };
+          }
+
+          acc[order_id].items.push({
+            product_Name,
+            image_link,
+            quantity,
+            price,
+          });
+
+          return acc;
+        }, {});
+
+        res.status(200).json(Object.values(groupedOrders));
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).json({ message: "Error retrieving orders" });
+      });
+  },
   // Get all products with error handling
-  getAllProducts: (req, res) => {
-    Product.getAllProducts((err, products) => {
-      if (err) {
-        // Handle database or other errors
-        return res.status(500).json({ error: err.message || "Database error" });
+  getAllProducts: async (req, res) => {
+    const search = req.query.search || "";
+    const category = req.query.category || "";
+
+    try {
+      const results = await Product.getAllProducts(search, category);
+
+      if (results.length === 0) {
+        return res.json({ message: "No products found" });
       }
 
-      if (!products) {
-        // Handle the case where no products are available
-        return res.status(404).json({ message: "No products found" });
-      }
-
-      // If everything is fine, return the products
-      res.json(products);
-    });
+      return res.json(results);
+    } catch (err) {
+      return res.status(500).json({ error: "Database query error" });
+    }
   },
 
   // Post a product
@@ -169,12 +297,10 @@ const userController = {
       isNaN(volume) ||
       isNaN(available_Qty)
     ) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Price, weight, volume, and available quantity must be valid numbers",
-        });
+      return res.status(400).json({
+        error:
+          "Price, weight, volume, and available quantity must be valid numbers",
+      });
     }
 
     // Call the create function from the Product model with all necessary parameters
@@ -202,13 +328,13 @@ const userController = {
 
   // Get product by ID
   getProductById: (req, res) => {
-    const productId = req.params.id;
-    Product.findById(productId, (err, product) => {
+    const { id } = req.params;
+    Product.getProductById(id, (err, product) => {
       if (err) {
-        return res.status(500).json({ error: "Database error" });
+        return res.status(500).json({ error: "Server error" });
       }
       if (!product) {
-        return res.status(404).json({ message: "Product not found" });
+        return res.status(404).json({ error: "Product not found" });
       }
       res.json(product);
     });
@@ -217,6 +343,7 @@ const userController = {
   // Delete product
   deleteProduct: (req, res) => {
     const productId = req.params.id;
+    console.log(productId);
     Product.delete(productId, (err, result) => {
       if (err) {
         return res.status(500).json({ error: "Database error" });
@@ -237,15 +364,20 @@ const userController = {
     });
   },
 
+  async getcategoryProducts(req, res) {
+    const { search, category } = req.query; // Extract query parameters
 
-
-
-
-
-
-
-
-
+    try {
+      const products = await ProductModel.getcategoryProducts(
+        search || "",
+        category || ""
+      );
+      res.status(200).json(products);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Error retrieving products" });
+    }
+  },
 
   // Get all users
   getUsers: (req, res) => {
@@ -293,6 +425,43 @@ const userController = {
       res.json({ message: "User deleted" });
     });
   },
+
+  // Payment
+  payment: async (req, res) => {
+    const { amount } = req.body;
+
+    // Call the payment function from the model
+    const { status, transactionId } = await User.payment(amount);
+
+    if (status === "success") {
+      res.json({ status, transactionId });
+    } else {
+      res.status(400).json({ status });
+    }
+  },
+
+  // Place order
+  placeOrder: async (req, res) => {
+    const { route_ID, store_ID, cartItems } = req.body; // Get cart items from local storage
+    
+    const userId = req.user.id; // Authenticated user ID from the token
+
+    try {
+        // Check if cart has items
+        if (!cartItems || cartItems.length === 0) {
+            return res.status(400).json({ error: 'Cart is empty' });
+        }
+
+        // Start the order process, use stored procedures for DB interactions
+        const result = await Order.placeOrder(userId, route_ID, store_ID, cartItems);
+
+        // Return success message and order ID
+        return res.status(200).json({ success: true, orderId: result.orderId });
+    } catch (err) {
+        console.error('Order placement failed:', err);
+        return res.status(500).json({ error: 'Failed to place order' });
+    }
+},
 };
 
 module.exports = userController;

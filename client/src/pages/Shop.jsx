@@ -41,7 +41,7 @@ const Shop = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://localhost:8080/user/${activeTab === 'new' ? 'new_arrivals' : 'trending'}?limit=8`,
+        `http://localhost:8080/user/${activeTab === 'new' ? 'new_arrivals' : 'trending'}?limit=100`,
         {
           credentials: "include",
           headers: {
@@ -65,7 +65,7 @@ const Shop = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://localhost:8080/user/filter?category=${selectedCategory}&subcategory=${selectedSubCategory}&minPrice=${priceRange[0]}&maxPrice=${priceRange[1]}&sortBy=${sortBy}&limit=8`,
+        `http://localhost:8080/user/filter?category=${selectedCategory}&subcategory=${selectedSubCategory}&minPrice=${priceRange[0]}&maxPrice=${priceRange[1]}&sortBy=${sortBy}&limit=100`,
         {
           credentials: "include",
           headers: {

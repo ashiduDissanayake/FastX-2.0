@@ -88,7 +88,7 @@ export default function CategoryView() {
               Up to 50% off on our best summer styles.
             </p>
             <Link
-              to="/shop/summer"
+              to="/shop"
               className="mt-6 inline-block px-6 py-2 bg-white text-pink-500 rounded-full font-medium hover:bg-gray-100 transition"
             >
               Shop Now
@@ -100,7 +100,7 @@ export default function CategoryView() {
               Discover the latest trends in fashion.
             </p>
             <Link
-              to="/shop/new"
+              to="/shop"
               className="mt-6 inline-block px-6 py-2 bg-pink-500 text-white rounded-full font-medium hover:bg-pink-600 transition"
             >
               Explore
@@ -112,7 +112,7 @@ export default function CategoryView() {
               Limited time offers on best-selling products.
             </p>
             <Link
-              to="/shop/flash-sale"
+              to="/shop"
               className="mt-6 inline-block px-6 py-2 bg-white text-pink-500 rounded-full font-medium hover:bg-gray-100 transition"
             >
               Grab Now

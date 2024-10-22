@@ -8,6 +8,8 @@ const bodyParser=require('body-parser');
 // Import the routes
 const userRoutes = require('./routes/userRoute');
 const managerRoutes = require('./routes/managerRoute');
+const mainmanagerRoutes = require('./routes/mainmanagerRoute');
+
 
 // dotenv config
 dotenv.config();
@@ -51,7 +53,8 @@ const port = process.env.PORT;
 //Routes
 // User routes
 app.use('/user', userRoutes);
-app.use('/manager', managerRoutes)
+app.use('/manager', managerRoutes);
+app.use('/mainmanager', mainmanagerRoutes)
 
 // Root route (for testing)
 app.get('/', (req, res) => {

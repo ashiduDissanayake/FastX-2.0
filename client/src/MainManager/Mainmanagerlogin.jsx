@@ -14,10 +14,16 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:8080/mainmanager/mainmanagerlogin', {
-                username,
-                password,
-            });
+            const response = await axios.post(
+                'http://localhost:8080/mainmanager/mainmanagerlogin', 
+                {
+                    username,
+                    password,
+                }, 
+                {
+                    withCredentials: true, // This includes credentials like cookies in the API call
+                }
+            );
 
             if (response.data.message === 'Login successful') {
                 setMainManagerId(response.data.mainmanager_id);

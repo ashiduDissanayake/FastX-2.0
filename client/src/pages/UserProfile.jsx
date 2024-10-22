@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Package, Brain, Rocket, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 // Simulated AR/VR integration
@@ -25,59 +25,9 @@ const FuturisticButton = ({ children, onClick }) => (
   </motion.button>
 );
 
-// Holographic Order Display
-const HolographicOrder = ({ order }) => {
-  const stages = ['Pending','Processing','Shipped','In Branch','Delivered'];
-  const currentStageIndex = stages.indexOf(order.status);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -50 }}
-      className="bg-black bg-opacity-50 backdrop-blur-lg rounded-xl p-6 text-white mb-8"
-    >
-      <div className="flex justify-between items-center mb-4">
-      </div>
-      <div className="flex items-center space-x-6 mb-6">
-        <div className="relative w-32 h-32">
-          <img src={order.image_link} alt={order.product_Name} className="w-full h-full object-cover rounded-lg" />
-          <div className="absolute inset-0 bg-gradient-to-tr from-purple-500 to-pink-500 opacity-30 rounded-lg"></div>
-        </div>
-        <div>
-          <p className="text-xl font-semibold">{order.product_Name}</p>
-          <p>Quantity: {order.quantity}</p>
-          <p>Price: ${parseFloat(order.price).toFixed(2)}</p>
-        </div>
-      </div>
-      <div className="flex items-center justify-between">
-        {stages.map((stage, index) => (
-          <div key={stage} className="flex flex-col items-center">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: index <= currentStageIndex ? 1 : 0.5 }}
-              className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                index <= currentStageIndex ? 'bg-gradient-to-r from-purple-500 to-pink-500' : 'bg-gray-600'
-              }`}
-            >
-              {index === 0 && <Package size={30} />}
-              {index === 1 && <Brain size={30} />}
-              {index === 2 && <Rocket size={30} />}
-              {index === 3 && <Zap size={30} />}
-              {index === 4 && <Sparkles size={30} />}
-            </motion.div>
-            <p className="text-xs mt-2">{stage}</p>
-          </div>
-        ))}
-      </div>
-    </motion.div>
-  );
-};
-
-// Main UserProfile Component
+// Main UserProfile Component (Without Order Details)
 const UserProfile = () => {
   const [profile, setProfile] = useState(null);
-  const [orders, setOrders] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState(null);
   const { auth, loading } = useAuth();
@@ -85,7 +35,6 @@ const UserProfile = () => {
   useEffect(() => {
     if (auth && !loading) {
       fetchProfile();
-      fetchOrders();
     }
   }, [auth, loading]);
 
@@ -96,15 +45,6 @@ const UserProfile = () => {
       setEditedProfile(response.data); // Initialize editedProfile with the current profile data
     } catch (error) {
       console.error('Error fetching profile:', error);
-    }
-  };
-
-  const fetchOrders = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/user/orders', { withCredentials: true });
-      setOrders(response.data);
-    } catch (error) {
-      console.error('Error fetching orders:', error);
     }
   };
 
@@ -157,7 +97,7 @@ const UserProfile = () => {
           </div>
 
           <div className="mb-8 flex justify-between items-center">
-            <h2 className="text-3xl font-bold">Order History</h2>
+            <h2 className="text-3xl font-bold">Profile Information</h2>
             <div className="flex space-x-4">
               <FuturisticButton onClick={() => setIsEditing(!isEditing)}>
                 {isEditing ? 'Cancel' : 'Edit Profile'}
@@ -213,13 +153,7 @@ const UserProfile = () => {
                 <FuturisticButton type="submit">Save Changes</FuturisticButton>
               </div>
             </form>
-          ) : (
-            <AnimatePresence>
-              {orders.map((order) => (
-                <HolographicOrder key={order.cart_ID} order={order} />
-              ))}
-            </AnimatePresence>
-          )}
+          ) : null}
         </motion.div>
       </div>
     </ARVRIntegration>

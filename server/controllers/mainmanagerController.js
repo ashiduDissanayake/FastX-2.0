@@ -176,7 +176,6 @@ const mainmanagerController = {
             // Set the token as an HTTP-only cookie (more secure)
             res.cookie('token', token, {
                 httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-                secure: process.env.NODE_ENV === 'production', // Use secure cookies in production (HTTPS)
                 maxAge: 3600000, // 1 hour in milliseconds
             });
 

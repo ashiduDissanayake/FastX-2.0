@@ -31,6 +31,7 @@ import UserProfile from "./pages/UserProfile";
 import OrdersDetails from "./pages/Orders";
 import Mainmanagerlogin from "./MainManager/Mainmanagerlogin";
 import MainManagerDashboard from "./MainManager/MainManagerDashboard";
+import ProductAdder from "./pages/ProductAdder";
 
 function App() {
   return (
@@ -67,7 +68,7 @@ function App() {
             <Route path="/maindashboard" element={<MainHome/>} />
             <Route path="/store" element={<Store/>} />
             <Route path="/trainschedule" element={<TrainSchedule/>} />
-            <Route path="/orders" element={<Orders/>} />
+            <Route path="/mainmanager-orders" element={<Orders/>} />
               
             {/* Manager Route */}
             <Route path="/manager-dashboard" element={<ManagerDashBoard />} />
@@ -80,55 +81,14 @@ function App() {
             
 
             {/* Other routes */}
-            <Route
-              path="/"
-              element={
-                <PublicRoute>
-                  <Home />
-                </PublicRoute>
-              }
-            />
+            <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
+            <Route path="/shop" element={<PublicRoute><Shop /></PublicRoute>} />
+            <Route path="/product/:productId" element={<PublicRoute><ProductDetail /></PublicRoute>} />
+            <Route path="/placeorder" element={<PublicRoute><SelectRoute /></PublicRoute>} />
+            <Route path="/profile" element={<PublicRoute><UserProfile /></PublicRoute>} />
+            <Route path="/orders" element={<PublicRoute><OrdersDetails /></PublicRoute>} />
+            <Route path="/imageupload" element={<PublicRoute><ProductAdder /></PublicRoute>} />
 
-            <Route
-              path="/shop"
-              element={
-                <PublicRoute>
-                  <Shop />
-                </PublicRoute>
-              }
-            />
-            <Route
-              path="/product/:productId"
-              element={
-                <ProtectedRoute>
-                  <ProductDetail />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/placeorder"
-              element={
-                <ProtectedRoute>
-                  <SelectRoute />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <UserProfile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/orders"
-              element={
-                <ProtectedRoute>
-                  <OrdersDetails />
-                </ProtectedRoute>
-              }
-            />
           </Routes>
         </Router>
       </AuthProvider>

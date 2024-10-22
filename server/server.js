@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const db = require('./config/db');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const multer = require('multer');
+const path = require('path');
 
 // Import the routes
 const userRoutes = require('./routes/userRoute');
@@ -33,6 +35,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors(corsOptions));
 // Middleware to parse incoming JSON requests
 app.use(express.json());
+
+// Multer Middleware
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, '../client/public/products')); // Path to save the file
+  },
+  filename: function (req, file, cb) {
+    cb(null, `${Date.now()}_${file.originalname}`); // Unique filename
+  },
+});
+
+const upload = multer({ storage: storage });
 
 // Connect to MySQL database
 db.connect((err) => {
@@ -64,7 +78,77 @@ app.get('/', (req, res) => {
   res.send('Welcome to the Express App!');
 });
 
+// Upload route
+app.post('/upload', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).send('No file uploaded.');
+  }
+
+  const filePath = `/products/${req.file.filename}`; // Relative path to the uploaded file
+  res.json({ filePath }); // Send the file path to the frontend
+});
+
 // Updated Login Route: Use the existing database connection
+app.post('/admin/addProduct', (req, res) => {
+  const {
+    productName,
+    price,
+    weight,
+    volume,
+    availableQty,
+    description,
+    category,
+    subcategory,
+    image_link
+  } = req.body;
+
+  // SQL query to insert a new product into the Product table
+  const query = `
+    INSERT INTO Product (
+      product_Name,
+      price,
+      weight,
+      volume,
+      available_Qty,
+      description,
+      category,
+      subcategory,
+      image_link,
+      created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+  `;
+
+  // Data values to be inserted
+  const values = [
+    productName,
+    price,
+    weight,
+    volume,
+    availableQty,
+    description,
+    category,
+    subcategory,
+    image_link
+  ];
+
+  // Return the database query as a promise
+  return new Promise((resolve, reject) => {
+    db.query(query, values, (error, result) => {
+      if (error) {
+        reject(error);  // If there's an error, reject the promise
+      } else {
+        resolve(result);  // If successful, resolve the promise with the result
+      }
+    });
+  })
+    .then(() => {
+      res.status(200).json({ message: 'Product added successfully!' });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).json({ message: 'Failed to add product', error: error.message });
+    });
+});
 
 
 // Start the server

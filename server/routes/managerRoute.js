@@ -4,10 +4,9 @@ const managerController = require('../controllers/managerController');
 
 // Manager routes
 router.post("/signup", managerController.createManager); // POST /manager/signup - sign up the manager
-router.post("/login", managerController.loginManager); // POST /manager/login - login the manager
+router.post("/managerlogin", managerController.loginManager); // POST /manager/login - login the manager
 router.post("/logout", managerController.logoutManager); // GET /manager/logout - logout the manager
 router.get("/check-auth", managerController.checkAuth); // GET /manager/check-auth - check if the manager is authenticated
-
 
 router.get('/getdriver/:storeId', managerController.getDriverByStoreId);         
 router.get('/getdriverassistant/:storeId', managerController.getDriverAssistant);      

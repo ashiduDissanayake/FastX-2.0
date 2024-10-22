@@ -25,6 +25,10 @@ import Cart from "./pages/Cart";
 import ActiveTrips from "./Manager/pages/ActiveTrips";
 import FinishedTrips from "./Manager/pages/FinishedTrips";
 import ViewOrders from "./Manager/pages/ViewOrders";
+import Login from "./Manager/pages/ManagerLogin";
+
+
+
 import ProductDetail from "./components/ProductDetail";
 import SelectRoute from "./components/SelectRoute";
 import UserProfile from "./pages/UserProfile";
@@ -32,6 +36,7 @@ import OrdersDetails from "./pages/Orders";
 import Mainmanagerlogin from "./MainManager/Mainmanagerlogin";
 import MainManagerDashboard from "./MainManager/MainManagerDashboard";
 import ProductAdder from "./pages/ProductAdder";
+
 
 function App() {
   return (
@@ -76,6 +81,7 @@ function App() {
             <Route path="/manager-schedule-trip" element={<ScheduleTrip />} />
             <Route path="/manager-active-trips" element={<ActiveTrips />} />
             <Route path="/manager-finished-trips" element={<FinishedTrips />} />
+            <Route path="/manager-login" element={<Login/>}/>
             <Route path="/mainmanager-login" element={<Mainmanagerlogin />} />
             <Route path="/mainmanager-dashboard" element={<MainManagerDashboard />} />
             

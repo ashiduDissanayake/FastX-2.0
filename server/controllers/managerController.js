@@ -106,21 +106,50 @@ const managerController = {
   },
 
   // Login user
-  loginManager: (req, res) => {
-    const { email, password } = req.body;
+ loginManager :(req, res) => {
+    const { username, password } = req.body;
+    console.log('Login attempt:', { username, password });
 
-    Manager.login(email, password, (err, user) => {
-      if (err) {
-        const errors = handleErrors(err);
-        return res.status(400).json({ errors }); // Send the error response
-      }
-      // Create JWT token
-      const token = createToken(user.customer_ID);
-      res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-      res.status(200).json({ user: user.customer_ID }); // Send user ID in response
+    // Call the model to interact with the database
+    Manager.login(username, password, (err, result) => {
+        if (err) {
+            console.error('Error during login:', err);
+            return res.status(500).json({ message: 'Error occurred during login' });
+        }
+
+        const rows = result[0];
+        console.log('Query result:', rows); // Log the result from the stored procedure
+
+        // Check if login was successful
+        if (rows.length > 0 && rows[0].message === 'Successful login') {
+            const manager_ID = rows[0].manager_id;
+
+            // Generate a JWT token
+            const token = jwt.sign(
+                { manager_ID, username },
+                process.env.SECRET,
+                { expiresIn: '1h' }
+            );
+
+            res.cookie('managertoken', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 3600000,
+            });
+
+            return res.status(200).json({
+                message: 'Login successful',
+                manager_ID,
+                token,
+            });
+        } else {
+            console.log('Login failed:', rows[0] ? rows[0].message : 'Incorrect credentials'); // Log the failure
+            return res.status(401).json({
+                message: rows[0] ? rows[0].message : 'Login failed: Incorrect username or password',
+            });
+        }
     });
-  },
-
+},
   // Check Auth
   checkAuth: (req, res) => {
     const token = req.cookies.jwt; // Get the token from cookies

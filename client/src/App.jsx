@@ -5,8 +5,6 @@ import Home from "./pages/Home";
 import LoginForm from "./pages/Login";
 import SignUpForm from "./pages/Signup";
 import { AuthProvider } from "./context/AuthContext";
-import ManagerDashBoard from "./Manager/pages/ManagerDashBoard";
-import ScheduleTrip from "./Manager/pages/ScheduleTrip";
 import Shop from "./pages/Shop";
 
 import AdminDashboard from "../src/components/Admin/pages/AdminDashboard";
@@ -18,16 +16,20 @@ import Manager from "../src/components/Admin/pages/Manager";
 import Report from "../src/components/Admin/pages/Report";
 
 import Cart from "./pages/Cart";
-// import ActiveTrips from "./Manager/components/";
 import ActiveTrips from "./Manager/pages/ActiveTrips";
 import FinishedTrips from "./Manager/pages/FinishedTrips";
 import ViewOrders from "./Manager/pages/ViewOrders";
+import Login from "./Manager/pages/ManagerLogin";
+import ManagerDashBoard from "./Manager/pages/ManagerDashboard";
+import ScheduleTrip from "./Manager/pages/ScheduleTrip";
+
 import ProductDetail from "./components/ProductDetail";
 import SelectRoute from "./components/SelectRoute";
 import UserProfile from "./pages/UserProfile";
 import Orders from "./pages/Orders";
 import Mainmanagerlogin from "./MainManager/Mainmanagerlogin";
 import MainManagerDashboard from "./MainManager/MainManagerDashboard";
+
 
 function App() {
   return (
@@ -64,6 +66,7 @@ function App() {
             <Route path="/manager-schedule-trip" element={<ScheduleTrip />} />
             <Route path="/manager-active-trips" element={<ActiveTrips />} />
             <Route path="/manager-finished-trips" element={<FinishedTrips />} />
+            <Route path="/manager-login" element={<Login/>}/>
             <Route path="/mainmanager-login" element={<Mainmanagerlogin />} />
             <Route path="/mainmanager-dashboard" element={<MainManagerDashboard />} />
             

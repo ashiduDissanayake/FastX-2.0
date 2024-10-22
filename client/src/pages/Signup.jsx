@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { User, Mail, Phone, Lock, ShoppingBag } from 'lucide-react';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { User, Mail, Phone, Lock, ShoppingBag } from "lucide-react";
+import { useAuth } from '../context/AuthContext';
 
 const SignUpForm = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    username: '',
-    firstName: '',
-    lastName: '',
-    phoneNumber: '',
-    userType: 'user',
-    password: '',
-    confirmPassword: '',
+    email: "",
+    username: "",
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    userType: "Retail",
+    password: "",
+    confirmPassword: "",
   });
   const [errors, setErrors] = useState({});
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,12 +24,16 @@ const SignUpForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
+    if (formData.password !== formData.confirmPassword) {
+      setErrors({ confirmPassword: "Passwords do not match" });
+      return;
+    }
 
     try {
-      const res = await fetch('http://localhost:8080/user/signup', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("http://localhost:8080/user/signup", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
@@ -37,7 +43,10 @@ const SignUpForm = () => {
       }
 
       if (data.user) {
-        window.location.assign('/');
+        // After successful sign up, clear or create the cart in local storage
+        localStorage.setItem("cart", JSON.stringify([])); // Initialize empty cart
+        login();
+        window.location.assign("/");
       }
     } catch (err) {
       console.error(err);
@@ -45,7 +54,7 @@ const SignUpForm = () => {
   };
 
   const inputClasses =
-    'w-full bg-black/30 border-b-2 border-pink-300 py-2 px-4 focus:outline-none focus:border-pink-500 transition-colors duration-300 text-white';
+    "w-full bg-black/30 border-b-2 border-pink-300 py-2 px-4 focus:outline-none focus:border-pink-500 transition-colors duration-300 text-white";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 flex items-center justify-center px-4">
@@ -60,7 +69,10 @@ const SignUpForm = () => {
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="text-sm font-medium text-pink-300 flex items-center" htmlFor="email">
+            <label
+              className="text-sm font-medium text-pink-300 flex items-center"
+              htmlFor="email"
+            >
               <Mail className="mr-2" size={18} />
               Email
             </label>
@@ -72,11 +84,16 @@ const SignUpForm = () => {
               className={inputClasses}
               required
             />
-            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+            )}
           </div>
 
           <div>
-            <label className="text-sm font-medium text-pink-300 flex items-center" htmlFor="username">
+            <label
+              className="text-sm font-medium text-pink-300 flex items-center"
+              htmlFor="username"
+            >
               <User className="mr-2" size={18} />
               Username
             </label>
@@ -88,12 +105,19 @@ const SignUpForm = () => {
               className={inputClasses}
               required
             />
-            {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username}</p>}
+            {errors.username && (
+              <p className="text-red-500 text-xs mt-1">{errors.username}</p>
+            )}
           </div>
 
           <div className="flex space-x-4">
             <div className="flex-1">
-              <label className="text-sm font-medium text-pink-300" htmlFor="firstName">First Name</label>
+              <label
+                className="text-sm font-medium text-pink-300"
+                htmlFor="firstName"
+              >
+                First Name
+              </label>
               <input
                 type="text"
                 name="firstName"
@@ -104,7 +128,12 @@ const SignUpForm = () => {
               />
             </div>
             <div className="flex-1">
-              <label className="text-sm font-medium text-pink-300" htmlFor="lastName">Last Name</label>
+              <label
+                className="text-sm font-medium text-pink-300"
+                htmlFor="lastName"
+              >
+                Last Name
+              </label>
               <input
                 type="text"
                 name="lastName"
@@ -117,7 +146,10 @@ const SignUpForm = () => {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-pink-300 flex items-center" htmlFor="phoneNumber">
+            <label
+              className="text-sm font-medium text-pink-300 flex items-center"
+              htmlFor="phoneNumber"
+            >
               <Phone className="mr-2" size={18} />
               Phone Number
             </label>
@@ -132,7 +164,10 @@ const SignUpForm = () => {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-pink-300 flex items-center" htmlFor="password">
+            <label
+              className="text-sm font-medium text-pink-300 flex items-center"
+              htmlFor="password"
+            >
               <Lock className="mr-2" size={18} />
               Password
             </label>
@@ -147,7 +182,10 @@ const SignUpForm = () => {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-pink-300 flex items-center" htmlFor="confirmPassword">
+            <label
+              className="text-sm font-medium text-pink-300 flex items-center"
+              htmlFor="confirmPassword"
+            >
               <Lock className="mr-2" size={18} />
               Confirm Password
             </label>
@@ -159,7 +197,11 @@ const SignUpForm = () => {
               className={inputClasses}
               required
             />
-            {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.confirmPassword}
+              </p>
+            )}
           </div>
 
           <motion.button
@@ -173,8 +215,11 @@ const SignUpForm = () => {
           </motion.button>
         </form>
         <p className="mt-4 text-center text-sm text-pink-200">
-          Already have an account?{' '}
-          <a href="/login" className="font-medium text-pink-400 hover:text-pink-500 transition">
+          Already have an account?{" "}
+          <a
+            href="/login"
+            className="font-medium text-pink-400 hover:text-pink-500 transition"
+          >
             Sign in
           </a>
         </p>

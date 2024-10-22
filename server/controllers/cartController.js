@@ -40,14 +40,14 @@ const productController = {
   // Get all products
   getCart: async (req, res) => {
     try {
-      const customerId = req.user.id;
-      const result = await Cart.getCart(customerId);
-      res.json({ cart: result });
+        const customerId = req.user.id; // Assuming the customer ID is available from req.user
+        const cartItems = await Cart.getCart(customerId);
+        res.status(200).json({ cart: cartItems });
     } catch (err) {
-      console.error('Error fetching cart:', err);
-      res.status(500).json({ error: "An error occurred while fetching the cart" });
+        console.error('Error fetching cart:', err);
+        res.status(500).json({ error: "An error occurred while fetching the cart" });
     }
-  },
+},
 
   // Add product to cart
   addToCart: (req, res) => {

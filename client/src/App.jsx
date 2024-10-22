@@ -26,8 +26,8 @@ import ActiveTrips from "./Manager/pages/ActiveTrips";
 import FinishedTrips from "./Manager/pages/FinishedTrips";
 import ViewOrders from "./Manager/pages/ViewOrders";
 import Login from "./Manager/pages/ManagerLogin";
-import ManagerDashBoard from "./Manager/pages/ManagerDashboard";
-import ScheduleTrip from "./Manager/pages/ScheduleTrip";
+
+
 
 import ProductDetail from "./components/ProductDetail";
 import SelectRoute from "./components/SelectRoute";

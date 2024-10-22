@@ -231,11 +231,6 @@ const managerController = {
     }
   },
 
-  // getScheduleTrip: (req, res) => {
-  //   console.log("GET request received");
-  //   res.send("Schedule Trip Endpoint");
-  // },
-
   endTrip: async (req, res) => {
     const { schedule_ID } = req.body;
 

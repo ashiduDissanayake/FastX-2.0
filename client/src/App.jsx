@@ -5,7 +5,7 @@ import Home from "./pages/Home";
 import LoginForm from "./pages/Login";
 import SignUpForm from "./pages/Signup";
 import { AuthProvider } from "./context/AuthContext";
-import ManagerDashBoard from "./Manager/pages/ManagerDashBoard";
+import ManagerDashBoard from "./Manager/pages/ManagerDashboard";
 import ScheduleTrip from "./Manager/pages/ScheduleTrip";
 import Shop from "./pages/Shop";
 
@@ -18,7 +18,6 @@ import Manager from "../src/components/Admin/pages/Manager";
 import Report from "../src/components/Admin/pages/Report";
 
 import Cart from "./pages/Cart";
-// import ActiveTrips from "./Manager/components/";
 import ActiveTrips from "./Manager/pages/ActiveTrips";
 import FinishedTrips from "./Manager/pages/FinishedTrips";
 import ViewOrders from "./Manager/pages/ViewOrders";

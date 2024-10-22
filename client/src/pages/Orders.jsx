@@ -46,7 +46,7 @@ const Order = ({ order }) => {
   );
 };
 
-const Orders = () => {
+const OrdersDetails = () => {
   const [orders, setOrders] = useState([]);
   const { auth, loading } = useAuth();
 
@@ -95,4 +95,4 @@ const Orders = () => {
   );
 };
 
-export default Orders;
+export default OrdersDetails;

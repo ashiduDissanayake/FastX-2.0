@@ -5,19 +5,14 @@ import {
   Sliders, 
   Sparkles, 
   TrendingUp, 
-  Clock, 
-  Heart,
-  Star,
   Filter,
   X,
-  ChevronDown
+  ChevronDown,
+  Star
 } from "lucide-react";
 
 const Shop = () => {
-  const [products, setProducts] = useState({
-    newArrivals: [],
-    trending: [],
-  });
+  const [products, setProducts] = useState([]);
   const [activeTab, setActiveTab] = useState("new");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedSubCategory, setSelectedSubCategory] = useState("all");
@@ -40,31 +35,13 @@ const Shop = () => {
 
   useEffect(() => {
     fetchInitialData();
-  }, []);
+  }, [activeTab]);
 
   const fetchInitialData = async () => {
     try {
       setLoading(true);
-      const [newArrivals, trending] = await Promise.all([
-        fetchProducts("new_arrivals", 8),
-        fetchProducts("trending", 8)
-      ]);
-
-      setProducts({
-        newArrivals,
-        trending
-      });
-      setLoading(false);
-    } catch (err) {
-      setError("Failed to load products");
-      setLoading(false);
-    }
-  };
-
-  const fetchProducts = async (criteria, limit = 8) => {
-    try {
       const response = await fetch(
-        `http://localhost:8080/user/products/${criteria}?limit=${limit}&category=${selectedCategory}&subcategory=${selectedSubCategory}&minPrice=${priceRange[0]}&maxPrice=${priceRange[1]}&sortBy=${sortBy}`,
+        `http://localhost:8080/user/${activeTab === 'new' ? 'new_arrivals' : 'trending'}?limit=8`,
         {
           credentials: "include",
           headers: {
@@ -72,11 +49,39 @@ const Shop = () => {
           }
         }
       );
+
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
-      return data;
-    } catch (error) {
-      throw error;
+
+      setProducts(data);
+      setLoading(false);
+    } catch (err) {
+      setError("Failed to load products");
+      setLoading(false);
+    }
+  };
+
+  const fetchFilteredProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `http://localhost:8080/user/filter?category=${selectedCategory}&subcategory=${selectedSubCategory}&minPrice=${priceRange[0]}&maxPrice=${priceRange[1]}&sortBy=${sortBy}&limit=8`,
+        {
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message);
+
+      setProducts(data);
+      setLoading(false);
+    } catch (err) {
+      setError("Failed to load filtered products");
+      setLoading(false);
     }
   };
 
@@ -88,13 +93,13 @@ const Shop = () => {
       exit={{ opacity: 0 }}
       className="group relative"
       whileHover={{ y: -5 }}
-      onClick={() => navigate(`/product/${product.id}`)}
+      onClick={() => navigate(`/product/${product.product_ID}`)}
     >
       <div className="bg-gray-900 rounded-lg overflow-hidden border border-pink-300/20 hover:border-pink-300/40 transition-colors">
         <div className="relative">
           <img 
-            src={product.image_url} 
-            alt={product.name}
+            src={product.image_link} 
+            alt={product.product_Name}
             className="w-full h-64 object-cover transition-transform group-hover:scale-105"
           />
           {product.isNew && (
@@ -104,7 +109,7 @@ const Shop = () => {
           )}
         </div>
         <div className="p-4">
-          <h3 className="text-lg font-semibold text-pink-300 mb-1">{product.name}</h3>
+          <h3 className="text-lg font-semibold text-pink-300 mb-1">{product.product_Name}</h3>
           <p className="text-sm text-pink-100/70 mb-2">{product.brand}</p>
           <div className="flex justify-between items-center">
             <span className="text-lg font-bold text-pink-400">${product.price}</span>
@@ -122,11 +127,9 @@ const Shop = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-gray-800 text-left px-4 py-2 rounded-lg border border-pink-300/20 hover:border-pink-300/40 focus:outline-none focus:ring-2 focus:ring-pink-500/50 flex justify-between items-center"
+        className="w-full bg-gray-800 text-left px-4 py-2 rounded-lg border border-pink-300/20 hover:border-pink-300/40 flex justify-between items-center"
       >
-        <span className="text-pink-100">
-          {value === "all" ? placeholder : options[value]?.[0]?.toUpperCase() + value.slice(1) || placeholder}
-        </span>
+        <span className="text-pink-100">{value === "all" ? placeholder : value || placeholder}</span>
         <ChevronDown className={`w-4 h-4 text-pink-300 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       
@@ -241,7 +244,7 @@ const Shop = () => {
 
         <button 
           onClick={() => {
-            fetchInitialData();
+            fetchFilteredProducts();
             setIsFilterOpen(false);
           }}
           className="w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 transition"
@@ -292,10 +295,8 @@ const Shop = () => {
               layout
             >
               <AnimatePresence>
-                {products[
-                  activeTab === "new" ? "newArrivals" : "trending"
-                ].map(product => (
-                  <ProductCard key={product.id} product={product} />
+                {products.map(product => (
+                  <ProductCard key={product.product_ID} product={product} />
                 ))}
               </AnimatePresence>
             </motion.div>

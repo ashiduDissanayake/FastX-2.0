@@ -6,7 +6,7 @@ const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
-    const [mainManagerId, setMainManagerId] = useState(null);
+    const [mainManagerId, setManagerId] = useState(null);
 
     const navigate = useNavigate(); // Initialize the navigate function
 
@@ -14,26 +14,31 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:8080/mainmanager/mainmanagerlogin', {
+            const response = await axios.post('http://localhost:8080/manager/managerlogin', {
                 username,
                 password,
-            },{
+            }, {
                 withCredentials: true,  // Include credentials in the request
             });
 
+            // Log the entire response for debugging
+            console.log('Login Response:', response.data);
+
             if (response.data.message === 'Login successful') {
-                setMainManagerId(response.data.mainmanager_id);
+                setManagerId(response.data.manager_ID);
                 setMessage('Login successful!');
-                // Navigate to the main manager dashboard
-                navigate('/mainmanager-dashboard'); // Redirect to the dashboard after successful login
+                navigate('/manager-dashboard'); // Redirect to the dashboard after successful login
             } else {
                 setMessage(response.data.message);
-                setMainManagerId(null);
+                setManagerId(null);
             }
         } catch (error) {
-            console.error(error);
+            console.error('Error during login:', error);
+            if (error.response) {
+                console.log('Error Response Data:', error.response.data);
+            }
             setMessage('Error occurred during login.');
-            setMainManagerId(null);
+            setManagerId(null);
         }
     };
 
@@ -78,7 +83,7 @@ const Login = () => {
 
                 {mainManagerId && (
                     <div className="mt-6 text-center">
-                        <p className="text-sm text-gray-500">MainManager ID: {mainManagerId}</p>
+                        <p className="text-sm text-gray-500">Manager ID: {mainManagerId}</p>
                     </div>
                 )}
             </div>

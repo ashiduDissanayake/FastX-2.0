@@ -29,6 +29,17 @@ const Manager = {
 // });
 //   },
 
+login :(username, password, callback) => {
+  const query = 'CALL ManagerLogin(?, ?)';
+  db.query(query, [username, password], (err, result) => {
+      if (err) {
+          return callback(err, null);
+      }
+      callback(null, result);
+  });
+},
+
+
   getActiveTripsByStore: (storeID) => {
     return new Promise((resolve, reject) => {
       const query = "CALL GetActiveTripsByStore(?)"; 

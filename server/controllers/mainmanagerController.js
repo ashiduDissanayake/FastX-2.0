@@ -286,7 +286,7 @@ const mainmanagerController = {
     // Add this function to mainmanagerController
     getTrainCapacity: (req, res) => {
       const storeId = req.params.storeId;
-      const sqlGet = "SELECT capacity FROM train_schedule WHERE store_ID = ?";
+      const sqlGet = "SELECT capacity FROM TrainSchedule WHERE store_ID = ?";
       
       db.query(sqlGet, [storeId], (error, result) => {
           if (error) {
@@ -340,7 +340,7 @@ const mainmanagerController = {
 //   });
 // },
 getTrainSchedule: (req, res) => {
-  const sqlGet = "SELECT * FROM `train_schedule`"; // Adjust the table name as needed
+  const sqlGet = "SELECT * FROM `TrainSchedule`"; // Adjust the table name as needed
 
   db.query(sqlGet, (error, result) => {
       if (error) {
@@ -351,7 +351,7 @@ getTrainSchedule: (req, res) => {
 },
 updateTrainSchedule: (req, res) => {
   const { schedule_ID, departure_Time, arrival_Time } = req.body; // Destructure incoming data
-  const sqlUpdate = "UPDATE `train_schedule` SET departure_Time = ?, arrival_Time = ? WHERE schedule_ID = ?"; // Adjust table name as needed
+  const sqlUpdate = "UPDATE `TrainSchedule` SET departure_Time = ?, arrival_Time = ? WHERE schedule_ID = ?"; // Adjust table name as needed
 
   db.query(sqlUpdate, [departure_Time, arrival_Time, schedule_ID], (error, result) => {
       if (error) {

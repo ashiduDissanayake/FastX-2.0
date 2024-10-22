@@ -4,56 +4,69 @@ const bcrypt = require("bcrypt");
 // User model
 const User = {
   // Create new user
-  create: async (userData, callback) => {
-    const salt = await bcrypt.genSalt();
-    hashedPassword = await bcrypt.hash(userData.password, salt);
+  create: (userData) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const salt = await bcrypt.genSalt();
+        const hashedPassword = await bcrypt.hash(userData.password, salt);
 
-    const query = "CALL CreateUser(?, ?, ?, ?, ?, ?, ?)";
-    db.query(
-      query,
-      [
-        userData.email,
-        userData.username,
-        hashedPassword,
-        userData.firstname,
-        userData.lastname,
-        userData.phonenumber,
-        userData.type,
-      ],
-      (err, result) => {
-        if (err) {
-          if (err.sqlState === "45000") {
-            // Custom error for email all ready registered
-            throw Error("email already registered");
+        const query = "CALL CreateUser(?, ?, ?, ?, ?, ?, ?)";
+        db.query(
+          query,
+          [
+            userData.email,
+            userData.username,
+            hashedPassword,
+            userData.firstName,
+            userData.lastName,
+            userData.phoneNumber,
+            userData.userType,
+          ],
+          (err, result) => {
+            if (err) {
+              if (err.sqlState === "45000") {
+                // Custom error for email already registered
+                return reject(new Error("Email already registered"));
+              }
+              console.log(err);
+              return reject(err);
+            }
+            // Assuming the stored procedure returns the inserted user ID
+            const userId = result[0][0].user_id; // Adjust according to the actual response
+            resolve(userId);
           }
-          return callback(err, null);
-        }
-        return callback(null, result);
+        );
+      } catch (err) {
+        console.log(result[0][0]);
+        reject(err);
       }
-    );
+    });
   },
 
   // Method to login user
   login: async (email, password, callback) => {
-    const query = "CALL GetUserByEmail(?)";
+    return new Promise((resolve, reject) => {
+      // Query the database to find the user by email
+      const query = "CALL GetUserByEmail(?)";
 
-    db.query(query, [email], async (err, result) => {
-      if (err) {
-        // Handle SQL error (including custom errors from the stored procedure)
-        if (err.sqlState === "45000") {
-          return callback(new Error("incorrect email"), null); // Return error through callback
+      db.query(query, [email], async (err, results) => {
+        if (err) {
+          if (err.sqlState === "45000") {
+            return reject(new Error("incorrect email"));
+          } else {
+            return reject(err);
+          }
         }
-        return callback(err, null); // Handle any other SQL errors
-      }
 
-      const user = result[0][0];
-      const auth = await bcrypt.compare(password, user.password);
+        const user = results[0][0];
+        const auth = await bcrypt.compare(password, user.password);
 
-      if (auth) {
-        return callback(null, user); // Return user on success
-      } else {
-        return callback(new Error("incorrect password"), null); // Handle incorrect password
-      }
+        if (!auth) {
+          return reject(new Error("incorrect password"));
+        }
+
+        resolve(user);
+      });
     });
   },
 
@@ -76,6 +89,26 @@ const User = {
         return callback(err);
       }
       callback(null, result);
+    });
+  },
+
+  // payement using promise
+  payment: (amount) => {
+    return new Promise((resolve, reject) => {
+      // Payment logic
+      // Assuming the payment is successful
+      // Write a payment logic
+      // const success = Math.random() > 0.2;  // 80% chance of success
+      // if (success) {
+      //     res.status(200).json({ status: 'success', transactionId: 'dummy-transaction-id' });
+      // } else {
+      //     res.status(400).json({ status: 'failure', message: 'Payment failed' });
+      // }
+      const success = Math.random() > 0.2; // 80% chance of success
+      if (!success) {
+        return reject(new Error("Payment failed"));
+      }
+      resolve("Payment successful");
     });
   },
 };

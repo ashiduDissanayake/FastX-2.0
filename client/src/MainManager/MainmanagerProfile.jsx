@@ -1,14 +1,14 @@
 import React from 'react'
 import SidePanel from './MainManagerSidepanel';
 
-function MainManagerDashboard() {
+function MainmanagerProfile() {
   return (
     <div>
         <SidePanel/>
-        <p>MainManagerDashboard</p>
-        
+
+        <p>MainmanagerProfile</p>
     </div>
   )
 }
 
-export default MainManagerDashboard
+export default MainmanagerProfile

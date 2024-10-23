@@ -34,8 +34,13 @@ import SelectRoute from "./components/SelectRoute";
 import UserProfile from "./pages/UserProfile";
 import OrdersDetails from "./pages/Orders";
 import Mainmanagerlogin from "./MainManager/Mainmanagerlogin";
-import MainManagerDashboard from "./MainManager/MainManagerDashboard";
+import MainManagerSidepanel from "./MainManager/MainManagerSidepanel";
 import ProductAdder from "./pages/ProductAdder";
+import MainManagerDashboard from "./MainManager/MainManagerDashboard";
+import MainmanagerCustomer from "./MainManager/MainmanagerCustomer";
+import MainmanagerReport from "./MainManager/MainmanagerReport";
+import MainmanagerWorker from "./MainManager/MainmanagerWorker";
+import MainmanagerProfile from "./MainManager/MainmanagerProfile";
 
 
 function App() {
@@ -84,6 +89,11 @@ function App() {
             <Route path="/manager-login" element={<Login/>}/>
             <Route path="/mainmanager-login" element={<Mainmanagerlogin />} />
             <Route path="/mainmanager-dashboard" element={<MainManagerDashboard />} />
+            <Route path="/mainmanager-customers" element={<MainmanagerCustomer />} />
+            <Route path="/mainmanager-report" element={<MainmanagerReport />} />
+            <Route path="/mainmanager-workers" element={<MainmanagerWorker />} />
+            <Route path="/mainmanager-profile" element={<MainmanagerProfile />} />
+            
             
 
             {/* Other routes */}

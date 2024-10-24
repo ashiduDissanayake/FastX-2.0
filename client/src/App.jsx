@@ -26,9 +26,7 @@ import ActiveTrips from "./Manager/pages/ActiveTrips";
 import FinishedTrips from "./Manager/pages/FinishedTrips";
 import ViewOrders from "./Manager/pages/ViewOrders";
 import Login from "./Manager/pages/ManagerLogin";
-import ManagerReports from "./Manager/Manager Reports/ManagerReports";
-import SalesReport from "./Manager/Manager Reports/SalesReport";
-import WorkingHoursReport from "./Manager/Manager Reports/WorkingHoursReport";
+import ManagerReports from "./Manager/pages/ManagerReports";
 
 import ProductDetail from "./components/ProductDetail";
 import SelectRoute from "./components/SelectRoute";
@@ -97,9 +95,7 @@ function App() {
             <Route path="/manager-finished-trips" element={<FinishedTrips />} />
             <Route path="/manager-login" element={<Login/>}/>
             <Route path="/manager-reports" element={<ManagerReports />} />
-            <Route path="/manager-reports/sales" element={<SalesReport />} />
-            <Route path="/manager-reports/working-hours" element={<WorkingHoursReport />} />
-
+           
             <Route path="/mainmanager-login" element={<Mainmanagerlogin />} />
             <Route path="/mainmanager-dashboard" element={<MainManagerDashboard />} />
             <Route path="/mainmanager-customers" element={<MainmanagerCustomer />} />

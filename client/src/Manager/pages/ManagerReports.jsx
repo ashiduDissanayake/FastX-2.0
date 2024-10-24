@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 
-const WorkingHoursReport = () => {
+const ManagerReports = () => {
   const [drivers, setDrivers] = useState([]);
   const [assistants, setAssistants] = useState([]);
   const [trucks, setTrucks] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [activePage, setActivePage] = useState("Working Hours Report");
+  const [activePage, setActivePage] = useState("Reports");
 
   useEffect(() => {
     fetchWorkingHoursReport();
@@ -48,7 +48,7 @@ const WorkingHoursReport = () => {
       <div className="w-3/4 p-8">
         <div className="flex flex-col items-center">
           <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-800 to-blue-800 mb-8">
-            Working Hours Report
+            Reports
           </h1>
 
           {/* Messages */}
@@ -58,7 +58,7 @@ const WorkingHoursReport = () => {
           {/* Display Drivers Table */}
           {drivers.length > 0 && (
             <div className="mt-8 bg-white rounded-xl shadow-xl p-4 w-full max-w-3xl overflow-hidden">
-              <h2 className="text-3xl font-semibold text-center mb-6">Working Hours for Drivers</h2>
+              <h2 className="text-3xl font-semibold text-center mb-6">Working Hours of Drivers</h2>
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gradient-to-r from-purple-500 to-blue-500 text-white">
                   <tr>
@@ -86,7 +86,7 @@ const WorkingHoursReport = () => {
           {/* Display Assistants Table */}
           {assistants.length > 0 && (
             <div className="mt-8 bg-white rounded-xl shadow-xl p-4 w-full max-w-3xl overflow-hidden">
-              <h2 className="text-3xl font-semibold text-center mb-6">Working Hours for Assistants</h2>
+              <h2 className="text-3xl font-semibold text-center mb-6">Working Hours of Driver Assistants</h2>
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gradient-to-r from-purple-500 to-blue-500 text-white">
                   <tr>
@@ -114,7 +114,7 @@ const WorkingHoursReport = () => {
           {/* Display Trucks Table */}
           {trucks.length > 0 && (
             <div className="mt-8 bg-white rounded-xl shadow-xl p-4 w-full max-w-3xl overflow-hidden">
-              <h2 className="text-3xl font-semibold text-center mb-6">Used Hours for Trucks</h2>
+              <h2 className="text-3xl font-semibold text-center mb-6">Used Hours of Trucks</h2>
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gradient-to-r from-purple-500 to-blue-500 text-white">
                   <tr>
@@ -144,4 +144,4 @@ const WorkingHoursReport = () => {
   );
 };
 
-export default WorkingHoursReport;
+export default ManagerReports;

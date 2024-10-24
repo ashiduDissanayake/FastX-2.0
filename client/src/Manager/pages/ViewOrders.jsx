@@ -46,15 +46,7 @@ const ViewOrders = () => {
             View Orders
           </h1>
 
-          {/* Fetch Orders Button */}
-          <button
-            onClick={fetchOrders}
-            className="w-full max-w-md bg-blue-500 text-white text-lg font-medium px-6 py-3 rounded-lg hover:bg-blue-600 transition-all duration-300 shadow-lg transform hover:-translate-y-1"
-          >
-            <FaClipboardList className="inline mr-2" />
-            View Orders
-          </button>
-
+        
           {/* Messages */}
           {errorMessage && <p className="text-red-500 mt-6 text-center">{errorMessage}</p>}
           {successMessage && <p className="text-green-500 mt-6 text-center">{successMessage}</p>}

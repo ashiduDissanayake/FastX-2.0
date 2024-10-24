@@ -20,6 +20,7 @@ const ScheduleTrip = () => {
   const [startTime, setStartTime] = useState("");
   const [warning, setWarning] = useState(""); // Warning message for capacity
 
+  
   const handleNavigation = (item) => {
     setActivePage(item);
   };
@@ -31,12 +32,12 @@ const ScheduleTrip = () => {
     loadTrucksByStore();
     loadRoutesByStore();
   }, []);
-  
 
   const loadOrdersByStore = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/manager/getstoreorders`,{ withCredentials: true }
+        `http://localhost:8080/manager/getstoreorders`,
+        { withCredentials: true }
       );
       console.log("API Response for orders:", response.data);
       setOrderData(response.data);
@@ -52,7 +53,8 @@ const ScheduleTrip = () => {
   const loadTrucksByStore = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/manager/gettruck`,{ withCredentials: true }
+        `http://localhost:8080/manager/gettruck`,
+        { withCredentials: true }
       );
       setTruckData(response.data);
     } catch (error) {
@@ -63,7 +65,8 @@ const ScheduleTrip = () => {
   const loadRoutesByStore = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/manager/getroute`,{ withCredentials: true }
+        `http://localhost:8080/manager/getroute`,
+        { withCredentials: true }
       );
       setRouteData(response.data);
     } catch (error) {
@@ -74,7 +77,8 @@ const ScheduleTrip = () => {
   const loadDriversByStore = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/manager/getdriver`, { withCredentials: true }
+        `http://localhost:8080/manager/getdriver`,
+        { withCredentials: true }
       );
       setDriverData(response.data);
     } catch (error) {
@@ -85,7 +89,8 @@ const ScheduleTrip = () => {
   const loadAssistantsByStore = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/manager/getdriverassistant`,{ withCredentials: true }
+        `http://localhost:8080/manager/getdriverassistant`,
+        { withCredentials: true }
       );
       setAssistantData(response.data);
     } catch (error) {
@@ -94,11 +99,13 @@ const ScheduleTrip = () => {
   };
 
   const handleOrderSelection = (orderId, capacity) => {
+    const intCapacity = Math.floor(capacity); // Convert capacity to integer
+  
     setSelectedOrders((prevOrders) => {
       const isSelected = prevOrders.includes(orderId);
       const newTotalCapacity = isSelected
-        ? totalCapacity - capacity
-        : totalCapacity + capacity;
+        ? totalCapacity - intCapacity
+        : totalCapacity + intCapacity;
   
       // Check capacity limit
       if (!isSelected && newTotalCapacity > 500) {
@@ -118,7 +125,6 @@ const ScheduleTrip = () => {
     });
   };
   
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -136,7 +142,9 @@ const ScheduleTrip = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/manager/scheduletrip",scheduleData, { withCredentials: true }        
+        "http://localhost:8080/manager/scheduletrip",
+        scheduleData,
+        { withCredentials: true }
       );
       alert("Trip scheduled successfully!");
       console.log("Response:", response.data);
@@ -218,7 +226,7 @@ const ScheduleTrip = () => {
                                 className="mr-2 h-5 w-5 text-green-600 rounded focus:ring-green-500 cursor-pointer"
                               />
                               <span className="text-gray-700 font-semibold">
-                                Order #{order.order_id}  Capacity:{" "}
+                                Order #{order.order_id} Capacity:{" "}
                                 {order.capacity}
                               </span>
                             </div>
@@ -243,11 +251,11 @@ const ScheduleTrip = () => {
             <div className="relative h-4 bg-gray-200 rounded-full overflow-hidden">
               <div
                 className="absolute h-full bg-gradient-to-r from-green-400 to-blue-500 rounded-full"
-                style={{ width: `${(totalCapacity / 100) * 100}%` }} // Calculate width based on total capacity
+                style={{ width: `${(totalCapacity / 500) * 100}%` }} // Use 500 as the max capacity
               />
             </div>
             <p className="text-sm mt-1 text-center">
-              {totalCapacity} / 100 Capacity Used
+              {totalCapacity} / 500 Capacity Used
             </p>
           </div>
         </div>
@@ -367,7 +375,7 @@ const ScheduleTrip = () => {
 
             {/* Route Selection */}
             <div className="mb-4">
-            <label className="block mb-2 text-gray-700">Select Route</label>
+              <label className="block mb-2 text-gray-700">Select Route</label>
               <select
                 value={selectedRoute}
                 onChange={(e) => {

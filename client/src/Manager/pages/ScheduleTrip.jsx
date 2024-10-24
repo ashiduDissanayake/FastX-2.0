@@ -247,21 +247,27 @@ const ScheduleTrip = () => {
           {warning && (
             <div className="text-red-500 text-sm mt-2">{warning}</div>
           )}
-
-          {/* Progress Bar for Capacity */}
-          <div className="mt-4">
-            <div className="relative h-4 bg-gray-200 rounded-full overflow-hidden">
-              <div
-                className="absolute h-full bg-gradient-to-r from-green-400 to-blue-500 rounded-full"
-                style={{ width: `${(totalCapacity / 500) * 100}%` }} // Use 500 as the max capacity
-              />
-            </div>
-            <p className="text-sm mt-1 text-center">
-              {totalCapacity} / 500 Capacity Used
-            </p>
-          </div>
-        </div>
-
+{/* Progress Bar for Capacity */}
+<div className="mt-4">
+  <div className="relative h-6 bg-gray-300 rounded-full overflow-hidden shadow-lg">
+    <div
+      className="absolute h-full bg-gradient-to-r from-green-400 to-blue-500 rounded-full transition-all duration-300"
+      style={{ width: `${(totalCapacity / 500) * 100}%` }} // Use 500 as the max capacity
+    />
+  </div>
+  <div className="flex justify-between mt-1 text-sm text-gray-600">
+    <span>{totalCapacity} / 500 Capacity Used</span>
+    <span>{((totalCapacity / 500) * 100).toFixed(0)}%</span>
+  </div>
+  {/* Tooltip */}
+  <div
+    className={`absolute top-[-25px] left-0 transform -translate-x-1/2 text-white text-xs font-semibold px-2 py-1 rounded-lg ${totalCapacity >= 500 ? "bg-red-500" : "bg-green-600"} transition-opacity duration-300`}
+    style={{ left: `${(totalCapacity / 500) * 100}%`, opacity: totalCapacity >= 500 ? 1 : 0 }}
+  >
+    {totalCapacity >= 500 ? "Max Capacity Reached" : `${((totalCapacity / 500) * 100).toFixed(0)}%`}
+  </div>
+</div>
+</div>
         {/* Trip Scheduling Form */}
         {selectedOrders.length > 0 && (
           <form

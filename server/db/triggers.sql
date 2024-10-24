@@ -21,23 +21,41 @@ END$$
 
 DELIMITER ;
 
--- update driver status on start of a trip
+-- ---------------------------------------------------------------------------------------------------------------------
+--                                              Manager Triggers
+-- ---------------------------------------------------------------------------------------------------------------------
+
 DELIMITER $$
-CREATE TRIGGER update_driver_status_on_start
+CREATE TRIGGER update_statuses_on_start
     AFTER INSERT ON TruckSchedule
     FOR EACH ROW
 BEGIN
     -- Update the driver's status to active when a trip starts
-    UPDATE driver
+    UPDATE Driver
     SET 
         status = 'active'
     WHERE driver_ID = NEW.driver_ID;
+
+    -- When a trip starts, set the assistant's status based on current state
+    UPDATE DriverAssistant
+    SET 
+        status = CASE 
+                    WHEN status = 'inactive' THEN 'active1'
+                    WHEN status = 'available' THEN 'active2'
+                 END
+    WHERE assistant_ID = NEW.assistant_ID;
+
+    -- Update the truck's status to active when a trip starts
+    UPDATE Truck
+    SET 
+        status = 'active'
+    WHERE truck_ID = NEW.truck_ID;
 END $$
 DELIMITER ;
 
--- update driver status and woking hours on end of a trip
+
 DELIMITER $$
-CREATE TRIGGER update_driver_status_on_end
+CREATE TRIGGER update_statuses_on_trip_end
     AFTER UPDATE ON TruckSchedule
     FOR EACH ROW
 BEGIN
@@ -52,37 +70,6 @@ BEGIN
             current_working_time = current_working_time + @route_duration,
             status = 'inactive'  -- Set status to inactive when the trip ends
         WHERE driver_ID = NEW.driver_ID;
-    END IF;
-END $$
-DELIMITER ;
-
--- update assistant status on start of a trip
-DELIMITER $$
-CREATE TRIGGER update_assistant_status_on_start
-    AFTER INSERT ON TruckSchedule
-    FOR EACH ROW
-BEGIN
-    -- When a trip starts, set the assistant's status based on current state
-    UPDATE DriverAssistant
-    SET 
-        status = CASE 
-                    WHEN status = 'inactive' THEN 'active1'
-                    WHEN status = 'available' THEN 'active2'
-                 END  -- Adjust status from available to active1, or active1 to active2
-    WHERE assistant_ID = NEW.assistant_ID;
-END $$
-DELIMITER ;
-
--- update assistant status and working hours on end of a trip
-DELIMITER $$
-CREATE TRIGGER update_assistant_status_on_end
-    AFTER UPDATE ON TruckSchedule
-    FOR EACH ROW
-BEGIN
-    -- Only proceed if the trip has ended (end_time is set)
-    IF NEW.end_time IS NOT NULL THEN
-        -- Calculate the working hours (end_time - start_time)
-        SET @route_duration = TIMESTAMPDIFF(SECOND, NEW.start_time, NEW.end_time) / 3600;
 
         -- Update the assistant's working hours and adjust the status
         UPDATE DriverAssistant
@@ -93,40 +80,18 @@ BEGIN
                         WHEN status = 'active2' THEN 'inactive'
                      END  -- Adjust status based on the current state
         WHERE assistant_ID = NEW.assistant_ID;
-    END IF;
-END $$
-DELIMITER ;
 
--- update truck status on start of a trip
-DELIMITER $$
-CREATE TRIGGER update_truck_status_on_start
-    AFTER INSERT ON TruckSchedule
-    FOR EACH ROW
-BEGIN
-    -- Update the truck's status to active when a trip starts
-    UPDATE truck
-    SET 
-        status = 'active'
-    WHERE truck_ID = NEW.truck_ID;
-END $$
-DELIMITER ;
-
--- update truck status on end of a trip
-DELIMITER $$
-CREATE TRIGGER update_truck_status_on_end
-    AFTER UPDATE ON TruckSchedule
-    FOR EACH ROW
-BEGIN
-    -- Only proceed if the trip has ended (end_time is set)
-    IF NEW.end_time IS NOT NULL THEN
         -- Update the truck's status to inactive when the trip ends
-        UPDATE truck
+        UPDATE Truck
         SET 
+			used_hours = used_hours + @route_duration,
             status = 'inactive'  -- Set status to inactive when the trip ends
         WHERE truck_ID = NEW.truck_ID;
     END IF;
 END $$
 DELIMITER ;
+
+DROP TRIGGER update_statuses_on_trip_end;
 
 
 -- Update the discount id in cart by searching through the discount table and the quanity in the cart

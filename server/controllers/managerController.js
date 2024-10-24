@@ -171,7 +171,7 @@ const managerController = {
   },
 
   // get driver details
-  getDriverByStoreId: async (req, res) => {
+  getDriverByStore: async (req, res) => {
     const managerID = req.user.manager_ID;
 
     try {

@@ -70,8 +70,7 @@ const port = process.env.PORT || 5000;
 // User routes
 app.use('/user', userRoutes);
 app.use('/manager', managerRoutes);
-app.use('/mainmanager', mainmanagerRoutes)
-
+app.use('/mainmanager', mainmanagerRoutes);
 
 // Root route (for testing)
 app.get('/', (req, res) => {
@@ -88,7 +87,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
   res.json({ filePath }); // Send the file path to the frontend
 });
 
-// Updated Login Route: Use the existing database connection
+// Updated Product Addition Route: Use the existing database connection
 app.post('/admin/addProduct', (req, res) => {
   const {
     productName,
@@ -102,7 +101,6 @@ app.post('/admin/addProduct', (req, res) => {
     image_link
   } = req.body;
 
-  // SQL query to insert a new product into the Product table
   const query = `
     INSERT INTO Product (
       product_Name,
@@ -118,7 +116,6 @@ app.post('/admin/addProduct', (req, res) => {
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
   `;
 
-  // Data values to be inserted
   const values = [
     productName,
     price,
@@ -131,13 +128,12 @@ app.post('/admin/addProduct', (req, res) => {
     image_link
   ];
 
-  // Return the database query as a promise
   return new Promise((resolve, reject) => {
     db.query(query, values, (error, result) => {
       if (error) {
-        reject(error);  // If there's an error, reject the promise
+        reject(error);
       } else {
-        resolve(result);  // If successful, resolve the promise with the result
+        resolve(result);
       }
     });
   })
@@ -150,6 +146,13 @@ app.post('/admin/addProduct', (req, res) => {
     });
 });
 
+// Updated route for fetching pending orders
+
+
+
+
+
+// Update order status
 
 // Start the server
 app.listen(port, () => {

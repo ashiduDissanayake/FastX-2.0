@@ -147,7 +147,33 @@ app.post('/admin/addProduct', (req, res) => {
 });
 
 // Updated route for fetching pending orders
+app.get('/orders', (req, res) => {
+  console.log("HI");
 
+  const query = 'SELECT order_id,order_date, route_id, status FROM `Order` WHERE status = ?';
+
+  // Use the correct parameter format, passing 'Pending' as a value for the placeholder
+  db.query(query, ['Pending'], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database query error' });
+    }
+    res.json(results);
+  });
+});
+
+app.put('/orders/:id', (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body; // Status should be 'Shipped'
+
+  const query = 'UPDATE `Order` SET status = ? WHERE order_id = ?';
+
+  db.query(query, [status, id], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error updating order status' });
+    }
+    res.json({ message: 'Order status updated successfully' });
+  });
+});
 
 
 

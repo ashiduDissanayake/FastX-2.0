@@ -45,6 +45,11 @@ import MainmanagerProfile from "./MainManager/MainmanagerProfile";
 import Quarterly from "./MainManager/Quarterly"
 import SalesbyCity from "./MainManager/SalesbyCity"
 import MostOrdered from "./MainManager/MostOrdered"
+import Store1 from './MainManager/Store/Store1'
+import Store2 from './MainManager/Store/Store2'
+import Store3 from './MainManager/Store/Store3'
+import Store4 from './MainManager/Store/Store4'
+import Store5 from './MainManager/Store/Store5'
 
 
 function App() {
@@ -104,6 +109,11 @@ function App() {
             <Route path="/quarterly-sales" element={<Quarterly />} />
             <Route path="/most-ordered-items" element={<MostOrdered />} />
             <Route path="/sales-by-city-route" element={<SalesbyCity />} />
+            <Route path="/store1" element={<Store1/>} />
+            <Route path="/store2" element={<Store2/>} />
+            <Route path="/store3" element={<Store3/>} />
+            <Route path="/store4" element={<Store4/>} />
+            <Route path="/store5" element={<Store5/>} />
 
             
             

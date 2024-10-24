@@ -15,7 +15,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
       case "Home":
         navigate("/manager-dashboard"); // Adjust the route as per your application structure
         break;
-        case "View Orders":
+      case "View Orders":
         navigate("/manager-view-orders");
         break;
       case "Schedule a New Trip":
@@ -27,9 +27,12 @@ const Sidebar = ({ activePage, setActivePage }) => {
       case "Finished Trips":
         navigate("/manager-finished-trips");
         break;
+      case "Reports":
+        navigate("/manager-reports");
+        break;
       case "Logout":
         // Implement logout logic here, e.g., clear auth tokens
-        navigate("/manager-login"); 
+        navigate("/manager-login");
         break;
       default:
         break;
@@ -53,6 +56,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
             "Schedule a New Trip",
             "Active Trips",
             "Finished Trips",
+            "Reports",
             "Logout",
           ].map((item) => (
             <li

@@ -193,8 +193,44 @@ const mainmanagerController = {
     });
 },
 
-getPendingOrders: (req, res) => {
-  MainManagerModel.getPendingOrders((err, orders) => {
+getPendingOrdersStore1: (req, res) => {
+  MainManagerModel.getPendingOrdersStore1((err, orders) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database query error' });
+    }
+    res.json(orders);
+  });
+},
+
+getPendingOrdersStore2: (req, res) => {
+  MainManagerModel.getPendingOrdersStore2((err, orders) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database query error' });
+    }
+    res.json(orders);
+  });
+},
+
+getPendingOrdersStore3: (req, res) => {
+  MainManagerModel.getPendingOrdersStore3((err, orders) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database query error' });
+    }
+    res.json(orders);
+  });
+},
+
+getPendingOrdersStore4: (req, res) => {
+  MainManagerModel.getPendingOrdersStore4((err, orders) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database query error' });
+    }
+    res.json(orders);
+  });
+},
+
+getPendingOrdersStore5: (req, res) => {
+  MainManagerModel.getPendingOrdersStore5((err, orders) => {
     if (err) {
       return res.status(500).json({ error: 'Database query error' });
     }
@@ -203,6 +239,7 @@ getPendingOrders: (req, res) => {
 },
 
 updateOrderStatus: (req, res) => {
+  console.log("Hi");
   const { id } = req.params;
   const { status } = req.body;
 

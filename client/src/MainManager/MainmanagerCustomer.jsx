@@ -1,14 +1,14 @@
 import React from 'react'
-import SidePanel from './MainManagerSidepanel';
+import SidePanel from './MainManagerSidepanel'
 
-function MainmanagerCustomer() {
+function MainmanagerWorker() {
   return (
     <div>
         <SidePanel/>
-        <p>MainmanagerCustomer</p>
-        
+
+        <p>MainmanagerWorker</p>
     </div>
   )
 }
 
-export default MainmanagerCustomer
+export default MainmanagerWorker

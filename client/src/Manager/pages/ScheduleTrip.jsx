@@ -182,64 +182,66 @@ const ScheduleTrip = () => {
             <span className="text-xl font-bold ml-2">Loading Packages</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {orderData.length > 0 ? (
-              Array.from(new Set(orderData.map((order) => order.route_id))).map(
-                (routeID) => {
-                  const isSelectedRoute = selectedRoute === routeID;
-                  return (
-                    <div
-                      key={routeID}
-                      className="bg-white p-4 rounded-lg shadow"
+          <div className="overflow-x-auto">
+  {orderData.length > 0 ? (
+    Array.from(new Set(orderData.map((order) => order.route_id))).map(
+      (routeID) => {
+        const isSelectedRoute = selectedRoute === routeID;
+        return (
+          <div key={routeID} className="mb-4">
+            <h3 className="font-bold mb-2 text-center">Route ID: {routeID}</h3>
+            <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="py-2 px-4 border-b text-center">Select</th>
+                  <th className="py-2 px-4 border-b text-center">Order ID</th>
+                  <th className="py-2 px-4 border-b text-center">Capacity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orderData
+                  .filter((order) => order.route_id === routeID)
+                  .map((order) => (
+                    <tr
+                      key={order.order_id}
+                      className={`transition duration-300 ease-in-out hover:bg-green-50 ${
+                        selectedOrders.includes(order.order_id) ? "bg-green-200" : ""
+                      }`}
                     >
-                      <h3 className="font-bold mb-2">Route ID: {routeID}</h3>
-                      <div className="grid grid-cols-1 gap-2">
-                        {orderData
-                          .filter((order) => order.route_id === routeID)
-                          .map((order) => (
-                            <div
-                              key={order.order_id}
-                              className={`flex items-center p-4 bg-gray-100 rounded-lg shadow-md transition duration-300 ease-in-out ${
-                                selectedOrders.includes(order.order_id)
-                                  ? "bg-green-200"
-                                  : ""
-                              } hover:bg-green-50`}
-                            >
-                              <input
-                                type="checkbox"
-                                value={order.order_id}
-                                checked={selectedOrders.includes(
-                                  order.order_id
-                                )}
-                                onChange={() => {
-                                  handleOrderSelection(
-                                    order.order_id,
-                                    order.capacity
-                                  );
-                                  if (!isSelectedRoute) {
-                                    setSelectedRoute(routeID);
-                                  }
-                                }}
-                                disabled={
-                                  selectedRoute && selectedRoute !== routeID
-                                }
-                                className="mr-2 h-5 w-5 text-green-600 rounded focus:ring-green-500 cursor-pointer"
-                              />
-                              <span className="text-gray-700 font-semibold">
-                                Order #{order.order_id} Capacity:{" "}
-                                {order.capacity}
-                              </span>
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  );
-                }
-              )
-            ) : (
-              <p>No orders found for the selected store.</p>
-            )}
+                      <td className="py-2 px-4 border-b text-center">
+                        <input
+                          type="checkbox"
+                          value={order.order_id}
+                          checked={selectedOrders.includes(order.order_id)}
+                          onChange={() => {
+                            handleOrderSelection(order.order_id, order.capacity);
+                            if (!isSelectedRoute) {
+                              setSelectedRoute(routeID);
+                            }
+                          }}
+                          disabled={selectedRoute && selectedRoute !== routeID}
+                          className="mr-2 h-5 w-5 text-green-600 rounded focus:ring-green-500 cursor-pointer"
+                        />
+                      </td>
+                      <td className="py-2 px-4 border-b text-center">
+                       {order.order_id}
+                      </td>
+                      <td className="py-2 px-4 border-b text-center">
+                        {order.capacity}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
           </div>
+        );
+      }
+    )
+  ) : (
+    <p>No orders found for the selected store.</p>
+  )}
+</div>
+
 
           {/* Warning Message */}
           {warning && (
@@ -322,7 +324,10 @@ const ScheduleTrip = () => {
                     return 0;
                   })
                   .map((assistant) => {
-                    // Set status display text
+                    const totalDriverHours =
+                    assistant.current_working_time + maxTimeOfRoute;
+
+
                     let statusText = "";
                     if (assistant.status === "inactive") {
                       statusText = "(Inactive)";
@@ -339,8 +344,8 @@ const ScheduleTrip = () => {
                         key={assistant.assistant_ID}
                         value={assistant.assistant_ID}
                         disabled={
-                          assistant.status !== "inactive" &&
-                          assistant.status !== "available"
+                          assistant.status === "active1" ||
+                          assistant.status === "active2" || totalDriverHours >= 60
                         }
                       >
                         {`${assistant.assistant_ID} - worked ${assistant.current_working_time} hrs ${statusText}`}

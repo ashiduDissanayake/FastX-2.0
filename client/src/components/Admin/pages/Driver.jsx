@@ -1,48 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar.jsx'; // Import the Sidebar component
 import img2 from './assets/bg.jpg'; // Background image
-
-// Sample data for drivers (You can fetch this from your backend)
-const initialDrivers = [
-  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', phone: '0771234567', vehicle: 'Toyota Corolla' },
-  { id: 2, name: 'Bob Brown', email: 'bob@example.com', phone: '0771234578', vehicle: 'Honda Accord' },
-];
-
+import axios from 'axios';
 
 export default function Driver() {
-    const [drivers, setDrivers] = useState(initialDrivers);
-  const [newDriver, setNewDriver] = useState({ name: '', email: '', phone: '', vehicle: '' });
+  const [drivers, setDrivers] = useState([]);
+  const [searchDriverId, setSearchDriverId] = useState(''); // State for entered Driver_ID
+  const [selectedDriverId, setSelectedDriverId] = useState(null); // State for selected Driver_ID
   const [editDriverId, setEditDriverId] = useState(null);
 
-  // Handle form changes
+  useEffect(() => {
+    axios.get('http://localhost:8080/admin/getdriver')
+      .then((response) => {
+        setDrivers(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching drivers:', error);
+      });
+  }, []);
+
+  // Handle Driver ID input change
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewDriver({ ...newDriver, [name]: value });
+    setSearchDriverId(e.target.value);
   };
 
-  // Add new driver
-  const handleAddDriver = () => {
-    const newId = drivers.length + 1;
-    setDrivers([...drivers, { ...newDriver, id: newId }]);
-    setNewDriver({ name: '', email: '', phone: '', vehicle: '' });
-  };
+  // Handle searching for the driver by Driver_ID
+  const handleFindDriver = () => {
+      const foundDriver = drivers.find((driver) => driver.driver_ID.toString() === searchDriverId);
+      console.log(searchDriverId)
+      console.log("new",foundDriver);
 
-  // Edit driver
-  const handleEditDriver = (driver) => {
-    setEditDriverId(driver.id);
-    setNewDriver(driver);
-  };
-
-  // Save edited driver
-  const handleSaveDriver = () => {
-    setDrivers(drivers.map((d) => (d.id === editDriverId ? newDriver : d)));
-    setEditDriverId(null);
-    setNewDriver({ name: '', email: '', phone: '', vehicle: '' });
-  };
-
-  // Delete driver
-  const handleDeleteDriver = (id) => {
-    setDrivers(drivers.filter((driver) => driver.id !== id));
+    if (foundDriver) {
+      setSelectedDriverId(foundDriver.driver_ID); // Highlight the row if driver found
+    } else {
+      alert('Driver not found!');
+      setSelectedDriverId(null); // Clear any previously highlighted row
+    }
   };
 
   return (
@@ -61,72 +54,32 @@ export default function Driver() {
       <div className="container mx-auto p-8 bg-white bg-opacity-80 rounded-lg shadow-lg flex-grow">
         <h1 className="text-3xl font-bold mb-6">Drivers</h1>
 
-        {/* Form for adding/editing drivers */}
+        {/* Form for finding a driver by Driver_ID */}
         <div className="bg-white shadow-md rounded p-6 mb-8">
-          <h2 className="text-xl mb-4">{editDriverId ? 'Edit Driver' : 'Add New Driver'}</h2>
+          <h2 className="text-xl mb-4">Find Driver</h2>
           <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block font-medium">Name</label>
+              <label className="block font-medium">Driver ID</label>
               <input
                 type="text"
-                name="name"
-                value={newDriver.name}
-                onChange={handleInputChange}
-                className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block font-medium">Email</label>
-              <input
-                type="email"
-                name="email"
-                value={newDriver.email}
-                onChange={handleInputChange}
-                className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block font-medium">Phone</label>
-              <input
-                type="text"
-                name="phone"
-                value={newDriver.phone}
-                onChange={handleInputChange}
-                className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block font-medium">Vehicle</label>
-              <input
-                type="text"
-                name="vehicle"
-                value={newDriver.vehicle}
+                value={searchDriverId}
                 onChange={handleInputChange}
                 className="mt-1 p-2 w-full border border-gray-300 rounded-md"
               />
             </div>
           </form>
           <div className="mt-6 flex justify-end">
-            {editDriverId ? (
-              <button
-                className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mr-2"
-                onClick={handleSaveDriver}
-              >
-                Save Driver
-              </button>
-            ) : (
-              <button
-                className="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 mr-2"
-                onClick={handleAddDriver}
-              >
-                Add Driver
-              </button>
-            )}
+            <button
+              className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mr-2"
+              onClick={handleFindDriver}
+            >
+              Find
+            </button>
             <button
               className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
               onClick={() => {
-                setEditDriverId(null);
-                setNewDriver({ name: '', email: '', phone: '', vehicle: '' });
+                setSearchDriverId('');
+                setSelectedDriverId(null);
               }}
             >
               Cancel
@@ -140,30 +93,27 @@ export default function Driver() {
           <table className="min-w-full table-auto">
             <thead>
               <tr>
-                <th className="px-4 py-2 border">Name</th>
-                <th className="px-4 py-2 border">Email</th>
-                <th className="px-4 py-2 border">Phone</th>
-                <th className="px-4 py-2 border">Vehicle</th>
+                <th className="px-4 py-2 border">Driver ID</th>
+                <th className="px-4 py-2 border">Store ID</th>
+                <th className="px-4 py-2 border">Status</th>
+                <th className="px-4 py-2 border">Current Working Time</th>
                 <th className="px-4 py-2 border">Actions</th>
               </tr>
             </thead>
             <tbody>
               {drivers.map((driver) => (
-                <tr key={driver.id}>
-                  <td className="border px-4 py-2">{driver.name}</td>
-                  <td className="border px-4 py-2">{driver.email}</td>
-                  <td className="border px-4 py-2">{driver.phone}</td>
-                  <td className="border px-4 py-2">{driver.vehicle}</td>
+                <tr
+                  key={driver.driver_ID}
+                  className={driver.driver_ID === selectedDriverId ? 'bg-yellow-100' : ''}
+                >
+                  <td className="border px-4 py-2">{driver.driver_ID}</td>
+                  <td className="border px-4 py-2">{driver.store_ID}</td>
+                  <td className="border px-4 py-2">{driver.status}</td>
+                  <td className="border px-4 py-2">{driver.current_working_time}</td>
                   <td className="border px-4 py-2">
                     <button
-                      className="bg-yellow-500 text-white py-1 px-3 rounded-md hover:bg-yellow-600 mr-2"
-                      onClick={() => handleEditDriver(driver)}
-                    >
-                      Edit
-                    </button>
-                    <button
                       className="bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600"
-                      onClick={() => handleDeleteDriver(driver.id)}
+                      onClick={() => handleDeleteDriver(driver.driver_ID)}
                     >
                       Delete
                     </button>

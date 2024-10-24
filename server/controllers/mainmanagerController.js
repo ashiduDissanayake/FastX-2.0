@@ -193,6 +193,31 @@ const mainmanagerController = {
     });
 },
 
+getPendingOrders: (req, res) => {
+  MainManagerModel.getPendingOrders((err, orders) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database query error' });
+    }
+    res.json(orders);
+  });
+},
+
+updateOrderStatus: (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!status) {
+    return res.status(400).json({ error: 'Status is required' });
+  }
+
+  MainManagerModel.updateOrderStatus(id, status, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error updating order status' });
+    }
+    res.json({ message: 'Order status updated successfully' });
+  });
+},
+
 
 
 

@@ -42,37 +42,35 @@ const ViewOrders = () => {
 
       <div className="w-3/4 p-8">
         <div className="flex flex-col items-center">
-          <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-800 to-blue-800 mb-8">
+          <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-800 to-blue-800 mb-8 text-center">
             View Orders
           </h1>
 
-        
           {/* Messages */}
           {errorMessage && <p className="text-red-500 mt-6 text-center">{errorMessage}</p>}
           {successMessage && <p className="text-green-500 mt-6 text-center">{successMessage}</p>}
 
-          {/* Display Orders */}
+          {/* Display Orders in Table */}
           {orders.length > 0 && (
-            <div className="mt-8 bg-white rounded-xl shadow-xl p-8 w-full max-w-3xl">
-              <h2 className="text-3xl font-semibold text-center mb-6">Orders for Your Store</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {orders.map((order) => (
-                  <div
-                    key={order.order_id}
-                    className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-lg shadow-lg hover:shadow-2xl transition-transform duration-300 transform hover:-translate-y-1"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold text-gray-800">Order ID:</span> {order.order_id}
-                    </div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold text-gray-800">Route ID:</span> {order.route_id}
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-gray-800">Capacity:</span> {order.capacity}
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="mt-8 bg-white shadow-xl w-full max-w-4xl overflow-hidden">
+              <table className="min-w-full border-collapse">
+                <thead className="bg-gradient-to-r from-purple-500 to-blue-500 text-white">
+                  <tr>
+                    <th className="py-3 px-4 text-center font-medium border-r border-white">Order ID</th>
+                    <th className="py-3 px-4 text-center font-medium border-r border-white">Route ID</th>
+                    <th className="py-3 px-4 text-center font-medium">Capacity</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orders.map((order) => (
+                    <tr key={order.order_id} className="border-b hover:bg-gray-100 transition duration-200">
+                      <td className="py-3 px-4 text-center text-gray-800 border-r border-gray-300">{order.order_id}</td>
+                      <td className="py-3 px-4 text-center text-gray-800 border-r border-gray-300">{order.route_id}</td>
+                      <td className="py-3 px-4 text-center text-gray-800">{order.capacity}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
 

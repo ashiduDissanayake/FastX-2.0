@@ -29,7 +29,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
         break;
       case "Logout":
         // Implement logout logic here, e.g., clear auth tokens
-        navigate("/login"); // Redirect to login or home page after logout
+        navigate("/manager-login"); 
         break;
       default:
         break;

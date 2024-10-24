@@ -6,7 +6,6 @@ const ScheduleTrip = () => {
   const [driverData, setDriverData] = useState([]);
   const [assistantData, setAssistantData] = useState([]);
   const [truckData, setTruckData] = useState([]);
-  const [storeData, setStoreData] = useState([]);
   const [routeData, setRouteData] = useState([]);
   const [orderData, setOrderData] = useState([]); // State for orders
   const [activePage, setActivePage] = useState("Schedule a New Trip");
@@ -19,33 +18,25 @@ const ScheduleTrip = () => {
   const [selectedOrders, setSelectedOrders] = useState([]); // State for selected orders
   const [totalCapacity, setTotalCapacity] = useState(0); // State for total capacity
   const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
   const [warning, setWarning] = useState(""); // Warning message for capacity
 
   const handleNavigation = (item) => {
     setActivePage(item);
   };
 
-  // Load data for dropdowns
   useEffect(() => {
-    loadStores();
+    loadOrdersByStore();
+    loadDriversByStore();
+    loadAssistantsByStore();
+    loadTrucksByStore();
+    loadRoutesByStore();
   }, []);
+  
 
-  const loadStores = async () => {
+  const loadOrdersByStore = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8080/manager/getstore"
-      );
-      setStoreData(response.data);
-    } catch (error) {
-      console.error("Error loading stores", error);
-    }
-  };
-
-  const loadOrdersByStore = async (storeId) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:8080/manager/getstoreorders/${storeId}`
+        `http://localhost:8080/manager/getstoreorders`,{ withCredentials: true }
       );
       console.log("API Response for orders:", response.data);
       setOrderData(response.data);
@@ -58,10 +49,10 @@ const ScheduleTrip = () => {
     }
   };
 
-  const loadTrucksByStore = async (storeId) => {
+  const loadTrucksByStore = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/manager/gettruck/${storeId}`
+        `http://localhost:8080/manager/gettruck`,{ withCredentials: true }
       );
       setTruckData(response.data);
     } catch (error) {
@@ -69,10 +60,10 @@ const ScheduleTrip = () => {
     }
   };
 
-  const loadRoutesByStore = async (storeId) => {
+  const loadRoutesByStore = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/manager/getroute/${storeId}`
+        `http://localhost:8080/manager/getroute`,{ withCredentials: true }
       );
       setRouteData(response.data);
     } catch (error) {
@@ -80,10 +71,10 @@ const ScheduleTrip = () => {
     }
   };
 
-  const loadDriversByStore = async (storeId) => {
+  const loadDriversByStore = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/manager/getdriver/${storeId}`
+        `http://localhost:8080/manager/getdriver`, { withCredentials: true }
       );
       setDriverData(response.data);
     } catch (error) {
@@ -91,25 +82,15 @@ const ScheduleTrip = () => {
     }
   };
 
-  const loadAssistantsByStore = async (storeId) => {
+  const loadAssistantsByStore = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/manager/getdriverassistant/${storeId}`
+        `http://localhost:8080/manager/getdriverassistant`,{ withCredentials: true }
       );
       setAssistantData(response.data);
     } catch (error) {
       console.error("Error loading assistants", error);
     }
-  };
-
-  const handleStoreChange = (e) => {
-    const storeId = e.target.value;
-    setSelectedStore(storeId);
-    loadOrdersByStore(storeId);
-    loadDriversByStore(storeId);
-    loadAssistantsByStore(storeId);
-    loadTrucksByStore(storeId);
-    loadRoutesByStore(storeId);
   };
 
   const handleOrderSelection = (orderId, capacity) => {
@@ -129,11 +110,14 @@ const ScheduleTrip = () => {
   
       setWarning("");
       setTotalCapacity(newTotalCapacity); // Update total capacity here
+  
+      // Return new list of selected orders
       return isSelected
         ? prevOrders.filter((id) => id !== orderId)
         : [...prevOrders, orderId];
     });
   };
+  
   
 
   const handleSubmit = async (e) => {
@@ -145,14 +129,14 @@ const ScheduleTrip = () => {
       store_ID: selectedStore,
       route_ID: selectedRoute,
       start_time: startTime,
-      end_time: endTime,
       selectedOrders: selectedOrders,
     };
 
+    console.log("Selected orders before submission:", selectedOrders);
+
     try {
       const response = await axios.post(
-        "http://localhost:8080/manager/scheduletrip",
-        scheduleData
+        "http://localhost:8080/manager/scheduletrip",scheduleData, { withCredentials: true }        
       );
       alert("Trip scheduled successfully!");
       console.log("Response:", response.data);
@@ -183,26 +167,6 @@ const ScheduleTrip = () => {
           <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-800 to-blue-800">
             Schedule A Trip
           </h1>
-        </div>
-
-        {/* Store Selection */}
-        <div className="mb-6 flex flex-col items-center">
-          <label className="block mb-2 text-gray-700 text-lg font-semibold">
-            Select Store
-          </label>
-          <select
-            value={selectedStore}
-            onChange={handleStoreChange}
-            className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            required
-          >
-            <option value="">-- Select Store --</option>
-            {storeData.map((store) => (
-              <option key={store.store_ID} value={store.store_ID}>
-                {store.store_ID}
-              </option>
-            ))}
-          </select>
         </div>
 
         <div className="mb-4">

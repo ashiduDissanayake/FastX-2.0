@@ -58,24 +58,43 @@ login :(username, password, callback) => {
     });
   },
 
-    getFinishedTripsByStore: (storeID) => {
-        return new Promise((resolve, reject) => {
-        const query = "CALL GetFinishedTripsByStore(?)"; 
+  getFinishedTripsByStore: (storeID) => {
+    return new Promise((resolve, reject) => {
+        const query = "CALL GetFinishedTripsByStore(?);"; 
         db.query(query, [storeID], (err, result) => {
             if (err) {
-            reject(err); 
+                reject(err);
             } else {
-            const response = result[0]; 
-            if (response[0] && response[0].error_message) {
-                reject(new Error(response[0].error_message));
-            } else {
-                resolve(response); 
-            }
+                const response = result[0];
+                if (response.length > 0 && response[0].error_message) {
+                    reject(new Error(response[0].error_message));
+                } else {
+                    resolve(response);
+                }
             }
         });
-        });
-    },
-
+    });
+},
+    getStoreIDByManagerID: (managerID) => {
+      return new Promise((resolve, reject) => {
+          const query = "CALL GetStoreIDByManagerID(?);";
+  
+          db.query(query, [managerID], (err, result) => {
+              if (err) {
+                  return reject(err);
+              }
+  
+              // Validate if a result was returned and extract the storeID
+              if (result && result[0].length > 0) {
+                  const storeID = result[0][0].store_ID; // Use correct key
+                  return resolve({ store_ID: storeID });
+              }
+  
+              return resolve(null); // No storeID found
+          });
+      });
+  },  
+   
     getTrainOrdersByStore: (storeID) => {
         return new Promise((resolve, reject) => {
           const query = "CALL GetTrainOrdersByStore(?)"; 

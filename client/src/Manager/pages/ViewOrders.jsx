@@ -4,39 +4,18 @@ import Sidebar from "../components/Sidebar";
 import { FaClipboardList } from "react-icons/fa";
 
 const ViewOrders = () => {
-  const [storeID, setStoreID] = useState("");
-  const [stores, setStores] = useState([]);
   const [orders, setOrders] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [activePage, setActivePage] = useState("View Orders");
 
   useEffect(() => {
-    const fetchStores = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/manager/getstore");
-        setStores(response.data);
-      } catch (error) {
-        console.error("Error loading stores:", error);
-        setErrorMessage("Error loading stores.");
-      }
-    };
-    fetchStores();
+    fetchOrders();
   }, []);
 
-  const handleStoreIDChange = (e) => {
-    setStoreID(e.target.value);
-    setOrders([]);
-  };
-
   const fetchOrders = async () => {
-    if (!storeID) {
-      setErrorMessage("Please select a valid store.");
-      return;
-    }
-
     try {
-      const response = await axios.get(`http://localhost:8080/manager/gettrainorders/${storeID}`);
+      const response = await axios.get(`http://localhost:8080/manager/gettrainorders`, { withCredentials: true });
       setOrders(response.data);
       setErrorMessage("");
     } catch (error) {
@@ -47,13 +26,8 @@ const ViewOrders = () => {
   };
 
   const updateOrdersStatus = async () => {
-    if (!storeID) {
-      setErrorMessage("Please select a valid store.");
-      return;
-    }
-
     try {
-      const response = await axios.post("http://localhost:8080/manager/updatetobranch", { storeID });
+      const response = await axios.post("http://localhost:8080/manager/updatetobranch", null, { withCredentials: true });
       setSuccessMessage(response.data.message);
       fetchOrders();
     } catch (error) {
@@ -72,23 +46,6 @@ const ViewOrders = () => {
             View Orders
           </h1>
 
-          {/* Dropdown for Store Selection */}
-          <div className="mb-6 w-full max-w-md">
-            <label className="block mb-3 text-lg font-semibold text-gray-800">Select Store</label>
-            <select
-              value={storeID}
-              onChange={handleStoreIDChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-md focus:outline-none focus:ring-4 focus:ring-blue-400 transition ease-in-out duration-200"
-            >
-              <option value="">-- Select Store --</option>
-              {stores.map((store) => (
-                <option key={store.store_ID} value={store.store_ID}>
-                  {store.store_ID}
-                </option>
-              ))}
-            </select>
-          </div>
-
           {/* Fetch Orders Button */}
           <button
             onClick={fetchOrders}
@@ -105,7 +62,7 @@ const ViewOrders = () => {
           {/* Display Orders */}
           {orders.length > 0 && (
             <div className="mt-8 bg-white rounded-xl shadow-xl p-8 w-full max-w-3xl">
-              <h2 className="text-3xl font-semibold text-center mb-6">Orders for Store ID: {storeID}</h2>
+              <h2 className="text-3xl font-semibold text-center mb-6">Orders for Your Store</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {orders.map((order) => (
                   <div

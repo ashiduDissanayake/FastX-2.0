@@ -106,50 +106,53 @@ const managerController = {
   },
 
   // Login user
- loginManager :(req, res) => {
+  loginManager: (req, res) => {
     const { username, password } = req.body;
-    console.log('Login attempt:', { username, password });
+    console.log("Login attempt:", { username, password });
 
     // Call the model to interact with the database
     Manager.login(username, password, (err, result) => {
-        if (err) {
-            console.error('Error during login:', err);
-            return res.status(500).json({ message: 'Error occurred during login' });
-        }
+      if (err) {
+        console.error("Error during login:", err);
+        return res.status(500).json({ message: "Error occurred during login" });
+      }
 
-        const rows = result[0];
-        console.log('Query result:', rows); // Log the result from the stored procedure
+      const rows = result[0];
+      console.log("Query result:", rows); // Log the result from the stored procedure
 
-        // Check if login was successful
-        if (rows.length > 0 && rows[0].login_message === 'Login successful') {
-            const manager_ID = rows[0].ManagerID;
+      // Check if login was successful
+      if (rows.length > 0 && rows[0].login_message === "Login successful") {
+        const manager_ID = rows[0].ManagerID;
 
-            // Generate a JWT token
-            const token = jwt.sign(
-                { manager_ID, username },
-                process.env.SECRET,
-                { expiresIn: '1h' }
-            );
+        // Generate a JWT token
+        const token = jwt.sign({ manager_ID, username }, process.env.SECRET, {
+          expiresIn: "1h",
+        });
 
-            res.cookie('managertoken', token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                maxAge: 3600000,
-            });
+        res.cookie("managertoken", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          maxAge: 3600000,
+        });
 
-            return res.status(200).json({
-                message: 'Login successful',
-                manager_ID,
-                token,
-            });
-        } else {
-            console.log('Login failed:', rows[0] ? rows[0].message : 'Incorrect credentials'); // Log the failure
-            return res.status(401).json({
-                message: rows[0] ? rows[0].message : 'Login failed: Incorrect username or password',
-            });
-        }
+        return res.status(200).json({
+          message: "Login successful",
+          manager_ID,
+          token,
+        });
+      } else {
+        console.log(
+          "Login failed:",
+          rows[0] ? rows[0].message : "Incorrect credentials"
+        ); // Log the failure
+        return res.status(401).json({
+          message: rows[0]
+            ? rows[0].message
+            : "Login failed: Incorrect username or password",
+        });
+      }
     });
-},
+  },
   // Check Auth
   checkAuth: (req, res) => {
     const token = req.cookies.jwt; // Get the token from cookies
@@ -169,81 +172,135 @@ const managerController = {
 
   // get driver details
   getDriverByStoreId: async (req, res) => {
-    const storeId = req.params.storeId; // Get the store ID from request parameters
+    const managerID = req.user.manager_ID;
 
     try {
-      const drivers = await Manager.getDriversByStore(storeId); 
-      res.status(200).json(drivers); 
+      const storeIDResult = await Manager.getStoreIDByManagerID(managerID);
+
+      // Check if the result contains the storeID
+      if (!storeIDResult || !storeIDResult.store_ID) {
+        return res
+          .status(404)
+          .json({ message: "No store associated with this manager." });
+      }
+
+      const storeID = storeIDResult.store_ID;
+      const drivers = await Manager.getDriversByStore(storeID);
+      res.status(200).json(drivers);
     } catch (error) {
-      console.error("Error retrieving drivers:", error.message); 
-      res.status(500).json({ message: "Error retrieving drivers", error }); 
+      console.error("Error retrieving drivers:", error.message);
+      res.status(500).json({ message: "Error retrieving drivers", error });
     }
   },
 
   //get driver assistant details
   getDriverAssistant: async (req, res) => {
-    const storeId = req.params.storeId;
+    const managerID = req.user.manager_ID;
 
     try {
-      const driverAssistants = await Manager.getDriverAssistantsByStore(storeId);
-      res.status(200).json(driverAssistants); 
+      const storeIDResult = await Manager.getStoreIDByManagerID(managerID);
+
+      // Check if the result contains the storeID
+      if (!storeIDResult || !storeIDResult.store_ID) {
+        return res
+          .status(404)
+          .json({ message: "No store associated with this manager." });
+      }
+
+      const storeID = storeIDResult.store_ID;
+      const driverAssistants = await Manager.getDriverAssistantsByStore(
+        storeID
+      );
+      res.status(200).json(driverAssistants);
     } catch (error) {
-      console.error("Error retrieving driver assistants:", error.message); 
-      res.status(500).json({ message: "Error retrieving driver assistants", error }); 
+      console.error("Error retrieving driver assistants:", error.message);
+      res
+        .status(500)
+        .json({ message: "Error retrieving driver assistants", error });
     }
   },
 
   //get truck details
   getTruck: async (req, res) => {
-    const storeId = req.params.storeId; // Get the store ID from request parameters
+    const managerID = req.user.manager_ID;
 
     try {
-      const trucks = await Manager.getTrucksByStore(storeId); 
-      res.status(200).json(trucks); 
+      const storeIDResult = await Manager.getStoreIDByManagerID(managerID);
+
+      // Check if the result contains the storeID
+      if (!storeIDResult || !storeIDResult.store_ID) {
+        return res
+          .status(404)
+          .json({ message: "No store associated with this manager." });
+      }
+
+      const storeID = storeIDResult.store_ID;
+      const trucks = await Manager.getTrucksByStore(storeID);
+      res.status(200).json(trucks);
     } catch (error) {
-      console.error("Error retrieving trucks:", error.message); 
-      res.status(500).json({ message: "Error retrieving trucks", error }); 
+      console.error("Error retrieving trucks:", error.message);
+      res.status(500).json({ message: "Error retrieving trucks", error });
     }
   },
 
-  getStore: async (req, res) => {
-    try {
-      const stores = await Manager.getAllStores();
-      res.status(200).json(stores); 
-    } catch (error) {
-      console.error("Error fetching stores:", error);
-      res.status(500).json({ error: "An error occurred while fetching stores." });
-    }
-  },
 
   getRoute: async (req, res) => {
-    const storeId = req.params.storeId; // Get the store ID from request parameters
+    const managerID = req.user.manager_ID;
 
     try {
-      const routes = await Manager.getRoutesByStore(storeId); 
-      res.status(200).json(routes); 
+      const storeIDResult = await Manager.getStoreIDByManagerID(managerID);
+
+      // Check if the result contains the storeID
+      if (!storeIDResult || !storeIDResult.store_ID) {
+        return res
+          .status(404)
+          .json({ message: "No store associated with this manager." });
+      }
+
+      const storeID = storeIDResult.store_ID;
+      const routes = await Manager.getRoutesByStore(storeID);
+      res.status(200).json(routes);
     } catch (error) {
       console.error("Error retrieving routes:", error.message);
-      res.status(500).json({ message: "Error retrieving routes", error }); 
+      res.status(500).json({ message: "Error retrieving routes", error });
     }
   },
 
   getStoreOrders: async (req, res) => {
-    const storeId = req.params.storeId; 
-
+    const managerID = req.user.manager_ID;
     try {
-      const orders = await Manager.getStoreOrders(storeId); 
-      console.log("Orders retrieved:", orders); 
-      res.status(200).json(orders); 
+      const storeIDResult = await Manager.getStoreIDByManagerID(managerID);
+
+      // Check if the result contains the storeID
+      if (!storeIDResult || !storeIDResult.store_ID) {
+        return res
+          .status(404)
+          .json({ message: "No store associated with this manager." });
+      }
+
+      const storeID = storeIDResult.store_ID;
+      const orders = await Manager.getStoreOrders(storeID);
+      console.log("Orders retrieved:", orders);
+      res.status(200).json(orders);
     } catch (error) {
       console.error("Error retrieving orders:", error.message);
-      res.status(500).json({ message: "Error retrieving orders", error }); 
+      res.status(500).json({ message: "Error retrieving orders", error });
     }
   },
 
   getActiveTripsByStore: async (req, res) => {
+    const managerID = req.user.manager_ID;
     try {
-      const storeID = req.params.storeId; // Get the store ID from request parameters
+      const storeIDResult = await Manager.getStoreIDByManagerID(managerID);
+
+      // Check if the result contains the storeID
+      if (!storeIDResult || !storeIDResult.store_ID) {
+        return res
+          .status(404)
+          .json({ message: "No store associated with this manager." });
+      }
+
+      const storeID = storeIDResult.store_ID;
       const trips = await Manager.getActiveTripsByStore(storeID);
 
       const formattedTrips = trips.map((trip) => ({
@@ -264,23 +321,37 @@ const managerController = {
     const { schedule_ID } = req.body;
 
     if (!schedule_ID) {
-      return res.status(400).send({ message: "Trip ID is required to end the trip." });
+      return res
+        .status(400)
+        .send({ message: "Trip ID is required to end the trip." });
     }
 
     try {
       const result = await Manager.endTripById(schedule_ID);
-      
+
       res.status(200).send(result);
     } catch (error) {
       console.error("Error ending trip:", error);
-      res.status(500).send({ message: "Failed to end trip", error: error.message });
+      res
+        .status(500)
+        .send({ message: "Failed to end trip", error: error.message });
     }
   },
 
   getFinishedTripsByStore: async (req, res) => {
-    const storeID = req.params.storeId;
-
+    const managerID = req.user.manager_ID; // Get manager ID from token
     try {
+      // Get storeID by calling the stored procedure
+      const storeIDResult = await Manager.getStoreIDByManagerID(managerID);
+
+      // Check if the result contains the storeID
+      if (!storeIDResult || !storeIDResult.store_ID) {
+        return res
+          .status(404)
+          .json({ message: "No store associated with this manager." });
+      }
+
+      const storeID = storeIDResult.store_ID; // Extract store ID
       const trips = await Manager.getFinishedTripsByStore(storeID);
 
       if (trips.length === 0) {
@@ -289,6 +360,7 @@ const managerController = {
           .json({ message: "No finished trips found for the given store." });
       }
 
+      // Format the trips before returning them
       const formattedTrips = trips.map((trip) => ({
         ...trip,
         start_time: formatDateTime(trip.start_time),
@@ -307,10 +379,19 @@ const managerController = {
   },
 
   getTrainOrdersByStore: async (req, res) => {
-    const storeID = req.params.storeId; 
+    const managerID = req.user.manager_ID; 
 
     try {
-      const orders = await Manager.getTrainOrdersByStore(storeID); 
+      const storeIDResult = await Manager.getStoreIDByManagerID(managerID);
+
+      if (!storeIDResult || !storeIDResult.store_ID) {
+        return res
+          .status(404)
+          .json({ message: "No store associated with this manager." });
+      }
+
+      const storeID = storeIDResult.store_ID; 
+      const orders = await Manager.getTrainOrdersByStore(storeID);
 
       if (orders.length === 0) {
         return res.status(404).json({
@@ -318,92 +399,116 @@ const managerController = {
         });
       }
 
-      res.status(200).json(orders); 
+      res.status(200).json(orders);
     } catch (err) {
       console.error("Error fetching train orders:", err);
-      res.status(500).json({ error: err.message || "An error occurred while fetching train orders." });
+      res
+        .status(500)
+        .json({
+          error:
+            err.message || "An error occurred while fetching train orders.",
+        });
     }
   },
 
   updateOrdersToBranch: async (req, res) => {
-    const { storeID } = req.body;
-
-    if (!storeID) {
-      return res.status(400).send({ message: "Store ID is required." });
-    }
-
+    const managerID = req.user.manager_ID;
+   
     try {
+      const storeIDResult = await Manager.getStoreIDByManagerID(managerID);
+
+      if (!storeIDResult || !storeIDResult.store_ID) {
+        return res
+          .status(404)
+          .json({ message: "No store associated with this manager." });
+      }
+      const storeID = storeIDResult.store_ID;   
       const result = await Manager.updateOrdersToBranch(storeID);
-      res.status(200).send({ message: result.success_message }); 
+      res.status(200).send({ message: result.success_message });
     } catch (error) {
       console.error("Error updating orders to 'branch':", error);
-      res.status(500).send({ message: "Failed to update orders", error: error.message });
+      res
+        .status(500)
+        .send({ message: "Failed to update orders", error: error.message });
     }
   },
 
   scheduleTrip: async (req, res) => {
+    const managerID = req.user.manager_ID;
     const {
-        truck_ID,
-        driver_ID,
-        assistant_ID,
-        store_ID,
-        route_ID,
-        start_time,
-        selectedOrders,
+      truck_ID,
+      driver_ID,
+      assistant_ID,
+      route_ID,
+      start_time,
+      selectedOrders,
     } = req.body;
 
     if (
-        !truck_ID ||
-        !driver_ID ||
-        !assistant_ID ||
-        !store_ID ||
-        !route_ID ||
-        !start_time ||
-        selectedOrders.length === 0
+      !truck_ID ||
+      !driver_ID ||
+      !assistant_ID ||
+      !route_ID ||
+      !start_time ||
+      selectedOrders.length === 0
     ) {
-        return res.status(400).send({
-            message:
-                "All fields are required and at least one order must be selected.",
-        });
+      return res.status(400).send({
+        message:
+          "All fields are required and at least one order must be selected.",
+      });
     }
 
     try {
-        const routeMaxTime = await Manager.getRouteMaxTime(route_ID);
+      const storeIDResult = await Manager.getStoreIDByManagerID(managerID);
 
-        const driverHours = await Manager.checkDriverHours(driver_ID);
-        if (driverHours + routeMaxTime > 40) {
-            return res.status(400).send({ message: "Driver exceeds the 40-hour working limit." });
-        }
+      if (!storeIDResult || !storeIDResult.store_ID) {
+        return res
+          .status(404)
+          .json({ message: "No store associated with this manager." });
+      }
+      const storeID = storeIDResult.store_ID; 
+      const routeMaxTime = await Manager.getRouteMaxTime(route_ID);
 
-        const assistantHours = await Manager.checkAssistantHours(assistant_ID);
-        if (assistantHours + routeMaxTime > 60) {
-            return res.status(400).send({ message: "Assistant exceeds the 60-hour working limit." });
-        }
+      const driverHours = await Manager.checkDriverHours(driver_ID);
+      if (driverHours + routeMaxTime > 40) {
+        return res
+          .status(400)
+          .send({ message: "Driver exceeds the 40-hour working limit." });
+      }
 
-        const currentDate = new Date().toISOString().split("T")[0];
-        const formattedStartTime = `${currentDate} ${start_time}:00`;
+      const assistantHours = await Manager.checkAssistantHours(assistant_ID);
+      if (assistantHours + routeMaxTime > 60) {
+        return res
+          .status(400)
+          .send({ message: "Assistant exceeds the 60-hour working limit." });
+      }
 
-        await Manager.scheduleTrip([
-            truck_ID,
-            driver_ID,
-            assistant_ID,
-            store_ID,
-            route_ID,
-            formattedStartTime,
-        ]);
+      const currentDate = new Date().toISOString().split("T")[0];
+      const formattedStartTime = `${currentDate} ${start_time}:00`;
 
-        const orderIds = selectedOrders.join(", ");
+      await Manager.scheduleTrip([
+        truck_ID,
+        driver_ID,
+        assistant_ID,
+        storeID,
+        route_ID,
+        formattedStartTime,
+      ]);
 
-        await Manager.updateOrderStatus(orderIds);
+      const orderIds = selectedOrders.join(", ");
 
-        res.status(200).send({ message: "Trip scheduled and orders updated successfully!" });
+      await Manager.updateOrderStatus(orderIds);
+
+      res
+        .status(200)
+        .send({ message: "Trip scheduled and orders updated successfully!" });
     } catch (error) {
-        console.error("Error scheduling trip:", error);
-        res.status(500).send({ message: "Failed to schedule trip", error: error.message });
+      console.error("Error scheduling trip:", error);
+      res
+        .status(500)
+        .send({ message: "Failed to schedule trip", error: error.message });
     }
-},
-
-
+  },
 };
 
 module.exports = managerController;

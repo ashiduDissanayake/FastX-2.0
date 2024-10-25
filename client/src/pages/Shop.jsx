@@ -92,6 +92,45 @@ const Shop = () => {
       setLoading(false);
     }
   };
+  const fetchFilteredProducts = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({
+        category: selectedCategory,
+        subcategory: selectedSubCategory,
+        sortBy: sortBy,
+        limit: '20',
+        page: page.toString()
+      });
+
+      const response = await fetch(
+        `http://localhost:8080/user/filter?${params}`,
+        {
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message);
+
+      setProducts(prev => {
+        const combinedProducts = [...prev, ...data];
+        // Remove duplicates based on product_ID
+        return Array.from(new Map(combinedProducts.map(item => [item.product_ID, item])).values());
+      });
+      setHasMore(data.length === 20);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching filtered products:', err);
+      setError("Failed to load filtered products");
+      setLoading(false);
+    }
+  };
+
+
 
   const getRandomSize = () => {
     const sizes = [

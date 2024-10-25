@@ -18,6 +18,8 @@ router.get('/getdriver', adminController.getDriver);
 router .get('/countcustomer', adminController.countCustomer);
 router.get('/countproduct', adminController.countProduct);
 router.get('/countEmployee', adminController.countEmployee);
+router.get('/getAssistantDriver', adminController.getAssistantDriver);
+router.get('/getManager', adminController.getManager);
                                                       
     
 module.exports = router;

@@ -1,6 +1,7 @@
 const db = require("../config/db");
 const bcrypt = require("bcrypt");
 
+
 // User model
 const Admin = {
    getCustermer: () => {
@@ -67,6 +68,33 @@ const Admin = {
       }
       resolve(result[0][0].TotalRowCount);
     });
+  }
+  );
+},
+getAssistantDriver: () => {
+  return new Promise((resolve, reject) => {
+    const query = "call GetDriverAssistantInfo()";
+    db.query(query, (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(result[0]);
+    }
+    );
+  }
+  );
+},
+
+getManager: () => {
+  return new Promise((resolve, reject) => {
+    const query = "call GetBranchManagerInfo()";
+    db.query(query, (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(result[0]);
+    }
+    );
   }
   );
 }

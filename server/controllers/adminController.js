@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const db = require("../config/db");
 const Admin = require("../models/adminModel");
-const { getDriver } = require("./mainmanagerController");
+
 
 // dotenv config
 dotenv.config();
@@ -139,6 +139,26 @@ const adminController = {
   countEmployee: async (req, res) => {
     try {
       const result = await Admin.countEmployee();
+      res.json(result);
+    } catch (err) {
+      const errors = handleErrors(err);
+      console.log(errors);
+    }
+  },
+
+  getAssistantDriver: async (req, res) => {
+    try {
+      const result = await Admin.getAssistantDriver();
+      res.json(result);
+    } catch (err) {
+      const errors = handleErrors(err);
+      console.log(errors);
+    }
+  },
+
+  getManager : async (req, res) => {
+    try {
+      const result = await Admin.getManager();
       res.json(result);
     } catch (err) {
       const errors = handleErrors(err);

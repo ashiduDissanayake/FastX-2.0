@@ -20,6 +20,7 @@ router.get('/countproduct', adminController.countProduct);
 router.get('/countEmployee', adminController.countEmployee);
 router.get('/getAssistantDriver', adminController.getAssistantDriver);
 router.get('/getManager', adminController.getManager);
+router.get('/getOrderCount', adminController.getOrderCount);
                                                       
     
 module.exports = router;

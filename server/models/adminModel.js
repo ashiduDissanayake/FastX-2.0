@@ -97,6 +97,20 @@ getManager: () => {
     );
   }
   );
+},
+
+getOrderCount: () => {
+  return new Promise((resolve, reject) => {
+    const query = "call GetOrdersCount()";
+    db.query(query, (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(result[0][0].OrderCount);
+    }
+    );
+  }
+  );
 }
 
 };

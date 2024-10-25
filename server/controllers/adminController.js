@@ -166,6 +166,16 @@ const adminController = {
     }
   },
 
+  getOrderCount: async (req, res) => {
+    try {
+      const result = await Admin.getOrderCount();
+      res.json(result);
+    } catch (err) {
+      const errors = handleErrors(err);
+      console.log(errors);
+    }
+  },
+
 
 };
 

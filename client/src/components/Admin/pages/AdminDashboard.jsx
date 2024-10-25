@@ -9,12 +9,14 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 ChartJS.register(ArcElement, Tooltip, Legend); // Register the required components
 
 const AdminDashboard = () => {
+  const [orderCount, setOrderCount] = useState(0);
   const [customerCount, setCustomerCount] = useState(0);
   const [productCount, setProductCount] = useState(0);
   const [employeeCount, setEmployeeCount] = useState(0);
   const [displayedCustomerCount, setDisplayedCustomerCount] = useState(0);
   const [displayedProductCount, setDisplayedProductCount] = useState(0);
   const [displayedEmployeeCount, setDisplayedEmployeeCount] = useState(0);
+  const [displayedOrderCount, setDisplayedOrderCount] = useState(0);
 
   // Fetch counts from the backend
   useEffect(() => {
@@ -41,14 +43,22 @@ const AdminDashboard = () => {
       .catch((error) => {
         console.error('Error fetching employee count:', error);
       });
+    axios.get('http://localhost:8080/admin/getOrderCount')
+      .then((response) => {
+        setOrderCount(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching order count:', error);
+      });
   }, []);
 
   // Counter animation
   useEffect(() => {
+    animateValue(setDisplayedOrderCount, orderCount, 1500);
     animateValue(setDisplayedCustomerCount, customerCount, 1500);
     animateValue(setDisplayedProductCount, productCount, 1500);
     animateValue(setDisplayedEmployeeCount, employeeCount, 1500);
-  }, [customerCount, productCount, employeeCount]);
+  }, [orderCount,customerCount, productCount, employeeCount]);
 
   const animateValue = (setter, finalValue, duration) => {
     let start = 0;
@@ -69,7 +79,7 @@ const AdminDashboard = () => {
     labels: ['Total Sells', 'Total Customers', 'Total Products', 'Total Employees'],
     datasets: [{
       label: 'Counts',
-      data: [25, displayedCustomerCount, displayedProductCount, displayedEmployeeCount],
+      data: [displayedOrderCount, displayedCustomerCount, displayedProductCount, displayedEmployeeCount],
       backgroundColor: [
         'rgba(255, 206, 86, 0.6)', // Yellow
         'rgba(75, 192, 192, 0.6)', // Green
@@ -87,7 +97,8 @@ const AdminDashboard = () => {
         <Sidebar />
         <div className="flex-grow p-5 bg-cover bg-center bg-no-repeat overflow-y-auto" style={{ backgroundImage: `url(${img2})` }}>
           <Header />
-          <Statistics 
+          <Statistics
+            orderCount={displayedOrderCount} 
             customerCount={displayedCustomerCount} 
             productCount={displayedProductCount} 
             employeeCount={displayedEmployeeCount} 
@@ -115,11 +126,11 @@ const Header = () => (
   </header>
 );
 
-const Statistics = ({ customerCount, productCount, employeeCount }) => (
+const Statistics = ({ orderCount,customerCount, productCount, employeeCount }) => (
   <div className="grid grid-cols-2 gap-y-5 gap-x-5 bg-[#001f3f] p-5 rounded-lg">
     <Statistic 
       title="Total Sells" 
-      value={<span className="text-4xl font-bold">25<span className="text-red-500 text-5xl">+</span></span>} 
+      value={<span className="text-4xl font-bold">{orderCount}<span className="text-red-500 text-5xl">+</span></span>} 
       change="" 
     />
     <Statistic 

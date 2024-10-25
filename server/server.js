@@ -149,33 +149,7 @@ app.post('/admin/addProduct', (req, res) => {
 });
 
 // Updated route for fetching pending orders
-app.get('/orders', (req, res) => {
-  console.log("HI");
 
-  const query = 'SELECT order_id,order_date, route_id, status FROM `Order` WHERE status = ?';
-
-  // Use the correct parameter format, passing 'Pending' as a value for the placeholder
-  db.query(query, ['Pending'], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: 'Database query error' });
-    }
-    res.json(results);
-  });
-});
-
-app.put('/orders/:id', (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body; // Status should be 'Shipped'
-
-  const query = 'UPDATE `Order` SET status = ? WHERE order_id = ?';
-
-  db.query(query, [status, id], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error updating order status' });
-    }
-    res.json({ message: 'Order status updated successfully' });
-  });
-});
 
 
 app.get('/api/train/nearest-capacity/:storeId', (req, res) => {
@@ -187,12 +161,37 @@ app.get('/api/train/nearest-capacity/:storeId', (req, res) => {
       console.error('Error executing stored procedure:', error);
       res.status(500).json({ message: 'Server error' });
     } else if (results[0].length > 0) {
-      res.json({ capacity: results[0][0].capacity });
+      const { capacity, Availabale_capacity } = results[0][0];
+      res.json({ capacity, Availabale_capacity });
     } else {
       res.status(404).json({ message: 'No upcoming train found' });
     }
   });
 });
+
+
+
+app.put('/api/train/reduce-capacity/:storeId', async (req, res) => {
+  const { storeId } = req.params; // Get the storeId from the URL parameters
+  const { capacity } = req.body; // Get the capacity from the request body
+
+  const updateQuery = `
+    UPDATE TrainSchedule
+    SET Availabale_capacity =Availabale_capacity - ?
+    WHERE store_id = ? AND arrival_time >= NOW()
+    ORDER BY arrival_time ASC
+    LIMIT 1;
+  `;
+  
+  try {
+    await db.query(updateQuery, [capacity, storeId]); // Execute the query
+    res.json({ message: 'Train capacity updated' }); // Respond with a success message
+  } catch (error) {
+    console.error('Error updating train capacity:', error);
+    res.status(500).json({ message: 'Server error' }); // Handle errors
+  }
+});
+
 
 
 

@@ -436,6 +436,39 @@ updateTrainSchedule: (req, res) => {
   });
 },
 
+
+getNearestCapacity: (req, res) => {
+  const { storeId } = req.params;
+
+  MainManagerModel.getNearestTrainCapacity(storeId, (error, results) => {
+    if (error) {
+      console.error('Error executing stored procedure:', error);
+      return res.status(500).json({ message: 'Server error' });
+    }
+
+    if (results.length > 0) {
+      const { capacity, Availabale_capacity, departure_Time } = results[0];
+      return res.json({ capacity, Availabale_capacity, departure_Time });
+    } else {
+      return res.status(404).json({ message: 'No upcoming train found' });
+    }
+  });
+},
+
+
+reduceCapacity: (req, res) => {
+  const { storeId } = req.params; // Get the storeId from the URL parameters
+  const { capacity } = req.body; // Get the capacity from the request body
+
+  MainManagerModel.reduceTrainCapacity(storeId, capacity, (error, results) => {
+    if (error) {
+      console.error('Error updating train capacity:', error);
+      return res.status(500).json({ message: 'Server error' }); // Handle errors
+    }
+    res.json({ message: 'Train capacity updated' }); // Respond with a success message
+  });
+},
+
 // Backend code for updating order status
 
 

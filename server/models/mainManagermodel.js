@@ -24,6 +24,33 @@ const OrderModel = {
     });
   },
 
+  getNearestTrainCapacity: (storeId, callback) => {
+    const query = 'CALL GetNearestTrainCapacity(?)';
+    db.query(query, [storeId], (error, results) => {
+      if (error) {
+        return callback(error, null);
+      }
+      callback(null, results[0]);
+    });
+  },
+
+  reduceTrainCapacity: (storeId, capacity, callback) => {
+    const updateQuery = `
+      UPDATE TrainSchedule
+      SET Availabale_capacity = Availabale_capacity - ?
+      WHERE store_id = ? AND arrival_time >= NOW()
+      ORDER BY arrival_time ASC
+      LIMIT 1;
+    `;
+    
+    db.query(updateQuery, [capacity, storeId], (error, results) => {
+      if (error) {
+        return callback(error, null);
+      }
+      callback(null, results);
+    });
+  },
+
   getAllTrainSchedules: (callback) => {
     const sqlGet = "SELECT * FROM `TrainSchedule`"; // Adjust the table name as needed
     db.query(sqlGet, (error, results) => {

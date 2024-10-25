@@ -6,6 +6,8 @@ function Store3() {
   const [orders, setOrders] = useState([]);
   const [trainCapacity, setTrainCapacity] = useState(0);
   const [displayCapacity, setDisplayCapacity] = useState(0);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [departureTime, setDepartureTime] = useState(null); // State to hold the departure time
 
   useEffect(() => {
     // Fetch data immediately when component mounts
@@ -18,8 +20,16 @@ function Store3() {
       fetchTrainCapacity();
     }, 5000); // Adjust the interval time as needed
 
-    // Cleanup interval on component unmount
-    return () => clearInterval(intervalId);
+    // Set up clock update every second
+    const clockIntervalId = setInterval(() => {
+      setCurrentTime(new Date()); // Update current time every second
+    }, 1000);
+
+    // Cleanup intervals on component unmount
+    return () => {
+      clearInterval(intervalId);
+      clearInterval(clockIntervalId);
+    };
   }, []);
 
   const fetchOrders = () => {
@@ -37,11 +47,12 @@ function Store3() {
   };
 
   const fetchTrainCapacity = () => {
-    fetch('http://localhost:8080/api/train/nearest-capacity/3')
+    fetch('http://localhost:8080/mainmanager/train/nearest-capacity/3')
       .then(response => response.json())
       .then(data => {
         setTrainCapacity(data.capacity);
         setDisplayCapacity(data.Availabale_capacity); // Check for typo in "Availabale_capacity"
+        setDepartureTime(new Date(data.departure_Time)); // Set the fetched departure time
       })
       .catch(error => console.error('Error fetching train capacity:', error));
   };
@@ -62,7 +73,7 @@ function Store3() {
       })
       .then(() => {
         // After successfully updating the order status, reduce the train capacity
-        return fetch('http://localhost:8080/api/train/reduce-capacity/3', {
+        return fetch('http://localhost:8080/mainmanager/train/reduce-capacity/3', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -85,6 +96,21 @@ function Store3() {
       .catch(error => console.error('Error processing status change:', error));
   };
 
+  // Function to format the remaining time
+  const formatRemainingTime = (departure) => {
+    if (!departure) return 'Loading...'; // Show loading state until departure time is available
+    const now = new Date();
+    const remainingTime = departure - now;
+
+    if (remainingTime <= 0) return 'Departure has passed';
+
+    const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
+
   return (
     <div className="flex">
       <div className="w-1/4">
@@ -93,7 +119,12 @@ function Store3() {
 
       <div className="w-3/4 p-8">
         <StoreSidebar />
-        
+
+        {/* Remaining Time until Departure */}
+        <div className="mb-4 p-4 bg-white rounded-lg shadow-md border border-gray-200">
+          <h2 className="text-xl font-semibold mb-2 text-center text-gray-800">Remaining Time to Departure</h2>
+          <p className="text-4xl font-bold text-center text-blue-600">{formatRemainingTime(departureTime)}</p>
+        </div>
 
         <h2 className="text-2xl font-semibold mb-6">Order List</h2>
         <div className="overflow-x-auto">

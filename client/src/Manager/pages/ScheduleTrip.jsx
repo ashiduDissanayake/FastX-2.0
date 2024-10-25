@@ -17,20 +17,16 @@ const ScheduleTrip = () => {
   const [selectedRoute, setSelectedRoute] = useState("");
   const [selectedOrders, setSelectedOrders] = useState([]); // State for selected orders
   const [totalCapacity, setTotalCapacity] = useState(0); // State for total capacity
-  const [startTime, setStartTime] = useState("");
+  const [startTime, setStartTime] = useState(""); // State for start time
   const [warning, setWarning] = useState(""); // Warning message for capacity
+  const [formVisible, setFormVisible] = useState(false); // State to control form visibility
 
-  
   const handleNavigation = (item) => {
     setActivePage(item);
   };
 
   useEffect(() => {
     loadOrdersByStore();
-    loadDriversByStore();
-    loadAssistantsByStore();
-    loadTrucksByStore();
-    loadRoutesByStore();
   }, []);
 
   const loadOrdersByStore = async () => {
@@ -43,10 +39,6 @@ const ScheduleTrip = () => {
       setOrderData(response.data);
     } catch (error) {
       console.error("Error loading orders", error);
-      if (error.response) {
-        console.error("Response data:", error.response.data);
-        console.error("Response status:", error.response.status);
-      }
     }
   };
 
@@ -100,13 +92,13 @@ const ScheduleTrip = () => {
 
   const handleOrderSelection = (orderId, capacity) => {
     const intCapacity = Math.floor(capacity); // Convert capacity to integer
-  
+
     setSelectedOrders((prevOrders) => {
       const isSelected = prevOrders.includes(orderId);
       const newTotalCapacity = isSelected
         ? totalCapacity - intCapacity
         : totalCapacity + intCapacity;
-  
+
       // Check capacity limit
       if (!isSelected && newTotalCapacity > 500) {
         setWarning(
@@ -114,17 +106,16 @@ const ScheduleTrip = () => {
         );
         return prevOrders;
       }
-  
+
       setWarning("");
       setTotalCapacity(newTotalCapacity); // Update total capacity here
-  
+
       // Return new list of selected orders
       return isSelected
         ? prevOrders.filter((id) => id !== orderId)
         : [...prevOrders, orderId];
     });
   };
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -158,7 +149,35 @@ const ScheduleTrip = () => {
     }
   };
 
+  const handleNextStep = () => {
+    if (selectedOrders.length === 0 || !startTime) {
+      alert("Please select orders and provide a start time.");
+    } else {
+      loadDriversByStore();
+      loadAssistantsByStore();
+      loadTrucksByStore();
+      loadRoutesByStore();
+      setFormVisible(true); // Show the rest of the form
+    }
+  };
+
   const [maxTimeOfRoute, setMaxTimeOfRoute] = useState(0);
+
+  const isDriverResting = (lastTripEndTime) => {
+    const restTimeInMilliseconds = 60 * 60 * 1000; // 1 hour in milliseconds
+    const now = new Date();
+    const lastTripEnd = new Date(lastTripEndTime);
+
+    return now - lastTripEnd < restTimeInMilliseconds;
+  };
+
+  const isDriverAssistantResting = (lastTripEndTime) => {
+    const restTimeInMilliseconds = 60 * 60 * 1000; // 1 hour in milliseconds
+    const now = new Date();
+    const lastTripEnd = new Date(lastTripEndTime);
+
+    return now - lastTripEnd < restTimeInMilliseconds;
+  };
 
   return (
     <div className="flex min-h-screen bg-gradient-to-r from-purple-100 to-blue-100">
@@ -182,6 +201,7 @@ const ScheduleTrip = () => {
             <span className="text-xl font-bold ml-2">Loading Packages</span>
           </div>
 
+          {/* Orders and capacity selection */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {orderData.length > 0 ? (
               Array.from(new Set(orderData.map((order) => order.route_id))).map(
@@ -250,109 +270,47 @@ const ScheduleTrip = () => {
           <div className="mt-4">
             <div className="relative h-4 bg-gray-200 rounded-full overflow-hidden">
               <div
-                className="absolute h-full bg-gradient-to-r from-green-400 to-blue-500 rounded-full"
-                style={{ width: `${(totalCapacity / 500) * 100}%` }} // Use 500 as the max capacity
-              />
+                className="absolute top-0 left-0 h-full bg-green-500 transition-all"
+                style={{ width: `${(totalCapacity / 500) * 100}%` }}
+              ></div>
             </div>
-            <p className="text-sm mt-1 text-center">
-              {totalCapacity} / 500 Capacity Used
-            </p>
+            <div className="mt-2 text-sm text-gray-600">
+              Total Capacity Selected: {totalCapacity} / 500
+            </div>
           </div>
         </div>
 
-        {/* Trip Scheduling Form */}
-        {selectedOrders.length > 0 && (
-          <form
-            onSubmit={handleSubmit}
-            className="max-w-lg mx-auto bg-white p-8 shadow-lg rounded-lg text-gray-600"
-          >
-            {/* driver selection */}
-            <div className="mb-4">
-              <label className="block mb-2 text-gray-700">Select Driver</label>
-              <select
-                value={selectedDriver}
-                onChange={(e) => setSelectedDriver(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg"
-                required
-              >
-                <option value="">-- Select Driver --</option>
-                {driverData.map((driver) => {
-                  // Calculate total working hours
-                  const totalDriverHours =
-                    driver.current_working_time + maxTimeOfRoute;
+        {/* Start Time Input */}
+        <div className="mb-4">
+          <label htmlFor="start_time" className="block font-bold mb-1">
+            Trip Start Time:
+          </label>
+          <input
+            type="time"
+            id="start_time"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            className="w-full px-3 py-2 border rounded-lg"
+            required
+          />
+        </div>
 
-                  return (
-                    <option
-                      key={driver.driver_ID}
-                      value={driver.driver_ID}
-                      disabled={
-                        driver.status !== "inactive" || totalDriverHours >= 40
-                      }
-                    >
-                      {`${driver.driver_ID} - worked ${driver.current_working_time} hrs`}
-                      {driver.status === "inactive" ? "" : "(active)"}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
+        {/* Next Button */}
+        <button
+          className="px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-700"
+          onClick={handleNextStep}
+        >
+          Next
+        </button>
 
-            {/* Assistant Selection */}
-            <div className="mb-4">
-              <label className="block mb-2 text-gray-700">
-                Select Assistant
-              </label>
-              <select
-                value={selectedAssistant}
-                onChange={(e) => setSelectedAssistant(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg"
-              >
-                <option value="">-- Select Assistant --</option>
-                {assistantData
-                  .sort((a, b) => {
-                    // Sorting: "inactive" first, then "available"
-                    if (a.status === "inactive" && b.status !== "inactive")
-                      return -1;
-                    if (a.status !== "inactive" && b.status === "inactive")
-                      return 1;
-                    if (a.status === "available" && b.status !== "available")
-                      return -1;
-                    if (a.status !== "available" && b.status === "available")
-                      return 1;
-                    return 0;
-                  })
-                  .map((assistant) => {
-                    // Set status display text
-                    let statusText = "";
-                    if (assistant.status === "inactive") {
-                      statusText = "(Inactive)";
-                    } else if (assistant.status === "available") {
-                      statusText = "(Available)";
-                    } else if (assistant.status === "active1") {
-                      statusText = "(Active 1)";
-                    } else if (assistant.status === "active2") {
-                      statusText = "(Active 2)";
-                    }
-
-                    return (
-                      <option
-                        key={assistant.assistant_ID}
-                        value={assistant.assistant_ID}
-                        disabled={
-                          assistant.status !== "inactive" &&
-                          assistant.status !== "available"
-                        }
-                      >
-                        {`${assistant.assistant_ID} - worked ${assistant.current_working_time} hrs ${statusText}`}
-                      </option>
-                    );
-                  })}
-              </select>
-            </div>
-
+        {/* Conditional Form */}
+        {formVisible && (
+          <form onSubmit={handleSubmit}>
             {/* Truck Selection */}
             <div className="mb-4">
-              <label className="block mb-2 text-gray-700">Select Truck</label>
+              <label htmlFor="truck" className="block font-bold mb-1">
+                Truck:
+              </label>
               <select
                 value={selectedTruck}
                 onChange={(e) => setSelectedTruck(e.target.value)}
@@ -366,7 +324,7 @@ const ScheduleTrip = () => {
                     value={truck.truck_ID}
                     disabled={truck.status !== "inactive"}
                   >
-                    {truck.truck_ID}{" "}
+                    {`${truck.truck_ID} - capacity ${truck.capacity}`}
                     {truck.status === "inactive" ? "" : "(active)"}
                   </option>
                 ))}
@@ -375,50 +333,109 @@ const ScheduleTrip = () => {
 
             {/* Route Selection */}
             <div className="mb-4">
-              <label className="block mb-2 text-gray-700">Select Route</label>
+              <label htmlFor="route" className="block font-bold mb-1">
+                Route:
+              </label>
               <select
                 value={selectedRoute}
-                onChange={(e) => {
-                  const selectedRouteId = e.target.value;
-                  setSelectedRoute(selectedRouteId);
-                  const selectedRouteData = routeData.find(
-                    (route) => route.route_ID === selectedRouteId
-                  );
-                  if (selectedRouteData) {
-                    setMaxTimeOfRoute(selectedRouteData.max_time);
-                  }
-                }}
+                onChange={(e) => setSelectedRoute(e.target.value)}
                 className="w-full px-3 py-2 border rounded-lg"
                 required
               >
                 <option value="">-- Select Route --</option>
                 {routeData.map((route) => (
                   <option key={route.route_ID} value={route.route_ID}>
-                    {`${route.route_ID} : ${route.max_time} hrs`}
+                    {route.route_ID}
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* Start Time Selection */}
+            {/* Driver Selection */}
             <div className="mb-4">
-              <label className="block mb-2 text-gray-700">Start Time</label>
-              <input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
+              <label htmlFor="driver" className="block font-bold mb-1">
+                Driver:
+              </label>
+              <select
+                value={selectedDriver}
+                onChange={(e) => setSelectedDriver(e.target.value)}
                 className="w-full px-3 py-2 border rounded-lg"
                 required
-              />
+              >
+                <option value="">-- Select Driver --</option>
+                {driverData.map((driver) => {
+                  const isResting = isDriverResting(driver.last_trip_end_time);
+                  const totalDriverHours =
+                    driver.current_working_time + maxTimeOfRoute;
+
+                  return (
+                    <option
+                      key={driver.driver_ID}
+                      value={driver.driver_ID}
+                      disabled={
+                        driver.status !== "inactive" || totalDriverHours >= 40
+                      }
+                    >
+                      {`${driver.driver_ID} - worked ${
+                        driver.current_working_time
+                      } hrs ${isResting ? "(resting)" : ""}`}
+                      {driver.status === "inactive" ? "" : "(active)"}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+
+            {/* Assistant Selection */}
+            <div className="mb-4">
+              <label htmlFor="assistant" className="block font-bold mb-1">
+                Driver Assistant:
+              </label>
+              <select
+                value={selectedAssistant}
+                onChange={(e) => setSelectedAssistant(e.target.value)}
+                className="w-full px-3 py-2 border rounded-lg"
+                required
+              >
+                <option value="">-- Select Driver Assistant --</option>
+                {assistantData.map((assistant) => {
+                  const isResting = isDriverAssistantResting(
+                    assistant.last_trip_end_time
+                  );
+                  const totalAssistantHours =
+                    assistant.current_working_time + maxTimeOfRoute;
+
+                  return (
+                    <option
+                      key={assistant.assistant_ID}
+                      value={assistant.assistant_ID}
+                      disabled={
+                         (assistant.status === "active1" || assistant.status === "active2") || totalAssistantHours > 60
+                      }
+                    >
+                      {`${assistant.assistant_ID} - worked ${
+                        assistant.current_working_time
+                      } hrs ${
+                        isResting && assistant.status === "inactive"
+                          ? "(resting)"
+                          : ""
+                      }`}
+                      {assistant.status === "inactive" ? "" : `(${assistant.status})`}
+                    </option>
+                  );
+                })}
+              </select>
             </div>
 
             {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-            >
-              Schedule Trip
-            </button>
+            <div className="mb-4">
+              <button
+                type="submit"
+                className="w-full px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-700"
+              >
+                Schedule Trip
+              </button>
+            </div>
           </form>
         )}
       </div>

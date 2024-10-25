@@ -608,19 +608,31 @@ END $$
 
 DELIMITER ;
 
--- Get  drivers
+-- get drivers
 DELIMITER $$
 
 CREATE PROCEDURE GetDriversByStoreID(
     IN storeID INT
 )
 BEGIN
+    -- Declare an exception handler for SQL errors
     DECLARE EXIT HANDLER FOR SQLEXCEPTION 
     BEGIN
+        -- Handling SQL exception, return an error message
         SELECT 'SQL Exception Occurred. Unable to fetch drivers.' AS error_message;
     END;
 
-    SELECT * FROM Driver WHERE store_ID = storeID; 
+   --  -- Select drivers for the specified store
+--     SELECT * FROM Driver WHERE store_ID = storeID; 
+-- Select drivers along with their last trip end time for the specified store
+    SELECT d.*, 
+           (SELECT end_time 
+            FROM TruckSchedule 
+            WHERE driver_ID = d.driver_ID 
+            ORDER BY end_time DESC 
+            LIMIT 1) AS last_trip_end_time
+    FROM Driver d
+    WHERE d.store_ID = storeID;
 END $$
 
 DELIMITER ;
@@ -632,15 +644,26 @@ CREATE PROCEDURE GetDriverAssistantsByStoreID(
     IN storeID INT
 )
 BEGIN
+    -- Declare an exception handler for SQL errors
     DECLARE EXIT HANDLER FOR SQLEXCEPTION 
     BEGIN
+        -- Handling SQL exception, return an error message
         SELECT 'SQL Exception Occurred. Unable to fetch driver assistants.' AS error_message;
     END;
 
-    SELECT * FROM DriverAssistant WHERE store_ID = storeID; 
+    -- Select driver assistants for the specified store
+    SELECT d.*, 
+           (SELECT end_time 
+            FROM TruckSchedule 
+            WHERE assistant_ID = d.assistant_ID 
+            ORDER BY end_time DESC 
+            LIMIT 1) AS last_trip_end_time
+    FROM DriverAssistant d
+    WHERE d.store_ID = storeID;
 END $$
 
 DELIMITER ;
+
 
 -- get trucks
 DELIMITER $$

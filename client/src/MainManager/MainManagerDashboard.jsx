@@ -1,11 +1,22 @@
 import React from 'react';
+import SidePanel from './MainManagerSidepanel';
+import StoreSidebar from './StoreSidebar'
 
-const MainManagerDashboard = () => {
-    return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <h2 className="text-3xl font-bold text-gray-900">Welcome to the Main Manager Dashboard</h2>
-        </div>
-    );
-};
+function MainmanagerCustomer() {
+  return (
+    <div className="flex">
+      {/* SidePanel on the left */}
+      <div className="w-1/4">
+        <SidePanel />
+      </div>
 
-export default MainManagerDashboard;
+      {/* MainmanagerReport on the right */}
+      <div className="w-3/4 p-8">
+        <StoreSidebar/>
+        <p>Hi</p>
+      </div>
+    </div>
+  );
+}
+
+export default MainmanagerCustomer;

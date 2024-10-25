@@ -176,7 +176,6 @@ const mainmanagerController = {
             // Set the token as an HTTP-only cookie (more secure)
             res.cookie('token', token, {
                 httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-                secure: process.env.NODE_ENV === 'production', // Use secure cookies in production (HTTPS)
                 maxAge: 3600000, // 1 hour in milliseconds
             });
 
@@ -192,6 +191,78 @@ const mainmanagerController = {
             });
         }
     });
+},
+
+getPendingOrdersStore1: (req, res) => {
+  MainManagerModel.getPendingOrdersStore1((err, orders) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database query error' });
+    }
+    res.json(orders);
+  });
+},
+
+getSchedules: async (req, res) => {
+  try {
+    const schedules = await MainManagerModel.getAllTrain();
+    res.status(200).json(schedules);
+  } catch (error) {
+    console.error('Error fetching train schedules:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+},
+
+getPendingOrdersStore2: (req, res) => {
+  MainManagerModel.getPendingOrdersStore2((err, orders) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database query error' });
+    }
+    res.json(orders);
+  });
+},
+
+getPendingOrdersStore3: (req, res) => {
+  MainManagerModel.getPendingOrdersStore3((err, orders) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database query error' });
+    }
+    res.json(orders);
+  });
+},
+
+getPendingOrdersStore4: (req, res) => {
+  MainManagerModel.getPendingOrdersStore4((err, orders) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database query error' });
+    }
+    res.json(orders);
+  });
+},
+
+getPendingOrdersStore5: (req, res) => {
+  MainManagerModel.getPendingOrdersStore5((err, orders) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database query error' });
+    }
+    res.json(orders);
+  });
+},
+
+updateOrderStatus: (req, res) => {
+ 
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!status) {
+    return res.status(400).json({ error: 'Status is required' });
+  }
+
+  MainManagerModel.updateOrderStatus(id, status, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error updating order status' });
+    }
+    res.json({ message: 'Order status updated successfully' });
+  });
 },
 
 
@@ -366,18 +437,6 @@ updateTrainSchedule: (req, res) => {
 },
 
 // Backend code for updating order status
-updateOrderStatus: (req, res) => {
-  const { orderId } = req.params;
-  const { status } = req.body; // Expects { status: 'Shipped' }
-
-  const sqlUpdate = "UPDATE orders SET status = ? WHERE order_ID = ?";
-  db.query(sqlUpdate, [status, orderId], (error, result) => {
-      if (error) {
-          return res.status(500).json({ message: "Error updating order status", error });
-      }
-      res.status(200).json({ message: "Order status updated successfully" });
-  });
-},
 
 
 

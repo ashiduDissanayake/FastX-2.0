@@ -17,6 +17,8 @@ const Login = () => {
             const response = await axios.post('http://localhost:8080/mainmanager/mainmanagerlogin', {
                 username,
                 password,
+            },{
+                withCredentials: true,  // Include credentials in the request
             });
 
             if (response.data.message === 'Login successful') {

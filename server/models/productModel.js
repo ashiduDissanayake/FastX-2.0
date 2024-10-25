@@ -166,6 +166,65 @@ const Product = {
       }
     );
   },
+
+  fetchProducts: (criteria, category, subcategory, minPrice, maxPrice, sortBy, limit) => {
+    return new Promise((resolve, reject) => {
+      // SQL procedure call based on the criteria
+      const query = 'CALL FetchProducts(?, ?, ?, ?, ?, ?, ?)';
+      const params = [criteria, category || 'all', subcategory || 'all', minPrice || 0, maxPrice || 10000, sortBy || 'newest', limit || 8];
+  
+      // Execute the procedure
+      db.query(query, params, (error, results) => {
+        if (error) {
+          reject(error); // If there is an error, reject the promise
+        } else {
+          resolve(results[0]); // Resolve the results (first result set from the procedure)
+        }
+      });
+    });
+  },
+  
+  getNewArrivals: (limit = 8) => {
+    return new Promise((resolve, reject) => {
+      const query = 'CALL GetNewArrivals(?)';
+      db.query(query, [limit], (error, results) => {
+        if (error) {
+          reject(error); // If there is an error, reject the promise
+        } else {
+          resolve(results[0]); // Resolve the results (first result set from the procedure)
+        }
+      });
+    });
+  },
+
+  // Fetch trending products with error handling using if-else
+  getTrendingProducts: (limit = 8) => {
+    return new Promise((resolve, reject) => {
+      const query = 'CALL GetTrendingProducts(?)';
+      db.query(query, [limit], (error, results) => {
+        if (error) {
+          reject(error); // If there is an error, reject the promise
+        } else {
+          resolve(results[0]); // Resolve the results (first result set from the procedure)
+        }
+      });
+    });
+  },
+
+  // Fetch filtered products with error handling using if-else
+  filterProducts: (category = 'all', subcategory = 'all', minPrice = 0, maxPrice = 1000, sortBy = 'newest', limit = 8) => {
+    return new Promise((resolve, reject) => {
+      const query = 'CALL FilterProducts(?, ?, ?, ?, ?, ?)';
+      db.query(query, [category, subcategory, minPrice, maxPrice, sortBy, limit], (error, results) => {
+        if (error) {
+          reject(error); // If there is an error, reject the promise
+        } else {
+          resolve(results[0]); // Resolve the results (first result set from the procedure)
+        }
+      });
+    });
+  },
 };
 
 module.exports = Product;
+

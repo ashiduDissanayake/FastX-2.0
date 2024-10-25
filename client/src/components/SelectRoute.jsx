@@ -89,6 +89,7 @@ const SelectRoute = () => {
     setLoading(true);
     try {
       const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+      console.log(cartItems);
       const response = await axios.post(
         "http://localhost:8080/user/placeorder",
         {

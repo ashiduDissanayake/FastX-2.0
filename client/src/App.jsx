@@ -48,6 +48,7 @@ import Store2 from './MainManager/Store/Store2'
 import Store3 from './MainManager/Store/Store3'
 import Store4 from './MainManager/Store/Store4'
 import Store5 from './MainManager/Store/Store5'
+import CategoryView from "./pages/CategoryView";
 
 
 function App() {
@@ -117,6 +118,7 @@ function App() {
             {/* Other routes */}
             <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
             <Route path="/shop" element={<PublicRoute><Shop /></PublicRoute>} />
+            <Route path="/shop/:category" element={<PublicRoute><CategoryView /></PublicRoute>} />
             <Route path="/product/:productId" element={<PublicRoute><ProductDetail /></PublicRoute>} />
             <Route path="/placeorder" element={<PublicRoute><SelectRoute /></PublicRoute>} />
             <Route path="/profile" element={<PublicRoute><UserProfile /></PublicRoute>} />

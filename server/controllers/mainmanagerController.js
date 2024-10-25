@@ -202,6 +202,16 @@ getPendingOrdersStore1: (req, res) => {
   });
 },
 
+getSchedules: async (req, res) => {
+  try {
+    const schedules = await MainManagerModel.getAllTrain();
+    res.status(200).json(schedules);
+  } catch (error) {
+    console.error('Error fetching train schedules:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+},
+
 getPendingOrdersStore2: (req, res) => {
   MainManagerModel.getPendingOrdersStore2((err, orders) => {
     if (err) {
@@ -239,7 +249,7 @@ getPendingOrdersStore5: (req, res) => {
 },
 
 updateOrderStatus: (req, res) => {
-  console.log("Hi");
+ 
   const { id } = req.params;
   const { status } = req.body;
 
@@ -427,18 +437,6 @@ updateTrainSchedule: (req, res) => {
 },
 
 // Backend code for updating order status
-updateOrderStatus: (req, res) => {
-  const { orderId } = req.params;
-  const { status } = req.body; // Expects { status: 'Shipped' }
-
-  const sqlUpdate = "UPDATE orders SET status = ? WHERE order_ID = ?";
-  db.query(sqlUpdate, [status, orderId], (error, result) => {
-      if (error) {
-          return res.status(500).json({ message: "Error updating order status", error });
-      }
-      res.status(200).json({ message: "Order status updated successfully" });
-  });
-},
 
 
 

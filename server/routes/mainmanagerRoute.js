@@ -26,6 +26,8 @@ router.get('/Store5/orders', mainmanagerController.getPendingOrdersStore5);
 
 // Route to update the order status
 router.put('/orders/:id', mainmanagerController.updateOrderStatus);
+
+
 // router.get('//:storeId', mainmanagerController.getDriver);
 module.exports = router;
 

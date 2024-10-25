@@ -176,6 +176,23 @@ app.put('/orders/:id', (req, res) => {
 });
 
 
+app.get('/api/train/nearest-capacity/:storeId', (req, res) => {
+  const { storeId } = req.params;
+  const query = 'CALL GetNearestTrainCapacity(?)';
+
+  db.query(query, [storeId], (error, results) => {
+    if (error) {
+      console.error('Error executing stored procedure:', error);
+      res.status(500).json({ message: 'Server error' });
+    } else if (results[0].length > 0) {
+      res.json({ capacity: results[0][0].capacity });
+    } else {
+      res.status(404).json({ message: 'No upcoming train found' });
+    }
+  });
+});
+
+
 
 
 // Update order status

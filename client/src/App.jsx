@@ -38,7 +38,7 @@ import ProductAdder from "./pages/ProductAdder";
 import MainManagerDashboard from "./MainManager/MainManagerDashboard";
 import MainmanagerCustomer from "./MainManager/MainmanagerCustomer";
 import MainmanagerReport from "./MainManager/MainmanagerReport";
-import MainmanagerWorker from "./MainManager/MainmanagerWorker";
+import MainmanagerTrainSchedule from "./MainManager/MainmanagerTrainSchedule";
 import MainmanagerProfile from "./MainManager/MainmanagerProfile";
 import Quarterly from "./MainManager/Quarterly"
 import SalesbyCity from "./MainManager/SalesbyCity"
@@ -100,7 +100,7 @@ function App() {
             <Route path="/mainmanager-dashboard" element={<MainManagerDashboard />} />
             <Route path="/mainmanager-customers" element={<MainmanagerCustomer />} />
             <Route path="/mainmanager-report" element={<MainmanagerReport />} />
-            <Route path="/mainmanager-workers" element={<MainmanagerWorker />} />
+            <Route path="/mainmanager-trainschedule" element={<MainmanagerTrainSchedule />} />
             <Route path="/mainmanager-profile" element={<MainmanagerProfile />} />
             <Route path="/quarterly-sales" element={<Quarterly />} />
             <Route path="/most-ordered-items" element={<MostOrdered />} />

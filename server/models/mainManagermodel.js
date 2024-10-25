@@ -12,56 +12,64 @@ const OrderModel = {
     });
   },
 
+  
   // Get pending orders
   getPendingOrdersStore1: (callback) => {
-    const query = 'SELECT o.order_id, o.order_date, o.status, o.route_id FROM `Order` o JOIN Route r ON o.route_id = r.route_ID WHERE o.status = ? AND r.store_id = 1;';
-    db.query(query, ['Pending'], (err, results) => {
+    const query = 'CALL GetOrdersByPriority(1)';
+    db.query(query, (err, results) => {
       if (err) {
         return callback(err, null);
       }
-      callback(null, results);
+      callback(null, results[0]); // Access the actual result set
+    });
+  },
+
+  getAllTrainSchedules: (callback) => {
+    const sqlGet = "SELECT * FROM `TrainSchedule`"; // Adjust the table name as needed
+    db.query(sqlGet, (error, results) => {
+        callback(error, results);
     });
   },
 
   getPendingOrdersStore2: (callback) => {
-    const query = 'SELECT o.order_id, o.order_date, o.status, o.route_id FROM `Order` o JOIN Route r ON o.route_id = r.route_ID WHERE o.status = ? AND r.store_id = 2;';
-    db.query(query, ['Pending'], (err, results) => {
+    const query = 'CALL GetOrdersByPriority(2)';
+    db.query(query, (err, results) => {
       if (err) {
         return callback(err, null);
       }
-      callback(null, results);
+      callback(null, results[0]); // Access the actual result set
     });
   },
 
   getPendingOrdersStore3: (callback) => {
-    const query = 'SELECT o.order_id, o.order_date, o.status, o.route_id FROM `Order` o JOIN Route r ON o.route_id = r.route_ID WHERE o.status = ? AND r.store_id = 3;';
-    db.query(query, ['Pending'], (err, results) => {
+    const query = 'CALL GetOrdersByPriority(3)';
+    db.query(query, (err, results) => {
       if (err) {
         return callback(err, null);
       }
-      callback(null, results);
+      callback(null, results[0]); // Access the actual result set
     });
   },
-
   getPendingOrdersStore4: (callback) => {
-    const query = 'SELECT o.order_id, o.order_date, o.status, o.route_id FROM `Order` o JOIN Route r ON o.route_id = r.route_ID WHERE o.status = ? AND r.store_id = 4;';
-    db.query(query, ['Pending'], (err, results) => {
+    const query = 'CALL GetOrdersByPriority(4)';
+    db.query(query, (err, results) => {
       if (err) {
         return callback(err, null);
       }
-      callback(null, results);
+      callback(null, results[0]); // Access the actual result set
     });
   },
 
   getPendingOrdersStore5: (callback) => {
-    const query = 'SELECT o.order_id, o.order_date, o.status, o.route_id FROM `Order` o JOIN Route r ON o.route_id = r.route_ID WHERE o.status = ? AND r.store_id = 5;';
-    db.query(query, ['Pending'], (err, results) => {
+    const query = 'CALL GetOrdersByPriority(5)';
+    db.query(query, (err, results) => {
       if (err) {
         return callback(err, null);
       }
-      callback(null, results);
+      callback(null, results[0]); // Access the actual result set
     });
   },
+
 
   // Update order status
   updateOrderStatus: (id, status, callback) => {

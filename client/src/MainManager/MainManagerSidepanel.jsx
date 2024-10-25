@@ -29,9 +29,9 @@ const SidePanel = () => {
           <PeopleIcon />
           <span className="ml-2 text-lg">Customers</span>
         </Link>
-        <Link to="/mainmanager-workers" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
+        <Link to="/mainmanager-trainschedule" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
           <GroupWorkIcon />
-          <span className="ml-2 text-lg">Workers</span>
+          <span className="ml-2 text-lg">TrainSchedule</span>
         </Link>
         <Link to="/mainmanager-report" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
           <AnalyticsIcon />

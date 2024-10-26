@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from './components/Sidebar.jsx'; // Import the Sidebar component
-import img2 from './assets/bg.jpg'; // Background image
+import Sidebar from './components/Sidebar.jsx';
+import img2 from './assets/bg.jpg';
 import axios from 'axios';
 
 export default function Driver() {
   const [drivers, setDrivers] = useState([]);
-  const [searchDriverId, setSearchDriverId] = useState(''); // State for entered Driver_ID
-  const [selectedDriverId, setSelectedDriverId] = useState(null); // State for selected Driver_ID
-  const [editDriverId, setEditDriverId] = useState(null);
+  const [searchDriverId, setSearchDriverId] = useState('');
+  const [selectedDriverId, setSelectedDriverId] = useState(null);
 
   useEffect(() => {
+    fetchDrivers();
+  }, []);
+
+  // Fetch drivers from the backend
+  const fetchDrivers = () => {
     axios.get('http://localhost:8080/admin/getdriver')
       .then((response) => {
         setDrivers(response.data);
@@ -17,7 +21,7 @@ export default function Driver() {
       .catch((error) => {
         console.error('Error fetching drivers:', error);
       });
-  }, []);
+  };
 
   // Handle Driver ID input change
   const handleInputChange = (e) => {
@@ -26,25 +30,36 @@ export default function Driver() {
 
   // Handle searching for the driver by Driver_ID
   const handleFindDriver = () => {
-      const foundDriver = drivers.find((driver) => driver.driver_ID.toString() === searchDriverId);
-      console.log(searchDriverId)
-      console.log("new",foundDriver);
-
+    const foundDriver = drivers.find((driver) => driver.driver_ID.toString() === searchDriverId);
     if (foundDriver) {
-      setSelectedDriverId(foundDriver.driver_ID); // Highlight the row if driver found
+      setSelectedDriverId(foundDriver.driver_ID);
     } else {
       alert('Driver not found!');
-      setSelectedDriverId(null); // Clear any previously highlighted row
+      setSelectedDriverId(null);
     }
+  };
+
+  // Handle deleting a driver by Driver_ID
+  const handleDeleteDriver = (driverId) => {
+    axios.delete(`http://localhost:8080/admin/deleteDriver/branch/${driverId}`)
+      .then(() => {
+        // Update the drivers list by removing the deleted driver
+        setDrivers(drivers.filter(driver => driver.driver_ID !== driverId));
+        alert('Driver deleted successfully');
+      })
+      .catch((error) => {
+        console.error('Error deleting driver:', error);
+        alert('Failed to delete driver');
+      });
   };
 
   return (
     <div
       style={{
-        backgroundImage: `url(${img2})`, // Set the background image
-        backgroundSize: 'cover',         // Cover the entire container
-        backgroundPosition: 'center',    // Center the background image
-        minHeight: '100vh',              // Make sure it covers the full screen
+        backgroundImage: `url(${img2})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        minHeight: '100vh',
         padding: '20px',
       }}
       className="flex"

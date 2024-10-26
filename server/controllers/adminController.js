@@ -184,7 +184,27 @@ const adminController = {
       const errors = handleErrors(err);
       console.log(errors);
     }
-  }
+  },
+
+  deleteDriver: async (req, res) => {
+    try {
+      const result = await Admin.deleteDriver(req.params.id);
+      res.json(result);
+    } catch (err) {
+      const errors = handleErrors(err);
+      console.log(errors);
+    }
+  },
+
+  deleteAssistantDriver: async (req, res) => {
+    try {
+      const result = await Admin.deleteAssistantDriver(req.params.id);
+      res.json(result);
+    } catch (err) {
+      const errors = handleErrors(err);
+      console.log(errors);
+    }
+  },
 
 
 };

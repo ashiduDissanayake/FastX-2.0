@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from './components/Sidebar.jsx'; // Import the Sidebar component
-import img2 from './assets/bg.jpg'; // Background image
+import Sidebar from './components/Sidebar.jsx';
+import img2 from './assets/bg.jpg';
 import axios from 'axios';
 
 export default function AssistentDriver() {
@@ -10,6 +10,11 @@ export default function AssistentDriver() {
   const [highlightedDriverId, setHighlightedDriverId] = useState(null);
 
   useEffect(() => {
+    fetchAssistantDrivers();
+  }, []);
+
+  // Fetch assistant drivers from the backend
+  const fetchAssistantDrivers = () => {
     axios.get('http://localhost:8080/admin/getAssistantDriver')
       .then((response) => {
         setAssistantDrivers(response.data);
@@ -17,7 +22,7 @@ export default function AssistentDriver() {
       .catch((error) => {
         console.error('Error fetching assistant drivers:', error);
       });
-  }, []);
+  };
 
   // Handle input changes
   const handleInputChange = (e) => {
@@ -38,6 +43,20 @@ export default function AssistentDriver() {
       setHighlightedDriverId(null);
       alert('Assistant Driver not found!');
     }
+  };
+
+  // Handle deleting an assistant driver by ID
+  const handleDeleteAssistantDriver = (assistantId) => {
+    axios.delete(`http://localhost:8080/admin/deleteAssistantDriver/branch/${assistantId}`)
+      .then(() => {
+        // Update the assistant drivers list by removing the deleted assistant driver
+        setAssistantDrivers(assistantDrivers.filter(driver => driver.assistant_ID !== assistantId));
+        alert('Assistant Driver deleted successfully');
+      })
+      .catch((error) => {
+        console.error('Error deleting assistant driver:', error);
+        alert('Failed to delete assistant driver');
+      });
   };
 
   return (
@@ -113,7 +132,7 @@ export default function AssistentDriver() {
                   <td className="border px-4 py-2">
                     <button
                       className="bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600"
-                      onClick={() => handleDeleteAssistantDriver(driver.id)}
+                      onClick={() => handleDeleteAssistantDriver(driver.assistant_ID)}
                     >
                       Delete
                     </button>

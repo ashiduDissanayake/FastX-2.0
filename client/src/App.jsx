@@ -121,10 +121,10 @@ function App() {
             <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
             <Route path="/shop" element={<PublicRoute><Shop /></PublicRoute>} />
             <Route path="/shop/:category" element={<PublicRoute><CategoryView /></PublicRoute>} />
-            <Route path="/product/:productId" element={<PublicRoute><ProductDetail /></PublicRoute>} />
+            <Route path="/product/:productId" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
             <Route path="/placeorder" element={<PublicRoute><SelectRoute /></PublicRoute>} />
             <Route path="/profile" element={<PublicRoute><UserProfile /></PublicRoute>} />
-            <Route path="/orders" element={<PublicRoute><OrdersDetails /></PublicRoute>} />
+            <Route path="/orders" element={<ProtectedRoute><OrdersDetails /></ProtectedRoute>} />
             <Route path="/imageupload" element={<PublicRoute><ProductAdder /></PublicRoute>} />
 
           </Routes>

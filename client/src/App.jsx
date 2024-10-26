@@ -31,6 +31,7 @@ import UserProfile from "./pages/UserProfile";
 import OrdersDetails from "./pages/Orders";
 import Mainmanagerlogin from "./MainManager/Mainmanagerlogin";
 import MainManagerDashboard from "./MainManager/MainManagerDashboard";
+import AdminLogin from "./components/Admin/pages/AdminLogin";
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
             <Route path="/adminassistentdriver" element={<AssistentDriver />} />
             <Route path="/adminmanager" element={<Manager />} />
             <Route path="/adminreport" element={<Report />} />
+            <Route path="/adminlogin" element={<AdminLogin/>} />
 
             
 

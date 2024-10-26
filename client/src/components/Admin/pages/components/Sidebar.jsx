@@ -12,7 +12,7 @@ export default function Sidebar() {
 
   const handleLogout = () => {
     // Logic to handle logout can be added here (e.g., clearing tokens, user data, etc.)
-    navigate('/login'); // Navigate to the login page on logout
+    navigate('/adminlogin'); // Navigate to the login page on logout
   };
 
   return (

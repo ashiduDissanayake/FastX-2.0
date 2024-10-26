@@ -49,6 +49,7 @@ import Store3 from './MainManager/Store/Store3'
 import Store4 from './MainManager/Store/Store4'
 import Store5 from './MainManager/Store/Store5'
 import CategoryView from "./pages/CategoryView";
+import AdminLogin from "./components/Admin/pages/AdminLogin";
 
 
 function App() {
@@ -79,6 +80,7 @@ function App() {
             <Route path="/adminassistentdriver" element={<AssistentDriver />} />
             <Route path="/adminmanager" element={<Manager />} />
             <Route path="/adminreport" element={<Report />} />
+            <Route path="/adminlogin" element={<AdminLogin/>} />
 
             
 

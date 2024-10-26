@@ -21,6 +21,7 @@ router.get('/countEmployee', adminController.countEmployee);
 router.get('/getAssistantDriver', adminController.getAssistantDriver);
 router.get('/getManager', adminController.getManager);
 router.get('/getOrderCount', adminController.getOrderCount);
+router.delete('/deleteManager/branch/:id', adminController.deleteManager);
                                                       
     
 module.exports = router;

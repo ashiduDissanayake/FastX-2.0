@@ -111,6 +111,21 @@ getOrderCount: () => {
     );
   }
   );
+},
+
+deleteManager: (id) => {
+  return new Promise((resolve, reject) => {
+    const query = 
+    `SET SQL_SAFE_UPDATES = 0;
+    call deleteManager(?);
+    SET SQL_SAFE_UPDATES = 1;`;
+    db.query(query, [id], (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(result);
+    });
+  });
 }
 
 };

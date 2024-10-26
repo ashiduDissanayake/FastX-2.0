@@ -17,6 +17,17 @@ router.get('/getTrainCapacity/:storeId', mainmanagerController.getTrainCapacity)
 router.put('/updateTrainSchedule', mainmanagerController.updateTrainSchedule);
 router.put('/updateOrderStatus/:orderId', mainmanagerController.updateOrderStatus);
 router.post('/mainmanagerlogin', mainmanagerController.mainManagerLogin);
+
+router.get('/Store1/orders', mainmanagerController.getPendingOrdersStore1);
+router.get('/Store2/orders', mainmanagerController.getPendingOrdersStore2);
+router.get('/Store3/orders', mainmanagerController.getPendingOrdersStore3);
+router.get('/Store4/orders', mainmanagerController.getPendingOrdersStore4);
+router.get('/Store5/orders', mainmanagerController.getPendingOrdersStore5);
+
+// Route to update the order status
+router.put('/orders/:id', mainmanagerController.updateOrderStatus);
+
+
 // router.get('//:storeId', mainmanagerController.getDriver);
 module.exports = router;
 

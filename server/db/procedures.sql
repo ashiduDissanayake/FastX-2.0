@@ -608,19 +608,31 @@ END $$
 
 DELIMITER ;
 
--- Get  drivers
+-- get drivers
 DELIMITER $$
 
 CREATE PROCEDURE GetDriversByStoreID(
     IN storeID INT
 )
 BEGIN
+    -- Declare an exception handler for SQL errors
     DECLARE EXIT HANDLER FOR SQLEXCEPTION 
     BEGIN
+        -- Handling SQL exception, return an error message
         SELECT 'SQL Exception Occurred. Unable to fetch drivers.' AS error_message;
     END;
 
-    SELECT * FROM Driver WHERE store_ID = storeID; 
+   --  -- Select drivers for the specified store
+--     SELECT * FROM Driver WHERE store_ID = storeID; 
+-- Select drivers along with their last trip end time for the specified store
+    SELECT d.*, 
+           (SELECT end_time 
+            FROM TruckSchedule 
+            WHERE driver_ID = d.driver_ID 
+            ORDER BY end_time DESC 
+            LIMIT 1) AS last_trip_end_time
+    FROM Driver d
+    WHERE d.store_ID = storeID;
 END $$
 
 DELIMITER ;
@@ -632,15 +644,26 @@ CREATE PROCEDURE GetDriverAssistantsByStoreID(
     IN storeID INT
 )
 BEGIN
+    -- Declare an exception handler for SQL errors
     DECLARE EXIT HANDLER FOR SQLEXCEPTION 
     BEGIN
+        -- Handling SQL exception, return an error message
         SELECT 'SQL Exception Occurred. Unable to fetch driver assistants.' AS error_message;
     END;
 
-    SELECT * FROM DriverAssistant WHERE store_ID = storeID; 
+    -- Select driver assistants for the specified store
+    SELECT d.*, 
+           (SELECT end_time 
+            FROM TruckSchedule 
+            WHERE assistant_ID = d.assistant_ID 
+            ORDER BY end_time DESC 
+            LIMIT 1) AS last_trip_end_time
+    FROM DriverAssistant d
+    WHERE d.store_ID = storeID;
 END $$
 
 DELIMITER ;
+
 
 -- get trucks
 DELIMITER $$
@@ -842,6 +865,133 @@ BEGIN
     END IF;
 
     SELECT error_message AS message, exit_code;  
+END $$
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE PROCEDURE InsertBranchManager(
+    IN p_name VARCHAR(255),
+    IN p_username VARCHAR(255),
+    IN p_email VARCHAR(255),
+    IN p_password VARCHAR(255),
+    IN p_store_ID INT
+)
+BEGIN
+    INSERT INTO BranchManager (name, username, email, password, store_ID)
+    VALUES (p_name, p_username, p_email, p_password, p_store_ID);
+END //
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE TRIGGER EncryptBranchManagerPassword
+BEFORE INSERT ON BranchManager
+FOR EACH ROW
+BEGIN
+    SET NEW.password = AES_ENCRYPT(NEW.password, 'your_strong_key_256_bits!');  -- Use a secure key for encryption
+END //
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE PROCEDURE ManagerLogin(
+    IN p_username VARCHAR(255),
+    IN p_password VARCHAR(255)
+)
+BEGIN
+    -- Declare variables at the beginning
+    DECLARE stored_password VARBINARY(255);
+    DECLARE decrypted_password VARCHAR(255);
+    DECLARE login_status VARCHAR(50) DEFAULT 'Login failed';
+    DECLARE manager_id INT;  -- Variable to hold the manager ID
+    
+    -- Declare the error handler before the transaction begins
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;  -- Roll back transaction in case of error
+        SET login_status = 'Error occurred during login';
+        -- Return the error message
+        SELECT login_status AS login_message;
+    END;
+
+    -- Start the transaction
+    START TRANSACTION;
+    
+    -- Try to retrieve the encrypted password and manager ID from the database
+    SELECT password, manager_ID INTO stored_password, manager_ID 
+    FROM BranchManager 
+    WHERE username = p_username;
+
+    -- Check if the username exists
+    IF stored_password IS NULL THEN
+        -- Username does not exist, return error message
+        SET login_status = 'Username not found';
+        ROLLBACK;
+        SELECT login_status AS login_message;
+    END IF;
+    
+    -- Decrypt the stored password
+    SET decrypted_password = AES_DECRYPT(stored_password, 'your_strong_key_256_bits!');
+
+    -- Check if decryption returned NULL (which means wrong decryption key)
+    IF decrypted_password IS NULL THEN
+        -- Decryption failed
+        SET login_status = 'Password decryption failed';
+        ROLLBACK;
+        SELECT login_status AS login_message;
+    END IF;
+
+    -- Compare the decrypted password with the provided password
+    IF decrypted_password = p_password THEN
+        -- If the password matches, set the status to successful
+        SET login_status = 'Login successful';
+        COMMIT;  -- Commit only if login is successful
+
+        -- Return the manager ID along with the login status
+        SELECT login_status AS login_message, manager_id AS ManagerID;
+    ELSE
+        -- Passwords do not match
+        SET login_status = 'Incorrect password';
+        ROLLBACK;  -- Rollback on failure
+        SELECT login_status AS login_message;
+    END IF;
+
+END //
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE GetStoreIDByManagerID(IN managerID INT)
+BEGIN
+    DECLARE storeID INT;  -- Declare a variable to hold the store ID
+
+    -- Declare an exception handler for SQL errors
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        -- Handling SQL exception, return an error message
+        SELECT 'SQL Exception Occurred. Unable to fetch store ID.' AS error_message;
+    END;
+
+    -- Retrieve the store_ID for the given manager_ID
+    SELECT store_ID INTO storeID  -- Use INTO to assign the result to the variable
+    FROM BranchManager
+    WHERE manager_ID = managerID;
+
+    -- Check if a store_ID was found
+    IF storeID IS NULL THEN
+        SELECT 'No store found for this manager ID.' AS error_message;
+    ELSE
+        SELECT storeID AS store_ID;  -- Return the found store_ID
+    END IF;
 END $$
 
 DELIMITER ;

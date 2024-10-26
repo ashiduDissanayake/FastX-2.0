@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   FaTruck,
   FaTasks,
-  FaFileAlt,
+  FaChartBar,
   FaClipboardList,
   FaStore,
 } from "react-icons/fa";
@@ -42,6 +42,14 @@ const ManagerDashBoard = () => {
       icon: <FaClipboardList />,
       navigateTo: "/manager-finished-trips",
     },
+    {
+      title: "Reports",
+      description: "View working hours and truck usage reports.",
+      bgColor: "bg-gradient-to-r from-purple-700 to-purple-900",
+      icon: <FaChartBar />,
+      navigateTo: "/manager-reports",
+    },
+    
   ];
 
   return (
@@ -74,71 +82,6 @@ const ManagerDashBoard = () => {
             </div>
           ))}
         </section>
-
-        {/* Analytics Section */}
-<section className="m-5">
-  <h2 className="text-3xl font-semibold text-gray-800 mb-8 text-center">
-    Key Performance Indicators
-  </h2>
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    {[
-      {
-        title: "Total Orders",
-        value: 102,
-        change: "Up 10% from last month",
-        color: "text-blue-600",
-        bgColor: "bg-gradient-to-r from-blue-200 to-blue-400",
-        iconBg: "bg-blue-100",
-        icon: <FaClipboardList className="text-3xl text-blue-600" />,
-      },
-      {
-        title: "Completed Trips",
-        value: 45,
-        change: "Up 20% from last week",
-        color: "text-green-600",
-        bgColor: "bg-gradient-to-r from-green-200 to-green-400",
-        iconBg: "bg-green-100",
-        icon: <FaTasks className="text-3xl text-green-600" />,
-      },
-      {
-        title: "Pending Deliveries",
-        value: 8,
-        change: "Critical attention required",
-        color: "text-red-600",
-        bgColor: "bg-gradient-to-r from-red-200 to-red-400",
-        iconBg: "bg-red-100",
-        icon: <FaTruck className="text-3xl text-red-600" />,
-      },
-      {
-        title: "Revenue Generated",
-        value: "Rs. 2.4M",
-        change: "Up 15% from last quarter",
-        color: "text-purple-600",
-        bgColor: "bg-gradient-to-r from-purple-200 to-purple-400",
-        iconBg: "bg-purple-100",
-        icon: <FaFileAlt className="text-3xl text-purple-600" />,
-      },
-    ].map((item) => (
-      <div
-        key={item.title}
-        className={`${item.bgColor} p-4 rounded-lg shadow-md hover:shadow-lg transform transition-all duration-300 hover:scale-105 flex items-center justify-between space-x-4`}
-      >
-        <div className={`p-3 rounded-full ${item.iconBg}`}>
-          {item.icon}
-        </div>
-        <div className="flex-grow">
-          <h3 className="text-lg font-semibold text-gray-800">
-            {item.title}
-          </h3>
-          <p className={`text-3xl font-bold mt-2 ${item.color}`}>
-            {item.value}
-          </p>
-          <p className="text-gray-600 mt-1">{item.change}</p>
-        </div>
-      </div>
-    ))}
-  </div>
-</section>
       </main>
     </div>
   );

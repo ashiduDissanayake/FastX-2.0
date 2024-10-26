@@ -176,6 +176,16 @@ const adminController = {
     }
   },
 
+  deleteManager: async (req, res) => {
+    try {
+      const result = await Admin.deleteManager(req.params.id);
+      res.json(result);
+    } catch (err) {
+      const errors = handleErrors(err);
+      console.log(errors);
+    }
+  }
+
 
 };
 

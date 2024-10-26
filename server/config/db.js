@@ -15,6 +15,7 @@ const db = mysql.createConnection({
   password: process.env.DB_PASSWORD,  // Replace with your MySQL password
   database: process.env.DB_DATABASE,  // Replace with your database name
   port: process.env.DB_PORT,
+  multipleStatements: true,
   ssl: {
     ca: caCert
   }

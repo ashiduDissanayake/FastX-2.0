@@ -10,6 +10,7 @@ export default function Manager() {
   const [highlightedManagerId, setHighlightedManagerId] = useState(null);
 
   useEffect(() => {
+    // Fetch all managers
     axios.get('http://localhost:8080/admin/getManager')
       .then((response) => {
         setManagers(response.data);
@@ -38,6 +39,18 @@ export default function Manager() {
       setHighlightedManagerId(null);
       alert('Manager not found!');
     }
+  };
+
+  // Delete manager by ID
+  const handleDeleteManager = (id) => {
+    axios.delete(`http://localhost:8080/admin/deleteManager/branch/${id}`)
+      .then(() => {
+        setManagers(managers.filter((manager) => manager.manager_ID !== id));
+        if (highlightedManagerId === id) setHighlightedManagerId(null);
+      })
+      .catch((error) => {
+        console.error('Error deleting manager:', error);
+      });
   };
 
   return (
@@ -113,7 +126,7 @@ export default function Manager() {
                   <td className="border px-4 py-2">
                     <button
                       className="bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600"
-                      onClick={() => handleDeleteManager(manager.id)}
+                      onClick={() => handleDeleteManager(manager.manager_ID)}
                     >
                       Delete
                     </button>

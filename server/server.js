@@ -158,9 +158,6 @@ app.post('/admin/addProduct', (req, res) => {
 
 
 
-
-
-
 // Update order status
 
 // Start the server

@@ -471,7 +471,15 @@ reduceCapacity: (req, res) => {
 
 // Backend code for updating order status
 
-
+getMostSoldItems: async (req, res) => {
+  try {
+      const results = await MainManagerModel.getMostSoldItems();
+      res.status(200).json(results);
+  } catch (error) {
+      console.error('Error fetching most sold items:', error);
+      res.status(500).json({ message: 'Failed to fetch most sold items', error: error.message });
+  }
+},
 
 
 

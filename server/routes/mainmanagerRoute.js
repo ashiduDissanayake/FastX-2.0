@@ -26,6 +26,7 @@ router.get('/Store5/orders', mainmanagerController.getPendingOrdersStore5);
 router.get('/train/nearest-capacity/:storeId', mainmanagerController.getNearestCapacity);
 router.put('/train/reduce-capacity/:storeId', mainmanagerController.reduceCapacity); 
 router.get('/most-sold-items', mainmanagerController.getMostSoldItems);
+router.get('/sales-data', mainmanagerController.getSalesData);
 
 // Route to update the order status
 router.put('/orders/:id', mainmanagerController.updateOrderStatus);

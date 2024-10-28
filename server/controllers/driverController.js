@@ -55,6 +55,33 @@ const driverController = {
             }
         });
     },
+
+    getDriverorders: (req, res) => {
+        const driver_ID = req.user.driver_ID;
+    
+        DriverModel.findById(driver_ID, (err, orders) => {
+            if (err) {
+                return res.status(500).json({ message: 'Error retrieving orders' });
+            }
+            return res.status(200).json({ 
+                message: 'Driver orders', 
+                orders    // Only send the orders
+            });
+        });
+    },
+
+
+     deliverOrder : (req, res) => {
+        const { order_id } = req.params;
+    
+        DriverModel.updateOrderStatusToDelivered(order_id, (err, result) => {
+            if (err) {
+                return res.status(500).json({ message: 'Failed to update order status' });
+            }
+            return res.status(200).json({ message: 'Order marked as Delivered' });
+        });
+    },
+
     
 
 

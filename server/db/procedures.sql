@@ -812,6 +812,8 @@ BEGIN
 END $$
 
 -- Procedure to schedule the trip
+DELIMITER $$
+
 CREATE PROCEDURE ScheduleTrip(
     IN truckID INT,
     IN driverID INT,
@@ -822,17 +824,24 @@ CREATE PROCEDURE ScheduleTrip(
 )
 BEGIN
     DECLARE exit_code INT DEFAULT 0;  
-    DECLARE error_message VARCHAR(255);
+    DECLARE error_message VARCHAR(255) DEFAULT '';
+    DECLARE newScheduleID INT;
 
+    -- Insert into TruckSchedule
     INSERT INTO TruckSchedule (truck_ID, driver_ID, assistant_ID, store_ID, route_ID, start_time, end_time)
     VALUES (truckID, driverID, assistantID, storeID, routeID, startTime, NULL);
 
+    -- Check if the insert was successful
     IF ROW_COUNT() = 0 THEN
         SET error_message = 'Failed to schedule trip.';
         SET exit_code = 1;  
+    ELSE
+        -- Get the last inserted ID
+        SET newScheduleID = LAST_INSERT_ID();
     END IF;
 
-    SELECT error_message, exit_code;  
+    -- Return the schedule ID and exit code
+    SELECT newScheduleID AS scheduleID, error_message, exit_code;  
 END $$
 
 DELIMITER ;
@@ -841,29 +850,39 @@ DELIMITER ;
 -- Procedure to update order status
 DELIMITER $$
 
-CREATE PROCEDURE UpdateOrderStatus(IN orderIds VARCHAR(255))
+CREATE PROCEDURE UpdateOrder(
+    IN orderIds VARCHAR(255),
+    IN newScheduleId INT
+)
 BEGIN
     DECLARE exit_code INT DEFAULT 0;  
     DECLARE error_message VARCHAR(255) DEFAULT '';
 
+    -- Start a transaction
     START TRANSACTION;
 
+    -- Update the order status and schedule_ID
     UPDATE `Order` 
-    SET status = 'Delivered' 
-    WHERE order_id IN (SELECT CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(orderIds, ',', numbers.n), ',', -1) AS UNSIGNED) 
-                         FROM (SELECT 1 n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 
-                               UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 
-                               UNION ALL SELECT 9 UNION ALL SELECT 10) numbers
-                         WHERE CHAR_LENGTH(orderIds) - CHAR_LENGTH(REPLACE(orderIds, ',', '')) >= numbers.n - 1);
+    SET status = 'Scheduled', 
+        schedule_ID = newScheduleId 
+    WHERE order_id IN (
+        SELECT CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(orderIds, ',', numbers.n), ',', -1) AS UNSIGNED) 
+        FROM (SELECT 1 n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 
+              UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 
+              UNION ALL SELECT 9 UNION ALL SELECT 10) numbers
+        WHERE CHAR_LENGTH(orderIds) - CHAR_LENGTH(REPLACE(orderIds, ',', '')) >= numbers.n - 1
+    );
 
+    -- Check if any rows were updated
     IF ROW_COUNT() = 0 THEN
         SET error_message = 'No orders were updated. Check if the order IDs are valid.';
         SET exit_code = 1;  
-        ROLLBACK;  
+        ROLLBACK;  -- Rollback the transaction on failure
     ELSE
-        COMMIT;  
+        COMMIT;  -- Commit the transaction if successful
     END IF;
 
+    -- Return the error message and exit code
     SELECT error_message AS message, exit_code;  
 END $$
 

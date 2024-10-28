@@ -308,36 +308,43 @@ login :(username, password, callback) => {
     },
 
     scheduleTrip: async (tripData) => {
-        return new Promise((resolve, reject) => {
-            const query = "CALL ScheduleTrip(?, ?, ?, ?, ?, ?)";
-            db.query(query, tripData, (error, result) => {
-                if (error) {
-                    return reject(error);
-                }
-                const [response] = result;
-                if (response[0].exit_code === 1) {
-                    return reject(new Error(response[0].error_message));
-                }
-                resolve(result);
-            });
-        });
-    },
+      return new Promise((resolve, reject) => {
+          const query = "CALL ScheduleTrip(?, ?, ?, ?, ?, ?)";
+          db.query(query, tripData, (error, result) => {
+              if (error) {
+                  return reject(error);
+              }
+  
+              const [response] = result;
+              if (response[0].exit_code === 1) {
+                  return reject(new Error(response[0].error_message));
+              }
+  
+              // Resolve with the newly created schedule ID
+              const newScheduleID = response[0].scheduleID;
+              resolve(newScheduleID);
+          });
+      });
+  },
+  
+  updateOrder: async (orderIds, scheduleId) => {
+    return new Promise((resolve, reject) => {
+        const query = "CALL UpdateOrder(?, ?)";
+        db.query(query, [orderIds, scheduleId], (error, result) => {
+            if (error) {
+                return reject(error);
+            }
 
-    updateOrderStatus: async (orderIds) => {
-        return new Promise((resolve, reject) => {
-            const query = "CALL UpdateOrderStatus(?)";
-            db.query(query, [orderIds], (error, result) => {
-                if (error) {
-                    return reject(error);
-                }
-                const [response] = result;
-                if (response[0].exit_code === 1) {
-                    return reject(new Error(response[0].error_message));
-                }
-                resolve(result);
-            });
+            const [response] = result;
+            if (response[0].exit_code === 1) {
+                return reject(new Error(response[0].error_message));
+            }
+
+            resolve(result);
         });
-    },
+    });
+},
+
 
 };
 

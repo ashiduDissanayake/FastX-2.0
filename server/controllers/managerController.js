@@ -486,7 +486,7 @@ const managerController = {
       const currentDate = new Date().toISOString().split("T")[0];
       const formattedStartTime = `${currentDate} ${start_time}:00`;
 
-      await Manager.scheduleTrip([
+      const newScheduleId = await Manager.scheduleTrip([
         truck_ID,
         driver_ID,
         assistant_ID,
@@ -497,11 +497,13 @@ const managerController = {
 
       const orderIds = selectedOrders.join(", ");
 
-      await Manager.updateOrderStatus(orderIds);
+      await Manager.updateOrder(orderIds, newScheduleId);
 
       res
         .status(200)
-        .send({ message: "Trip scheduled and orders updated successfully!" });
+        .send({ message: 'Trip scheduled and orders updated successfully.',
+          scheduleId: newScheduleId,
+          orderIds: orderIds.split(',') });
     } catch (error) {
       console.error("Error scheduling trip:", error);
       res

@@ -1,14 +1,49 @@
 import React from 'react';
-import img2 from './assets/bg.jpg'; // Background image
+import { useState } from 'react';
+import img2 from './assets/bg.jpg';
+import axios from "axios" // Background image
+
+
 
 export default function AdminLogin() {
+  
+
+  const[email, setEmail] = useState("");
+  const[password, setPassword] = useState("");
+
+
+  const handleSubmit = async (e) => {
+    console.log("HIII");
+    e.preventDefault();
+    try {
+      const response = await axios.get("http://localhost:8080/admin/adminLogin",
+      {
+        params: {
+          username: email,
+          password: password
+        }
+      }
+      );
+      console.log(response.data);
+      if(response.data.success){
+        console.log("Login successful");
+        window.location.href = "/admin";}
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
+   
+
+
+
   return (
     <div
       className="flex items-center justify-center min-h-screen bg-cover bg-center"
       style={{ backgroundImage: `url(${img2})` }}
     >
       <div className="w-[420px] bg-transparent border-2 border-white/20 backdrop-blur-md shadow-lg text-white rounded-lg p-8">
-        <form action="">
+        <form action="" onSubmit={ handleSubmit}>
           <h1 className="text-3xl text-center mb-6">Login</h1>
           <div className="relative w-full h-[50px] mb-8">
             <input 
@@ -16,6 +51,7 @@ export default function AdminLogin() {
               placeholder="Username" 
               required 
               className="w-full h-full bg-transparent border border-white/20 rounded-full text-white px-5 py-2 placeholder-white focus:outline-none focus:ring-2 focus:ring-white/50"
+              onChange={(e) => setEmail(e.target.value)}
             />
             <i className="bx bxs-user absolute right-5 top-1/2 transform -translate-y-1/2 text-xl"></i>
           </div>
@@ -25,6 +61,7 @@ export default function AdminLogin() {
               placeholder="Password" 
               required 
               className="w-full h-full bg-transparent border border-white/20 rounded-full text-white px-5 py-2 placeholder-white focus:outline-none focus:ring-2 focus:ring-white/50"
+              onChange={(e) => setPassword(e.target.value)}
             />
             <i className="bx bxs-lock-alt absolute right-5 top-1/2 transform -translate-y-1/2 text-xl"></i>
           </div>
@@ -38,6 +75,7 @@ export default function AdminLogin() {
           <button 
             type="submit" 
             className="w-full h-[45px] bg-white text-gray-800 rounded-full shadow hover:shadow-md font-semibold focus:outline-none focus:ring-2 focus:ring-gray-300"
+            
           >
             Login
           </button>

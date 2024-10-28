@@ -206,6 +206,35 @@ const adminController = {
     }
   },
 
+  loginAdmin : async (req, res) => {
+    const {username,password} = req.query;
+    try{
+        // const admin = await loginAdmin(username);
+        // if(!admin){
+        //     return res.json({error:"Invalid username or password."});
+        // }
+        // const passwordMatch = await bcrypt.compare(password,admin.Password);
+        // if(!passwordMatch){
+        //     return res.json({error:"Invalid username or password."});
+        // }
+        // const token = sign({username:admin.Username,AdminID:admin.Admin_ID},"secret");
+        // res.json({success:true,token:token});
+        const admin = await Admin.loginAdmin(username, password);
+        console.log(admin);
+        if (admin.success) {
+            // const token = sign({ username: username, AdminID: admin.Admin_ID }, "secret");
+            res.json({ success: true });
+        } else {
+            res.json({ success: false,error: "Invalid username or password." });
+        }
+    }catch(error){
+        console.error('Error logging in admin:', error);
+        res.json({ error: "Failed to login admin." });
+    }
+},
+
+
+
 
 };
 

@@ -211,88 +211,70 @@ const ScheduleTrip = () => {
         </div>
 
         <div className="mb-4">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-xl font-bold ml-2">Loading Packages</span>
-          </div>
+  <div className="flex items-center justify-between mb-4">
+    <span className="text-xl font-bold ml-2">Loading Packages</span>
+  </div>
 
-          {/* Orders and capacity selection */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {orderData.length > 0 ? (
-              Array.from(new Set(orderData.map((order) => order.route_id))).map(
-                (routeID) => {
-                  const isSelectedRoute = selectedRoute === routeID;
-                  return (
-                    <div
-                      key={routeID}
-                      className="bg-white p-4 rounded-lg shadow"
-                    >
-                      <h3 className="font-bold mb-2">Route ID: {routeID}</h3>
-                      <div className="grid grid-cols-1 gap-2">
-                        {orderData
-                          .filter((order) => order.route_id === routeID)
-                          .map((order) => (
-                            <div
-                              key={order.order_id}
-                              className={`flex items-center p-4 bg-gray-100 rounded-lg shadow-md transition duration-300 ease-in-out ${
-                                selectedOrders.includes(order.order_id)
-                                  ? "bg-green-200"
-                                  : ""
-                              } hover:bg-green-50`}
-                            >
-                              <input
-                                type="checkbox"
-                                value={order.order_id}
-                                checked={selectedOrders.includes(
-                                  order.order_id
-                                )}
-                                onChange={() => {
-                                  handleOrderSelection(
-                                    order.order_id,
-                                    order.capacity
-                                  );
-                                  if (!isSelectedRoute) {
-                                    setSelectedRoute(routeID);
-                                  }
-                                }}
-                                disabled={
-                                  selectedRoute && selectedRoute !== routeID
-                                }
-                                className="mr-2 h-5 w-5 text-green-600 rounded focus:ring-green-500 cursor-pointer"
-                              />
-                              <span className="text-gray-700 font-semibold">
-                                Order #{order.order_id} Capacity:{" "}
-                                {order.capacity}
-                              </span>
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  );
-                }
-              )
-            ) : (
-              <p>No orders found for the selected store.</p>
-            )}
-          </div>
+  {/* Orders and capacity selection in table format */}
+  <div className="overflow-auto bg-white rounded-lg shadow">
+    <table className="min-w-full bg-white border border-gray-300">
+      <thead>
+        <tr className="bg-gradient-to-r from-purple-500 to-blue-500 text-white">
+          <th className="px-4 py-2 border-b font-semibold text-left">Order ID</th>
+          <th className="px-4 py-2 border-b font-semibold text-left">Route ID</th>
+          <th className="px-4 py-2 border-b font-semibold text-left">Capacity</th>
+          <th className="px-4 py-2 border-b font-semibold text-center">Select</th>
+        </tr>
+      </thead>
+      <tbody>
+        {orderData.length > 0 ? (
+          orderData.map((order) => (
+            <tr
+              key={order.order_id}
+              className={`border-b hover:bg-gray-100 ${
+                selectedOrders.includes(order.order_id) ? 'bg-green-100' : ''
+              }`}
+            >
+              <td className="px-4 py-2 text-gray-600">{order.order_id}</td>
+              <td className="px-4 py-2 text-gray-600">{order.route_id}</td>
+              <td className="px-4 py-2 text-gray-600">{order.capacity}</td>
+              <td className="px-4 py-2 text-center">
+                <input
+                  type="checkbox"
+                  checked={selectedOrders.includes(order.order_id)}
+                  onChange={() => handleOrderSelection(order.order_id, order.capacity)}
+                  disabled={selectedRoute && selectedRoute !== order.route_id}
+                  className="h-5 w-5 text-green-600 rounded focus:ring-green-500 cursor-pointer"
+                />
+              </td>
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td colSpan="4" className="px-4 py-2 text-center text-gray-500">No orders found for the selected store.</td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
 
-          {/* Warning Message */}
-          {warning && (
-            <div className="text-red-500 text-sm mt-2">{warning}</div>
-          )}
+  {/* Warning Message */}
+  {warning && <div className="text-red-500 text-sm mt-2">{warning}</div>}
 
-          {/* Progress Bar for Capacity */}
-          <div className="mt-4">
-            <div className="relative h-4 bg-gray-200 rounded-full overflow-hidden">
-              <div
-                className="absolute top-0 left-0 h-full bg-green-500 transition-all"
-                style={{ width: `${(totalCapacity / 500) * 100}%` }}
-              ></div>
-            </div>
-            <div className="mt-2 text-sm text-gray-600">
-              Total Capacity Selected: {totalCapacity} / 500
-            </div>
-          </div>
-        </div>
+  {/* Progress Bar for Capacity */}
+  <div className="mt-4">
+    <div className="relative h-4 bg-gray-200 rounded-full overflow-hidden">
+      <div
+        className="absolute top-0 left-0 h-full bg-green-500 transition-all"
+        style={{ width: `${(totalCapacity / 500) * 100}%` }}
+      ></div>
+    </div>
+    <div className="mt-2 text-sm text-gray-600">
+      Total Capacity Selected: {totalCapacity} / 500
+    </div>
+  </div>
+</div>
+
 
         {/* Start Time Input */}
         <div className="mb-4">

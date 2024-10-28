@@ -139,6 +139,20 @@ const ScheduleTrip = () => {
       );
       alert("Trip scheduled successfully!");
       console.log("Response:", response.data);
+
+      // Resetting the form to initial state
+    setSelectedDriver("");
+    setSelectedAssistant("");
+    setSelectedTruck("");
+    setSelectedStore("");
+    setSelectedRoute("");
+    setSelectedOrders([]);
+    setTotalCapacity(0);
+    setStartTime("");
+    setWarning("");
+    setFormVisible(false); 
+
+    loadOrdersByStore();
     } catch (error) {
       if (error.response) {
         alert(error.response.data.message);

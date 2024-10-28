@@ -158,6 +158,40 @@ deleteAssistantDriver: (id) => {
   });
 },
 
+loginAdmin: (username, password) => {
+  return new Promise((resolve, reject) => {
+    // const query = `
+    //   SELECT * FROM Admin WHERE Admin_ID = ? AND Password = ?;
+    // `;
+
+    const query = `call GetAdminByCredentials(?,?);`;
+
+    console.log("Username provided:", username);
+    console.log("Password provided:", password);
+
+    db.query(query, [username, password], (err, results) => {
+      if (err) {
+        console.error("Database error:", err);
+        reject({ success: false, message: 'Database error', error: err.stack });
+      } else {
+        console.log("Query results:", results[0]);
+
+        if (results[0] && results[0][0].length != 0) {
+          // Username and password matched, allow login
+          console.log("Login successful for:", username);
+          resolve({ success: true });
+        } else {
+          // Username or password incorrect
+          console.log("Login failed: Username or password invalid");
+          resolve({ success: false, message: 'Username or password invalid' });
+        }
+      }
+    });
+  });
+}
+
+
+
 };
 
 

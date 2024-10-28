@@ -22,6 +22,8 @@ router.get('/getAssistantDriver', adminController.getAssistantDriver);
 router.get('/getManager', adminController.getManager);
 router.get('/getOrderCount', adminController.getOrderCount);
 router.delete('/deleteManager/branch/:id', adminController.deleteManager);
+router.delete('/deleteDriver/branch/:id', adminController.deleteDriver);
+router.delete('/deleteAssistantDriver/branch/:id', adminController.deleteAssistantDriver);
                                                       
     
 module.exports = router;

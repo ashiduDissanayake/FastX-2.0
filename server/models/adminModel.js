@@ -126,7 +126,37 @@ deleteManager: (id) => {
       resolve(result);
     });
   });
-}
+},
+
+deleteDriver: (id) => {
+  return new Promise((resolve, reject) => {
+    const query = 
+    `SET SQL_SAFE_UPDATES = 0;
+    call deleteDriver(?);
+    SET SQL_SAFE_UPDATES = 1;`;
+    db.query(query, [id], (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(result);
+    });
+  });
+},
+
+deleteAssistantDriver: (id) => {
+  return new Promise((resolve, reject) => {
+    const query = 
+    `
+    call deleteAssistantDriver(?);
+    `;
+    db.query(query, [id], (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(result);
+    });
+  });
+},
 
 };
 

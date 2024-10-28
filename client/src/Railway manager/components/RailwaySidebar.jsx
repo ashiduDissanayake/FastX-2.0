@@ -3,7 +3,7 @@ import React from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom"; // Import the useNavigate hook
 
-const Sidebar = ({ activePage, setActivePage }) => {
+const RailwaySidebar = ({ activePage, setActivePage }) => {
   const navigate = useNavigate(); // Initialize the navigate function
 
   // Handle navigation logic
@@ -13,27 +13,22 @@ const Sidebar = ({ activePage, setActivePage }) => {
     // Navigate to the corresponding route
     switch (item) {
       case "Home":
-        navigate("/maindashboard"); // Adjust the route as per your application structure
+        navigate("/railwaymanagerdashboard"); // Adjust the route as per your application structure
         break;
-      case "Orders":
-        navigate("/orders");
+      
+      case "Train schedule":
+        navigate("/railwaytrainschedule");
         break;
-      case "Stores":
-        navigate("/Store");
-        break;
-      // case "Train schedule":
-      //   navigate("/trainschedule");
-      //   break;
-    //   case "Finished Trips":
-    //     navigate("/finished-trips");
-    //     break;
+    
       case "Reports":
         navigate("/reports");
         break;
+
       case "Logout":
         // Implement logout logic here, e.g., clear auth tokens
         navigate("/login"); // Redirect to login or home page after logout
         break;
+
       default:
         break;
     }
@@ -45,16 +40,15 @@ const Sidebar = ({ activePage, setActivePage }) => {
         <FaUserCircle className="text-5xl mr-4" />
         <div>
           <h2 className="text-xl font-semibold">Manager</h2>
-          <p className="text-sm text-gray-400">Main Manager</p>
+          <p className="text-sm text-gray-400">Railway Manager</p>
         </div>
       </div>
       <nav>
         <ul className="space-y-4">
           {[
             "Home",
-            "Stores",
-            "Orders",
-            // "Train schedule",
+            
+            "Train schedule",
             "Reports",
             "Logout",
           ].map((item) => (
@@ -76,4 +70,4 @@ const Sidebar = ({ activePage, setActivePage }) => {
   );
 };
 
-export default Sidebar;
+export default RailwaySidebar;

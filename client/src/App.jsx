@@ -31,7 +31,9 @@ import UserProfile from "./pages/UserProfile";
 import OrdersDetails from "./pages/Orders";
 import Mainmanagerlogin from "./MainManager/Mainmanagerlogin";
 import MainManagerDashboard from "./MainManager/MainManagerDashboard";
-import DriverDashboard from "./Driver/pages/DriverDashboard";
+import RailwayDashboard from "./Railway manager/pages/RailwayDashboard";
+import RailwayTrainSchedule from "./Railway manager/pages/RailwayTrainSchedule";
+
 
 function App() {
   return (
@@ -70,11 +72,9 @@ function App() {
             <Route path="/trainschedule" element={<TrainSchedule/>} />
             <Route path="/orders" element={<Orders/>} />
 
-            {/* Driver */}
-            <Route path="/driverdashboard" element={<DriverDashboard/>} />
-            {/* <Route path="/store" element={<Store/>} />
-            <Route path="/trainschedule" element={<TrainSchedule/>} />
-            <Route path="/orders" element={<Orders/>} /> */}
+            {/* Railway manager */}
+            <Route path="/railwaymanagerdashboard" element={<RailwayDashboard/>} />
+            <Route path="/railwaytrainschedule" element={<RailwayTrainSchedule/>} />
 
               
             {/* Manager Route */}

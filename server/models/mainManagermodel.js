@@ -121,6 +121,33 @@ const OrderModel = {
     });
   },
 
+  getRevenuePastThreeMonths: () => {
+    return new Promise((resolve, reject) => {
+        db.query(`CALL GetRevenuePastThreeMonths()`, (error, results) => {
+            if (error) return reject(error);
+            resolve(results[0][0].revenue_past_3_months);
+        });
+    });
+},
+
+getRevenuePreviousThreeMonths: () => {
+    return new Promise((resolve, reject) => {
+        db.query(`CALL GetRevenuePreviousThreeMonths()`, (error, results) => {
+            if (error) return reject(error);
+            resolve(results[0][0].revenue_prev_3_months);
+        });
+    });
+},
+
+getTopProductsLastThreeMonths: () => {
+    return new Promise((resolve, reject) => {
+        db.query(`CALL GetTopProductsLastThreeMonths()`, (error, results) => {
+            if (error) return reject(error);
+            resolve(results[0]);
+        });
+    });
+},
+
 
   // Update order status
   updateOrderStatus: (id, status, callback) => {

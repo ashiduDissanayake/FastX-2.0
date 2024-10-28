@@ -44,7 +44,7 @@ function MostSoldItems() {
         backgroundColor: backgroundColors,
         borderColor: borderColors,
         borderWidth: 1,
-        barThickness: 20, // Adjust bar thickness here
+        barThickness: 18, // Slightly reduced bar thickness for better fit
       },
     ],
   };
@@ -52,18 +52,19 @@ function MostSoldItems() {
   return (
     <div className="flex">
       {/* SidePanel on the left */}
-      <div className="w-1/4">
+      <div className="w-1/5">
         <SidePanel />
       </div>
 
-      {/* Main manager Report on the right */}
-      <div className="w-3/4 p-8">
+      {/* Main Content on the right */}
+      <div className="w-4/5 p-4">
         <ReportSelectionbar />
-        <p className="text-xl font-semibold mb-4">Most Sold Items</p>
+        <p className="text-lg font-semibold mb-4">Most Sold Items</p>
         
-        {/* Bar Chart */}
+        {/* Chart and Legend Container */}
         <div className="flex">
-          <div className="w-3/4 h-96 mb-8"> {/* Increased height of the chart */}
+          {/* Bar Chart */}
+          <div className="w-3/5 h-80 mb-8"> {/* Height and width adjusted */}
             {mostSoldItems.length > 0 ? (
               <Bar 
                 data={barData} 
@@ -74,7 +75,7 @@ function MostSoldItems() {
                   scales: {
                     x: {
                       ticks: {
-                        display: false, // Hide product names
+                        display: false, // Hide product names on x-axis
                       },
                       grid: {
                         color: 'rgba(0,0,0,0.1)',
@@ -82,12 +83,12 @@ function MostSoldItems() {
                     },
                     y: {
                       min: 0, // Minimum value on y-axis
-                      max: Math.max(...dataValues) + 10, // Set a max value based on data + some buffer
+                      max: Math.max(...dataValues) + 10, // Max value with a buffer
                       ticks: {
-                        stepSize: 2, // Set the tick interval to 2
+                        stepSize: 5, // Adjust tick interval
                         color: '#333',
                         font: {
-                          size: 12, // Adjust font size for y-axis
+                          size: 12, // Font size for y-axis
                         },
                       },
                       grid: {
@@ -100,14 +101,6 @@ function MostSoldItems() {
                       display: false,
                     },
                   },
-                  layout: {
-                    padding: {
-                      left: 0,
-                      right: 0,
-                      top: 0,
-                      bottom: 0,
-                    },
-                  },
                 }} 
               />
             ) : (
@@ -116,7 +109,7 @@ function MostSoldItems() {
           </div>
 
           {/* Product Color Legend */}
-          <div className="w-1/4 pl-4"> {/* Added padding for spacing */}
+          <div className="w-2/5 pl-6"> {/* Adjusted width and padding for spacing */}
             <h4 className="text-lg font-semibold text-gray-700 mb-4">Product Color Legend</h4>
             <div className="space-y-2">
               {labels.map((label, index) => (

@@ -481,6 +481,23 @@ getMostSoldItems: async (req, res) => {
   }
 },
 
+getSalesData: async (req, res) => {
+  try {
+      const revenuePast3Months = await MainManagerModel.getRevenuePastThreeMonths();
+      const revenuePrev3Months = await MainManagerModel.getRevenuePreviousThreeMonths();
+      const topSoldItems = await MainManagerModel.getTopProductsLastThreeMonths();
+
+      res.json({
+          revenue_past_3_months: revenuePast3Months,
+          revenue_prev_3_months: revenuePrev3Months,
+          top_sold_items: topSoldItems,
+      });
+  } catch (error) {
+      console.error('Error fetching sales data:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+},
+
 
 
 

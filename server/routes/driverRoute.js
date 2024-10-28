@@ -18,8 +18,4 @@ router.put('/updateTrainSchedule', mainmanagerController.updateTrainSchedule);
 router.put('/updateOrderStatus/:orderId', mainmanagerController.updateOrderStatus);
 router.post('/mainmanagerlogin', mainmanagerController.mainManagerLogin);
 // router.get('//:storeId', mainmanagerController.getDriver);
-router.put('/updateOrderStatus', mainmanagerController.updateOrderStatus);
 module.exports = router;
-
-
-

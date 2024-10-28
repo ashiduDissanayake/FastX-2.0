@@ -9,7 +9,7 @@ import {
 
 import Sidebar from "../components/Sidebar";
 
-const Home = () => {
+const DriverDashboard = () => {
   const [data, setData] = useState([]);
   const [activePage, setActivePage] = useState("Home");
   const navigate = useNavigate(); // Initialize useNavigate
@@ -32,32 +32,32 @@ const Home = () => {
 
       {/* Main Content */}
       <main className="w-3/4 p-6">
-        <h1 className="text-3xl font-bold mb-6"> Main Manager Dashboard</h1>
+        <h1 className="text-3xl font-bold mb-6">Driver Dashboard</h1>
 
         <section className="mb-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
             {[
-              {
-                title: "Orders",
-                bgColor: "bg-blue-500",
-                icon: <FaTruck />,
-                navigateTo: "/orders",
-              },
-              {
-                title: "Train schedule",
-                bgColor: "bg-green-500",
-                icon: <FaTasks />,
-                navigateTo: "/trainschedule",
+            //   {
+            //     title: "Orders",
+            //     bgColor: "bg-blue-500",
+            //     icon: <FaTruck />,
+            //     navigateTo: "/orders",
+            //   },
+            //   {
+            //     title: "Train schedule",
+            //     bgColor: "bg-green-500",
+            //     icon: <FaTasks />,
+            //     navigateTo: "/trainschedule",
     
                 
-              },
-              {
-                title: "Stores",
-                bgColor: "bg-yellow-500",
-                icon: <FaClipboardList />,
+            //   },
+            //   {
+            //     title: "Stores",
+            //     bgColor: "bg-yellow-500",
+            //     icon: <FaClipboardList />,
 
-                navigateTo: "/store",
-              },
+            //     navigateTo: "/store",
+            //   },
               {
                 title: "Reports",
                 bgColor: "bg-purple-500",
@@ -87,4 +87,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default DriverDashboard;

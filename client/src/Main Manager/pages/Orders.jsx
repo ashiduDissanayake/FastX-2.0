@@ -84,27 +84,30 @@ const Orders = () => {
                         <thead>
                             <tr>
                                 <th style={{ textAlign: "center" }}>Order ID</th>
-                                <th style={{ textAlign: "center" }}>Cart ID</th>
+                                <th style={{ textAlign: "center" }}>Customer ID</th>
                                 <th style={{ textAlign: "center" }}>Route ID</th>
-                                <th style={{ textAlign: "center" }}>Status</th>
                                 <th style={{ textAlign: "center" }}>Order Date Time</th>
+                                <th style={{ textAlign: "center" }}>Total Amount</th>
+                                <th style={{ textAlign: "center" }}>Status</th>
+                                <th style={{ textAlign: "center" }}>Capacity Lmit</th>
                                 <th style={{ textAlign: "center" }}>Capacity</th>
-                                <th style={{ textAlign: "center" }}>Store ID</th>
                             </tr>
                         </thead>
                         <tbody>
                             {data.map((item) => {
                                 return (
-                                    <tr key={item.order_ID}>
-                                        <td>{item.order_ID}</td>
-                                        <td>{item.cart_ID}</td>
-                                        <td>{item.route_ID}</td>
+                                    <tr key={item.order_id}>
+                                        <td>{item.order_id}</td>
+                                        <td>{item.customer_ID}</td>
+                                        <td>{item.route_id}</td>
+                                        <td>{item.order_date}</td>
+                                        <td>{item.total_amount}</td>
                                         <td>
                                             <button className="btn btn-shipped">{item.status}</button>
                                         </td>
-                                        <td>{item.order_Date_Time}</td>
+                                        <td>{item.capacity_limit}</td>
                                         <td>{item.capacity}</td>
-                                        <td>{item.store_ID}</td>
+                                        
                                     </tr>
                                 );
                             })}

@@ -1707,6 +1707,264 @@
 
 //7th edition now
 
+// import React, { useState, useEffect } from 'react';
+// import axios from 'axios';
+// import Sidebar from '../components/Sidebar';
+
+// const Store = () => {
+//     const [storeData, setStoreData] = useState([]);
+//     const [filteredData, setFilteredData] = useState([]);
+//     const [activePage, setActivePage] = useState("Schedule a New Trip");
+//     const [selectedStore, setSelectedStore] = useState("");
+//     const [progress, setProgress] = useState(0); // Progress for train capacity
+//     const [barVisible, setBarVisible] = useState(true); // To toggle progress bar visibility
+//     const [trainCapacity, setTrainCapacity] = useState(0); // Train capacity for the selected store
+//     const [availableCapacity, setAvailableCapacity] = useState(0); // Track available capacity
+//     const [orderStatuses, setOrderStatuses] = useState({}); // State to track order statuses
+//     const [shipButtonLabel, setShipButtonLabel] = useState("Ship"); // State for ship button label
+
+//     const handleNavigation = (item) => {
+//         setActivePage(item);
+//     };
+
+//     useEffect(() => {
+//         loadStores();
+//     }, []);
+
+//     const loadStores = async () => {
+//         try {
+//             const response = await axios.get("http://localhost:8080/manager/getstore");
+//             setStoreData(response.data);
+//         } catch (error) {
+//             console.error("Error loading stores", error);
+//         }
+//     };
+
+//     const loadOrdersByStore = async (storeId) => {
+//         try {
+//             const response = await axios.post(`http://localhost:8080/mainmanager/getorder/${storeId}`);
+//             setFilteredData(response.data);
+
+//             // Initialize order statuses for the new store
+//             const initialStatuses = {};
+//             response.data.forEach(order => {
+//                 initialStatuses[order.order_id] = order.status; // Set initial status
+//             });
+//             setOrderStatuses(initialStatuses);
+//         } catch (error) {
+//             console.error("Error loading orders", error);
+//         }
+//     };
+
+
+
+//     // Function to fetch train capacity for the selected store
+//     const loadTrainCapacityByStore = async (storeId) => {
+//         try {
+//             const response = await axios.get(`http://localhost:8080/mainmanager/getTrainCapacity/${storeId}`);
+//             const capacity = response.data.capacity; // Assuming capacity comes in the response
+//             setTrainCapacity(capacity);
+//             setAvailableCapacity(capacity); // Initialize available capacity
+//         } catch (error) {
+//             console.error("Error loading train capacity", error);
+//         }
+//     };
+
+//     // Handle store change event
+//     const handleStoreChange = (e) => {
+//         const storeId = e.target.value;
+//         setSelectedStore(storeId);
+//         loadOrdersByStore(storeId); // Load orders when store is selected
+//         loadTrainCapacityByStore(storeId); // Load train capacity for the selected store
+
+//         // Reset the progress bar visibility and progress
+//         setBarVisible(true);
+//         setProgress(0); // Reset progress when switching stores
+
+//         // Reset button label to default
+//         setShipButtonLabel("Ship"); // Reset button label
+//     };
+
+//     // Function to handle status button click
+//     const handleStatusClick = (orderId) => {
+//         const order = filteredData.find(order => order.order_id === orderId);
+        
+//         if (order) {
+//             // Update the status to "Shipped" for the clicked order
+//             setOrderStatuses((prevStatuses) => ({
+//                 ...prevStatuses,
+//                 [orderId]: 'Shipped' // Change status to "Shipped"
+//             }));
+
+//             // Calculate the new available capacity first
+//             const newAvailableCapacity = Math.max(availableCapacity - order.capacity, 0); // Ensure it doesn't go below 0
+//             setAvailableCapacity(newAvailableCapacity); // Update available capacity
+
+//             // Calculate the new progress based on the new available capacity
+//             const newProgress = ((trainCapacity - newAvailableCapacity) / trainCapacity) * 100; // Calculate the percentage of used capacity
+//             setProgress(Math.min(newProgress, 100)); // Ensure progress doesn't exceed 100%
+//         }
+//     };
+
+//     // Function to handle the new button click
+//     const handleNewButtonClick = () => {
+//         setShipButtonLabel("Shipped"); // Change button label to "Shipped"
+//         // Add logic for what this button should do
+//         console.log("New button clicked!"); // Placeholder action
+//     };
+
+//     // Reset button label if there are no orders
+//     useEffect(() => {
+//         if (filteredData.length === 0) {
+//             setShipButtonLabel("Ship"); // Reset button label if no orders are available
+//         }
+//     }, [filteredData]); // Effect runs whenever filteredData changes
+
+//     // Determine if the button should be disabled
+//     const isButtonDisabled = filteredData.length === 0 || availableCapacity === 0 || progress === 0; // Disable if no orders, capacity is 0, or progress is 0
+
+//     return (
+//         <div className="flex min-h-screen bg-gray-100">
+//             <Sidebar activePage={activePage} setActivePage={setActivePage} handleNavigation={handleNavigation} />
+
+//             <div className="w-3/4 p-6">
+//                 <h1 className="text-3xl text-center font-bold mb-6">Store</h1>
+
+//                 {/* Progress Bar for Train Capacity */}
+//                 <div className="mb-4">
+//                     {barVisible && (
+//                         <div
+//                             className="huge-progress-bar-container"
+//                             style={{
+//                                 marginBottom: '20px',
+//                                 width: '100%',
+//                                 height: '50px',
+//                                 backgroundColor: '#e0e0e0',
+//                                 borderRadius: '10px',
+//                                 overflow: 'hidden',
+//                             }}
+//                         >
+//                             <div
+//                                 className="huge-progress-bar"
+//                                 style={{
+//                                     width: `${progress}%`,
+//                                     backgroundColor: '#4caf50',
+//                                     height: '100%',
+//                                     transition: 'width 0.5s ease-in-out',
+//                                 }}
+//                             >
+//                                 <span
+//                                     className="progress-text"
+//                                     style={{ color: 'white', paddingLeft: '10px', fontSize: '18px', fontWeight: 'bold' }}
+//                                 >
+//                                     {progress.toFixed(2)}% Capacity
+//                                 </span>
+//                             </div>
+//                         </div>
+//                     )}
+//                 </div>
+
+//                 {/* New Button near the Progress Bar */}
+//                 <div className="mb-4">
+//                     <button
+//                         onClick={handleNewButtonClick}
+//                         className={`px-4 py-2 rounded transition duration-200 ${isButtonDisabled ? 'bg-gray-400 text-gray-700 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+//                         disabled={isButtonDisabled} // Disable button if no orders, capacity is 0, or progress is 0
+//                     >
+//                         {shipButtonLabel} {/* Dynamic button label */}
+//                     </button>
+//                 </div>
+
+//                 {/* Display Train Capacity and Available Capacity */}
+//                 {selectedStore && (
+//                     <div className="mb-4">
+//                         <h2 className="text-xl font-bold">Train Capacity for Store {selectedStore}: {trainCapacity}</h2>
+//                         <h3 className="text-lg">Available Capacity: {availableCapacity}</h3>
+//                     </div>
+//                 )}
+
+//                 <form className="max-w-lg mx-auto bg-white p-8 shadow-lg rounded-lg text-gray-600">
+//                     <div className="mb-4">
+//                         <label className="block mb-2 text-gray-700">Select Store</label>
+//                         <select
+//                             value={selectedStore}
+//                             onChange={handleStoreChange}
+//                             className="w-full px-3 py-2 border rounded-lg"
+//                             required
+//                         >
+//                             <option value="">-- Select Store --</option>
+//                             {storeData.map((store) => (
+//                                 <option key={store.store_ID} value={store.store_ID}>
+//                                     {store.store_ID}
+//                                 </option>
+//                             ))}
+//                         </select>
+//                     </div>
+//                 </form>
+
+//                 {selectedStore && (
+//                     <div className="mt-8">
+//                         <h2 className="text-2xl font-bold mb-4">Details for Store {selectedStore}</h2>
+
+//                         <table className="table-auto w-full bg-white shadow-md rounded-lg">
+//                             <thead>
+//                                 <tr>
+//                                     <th className="px-4 py-2 border">Order ID</th>
+//                                     <th className="px-4 py-2 border">Customer ID</th>
+//                                     <th className="px-4 py-2 border">Route ID</th>
+//                                     <th className="px-4 py-2 border">Order Date Time</th>
+//                                     <th className="px-4 py-2 border">Total Amount</th>
+//                                     <th className="px-4 py-2 border">Status</th>
+//                                     <th className="px-4 py-2 border">Capacity Limit</th>
+//                                     <th className="px-4 py-2 border">Capacity</th>
+//                                 </tr>
+//                             </thead>
+//                             <tbody>
+//                                 {filteredData.length > 0 ? (
+//                                     filteredData.map((order) => (
+//                                         <tr key={order.order_id}>
+//                                             <td className="px-4 py-2 border">{order.order_id}</td>
+//                                             <td className="px-4 py-2 border">{order.customer_ID}</td>
+//                                             <td className="px-4 py-2 border">{order.route_id}</td>
+//                                             <td className="px-4 py-2 border">{order.order_date}</td>
+//                                             <td className="px-4 py-2 border">{order.total_amount}</td>
+//                                             <td className="px-4 py-2 border">
+//                                                 {orderStatuses[order.order_id]} {/* Display order status */}
+//                                                 {orderStatuses[order.order_id] !== 'Shipped' && (
+//                                                     <button
+//                                                         onClick={() => handleStatusClick(order.order_id)}
+//                                                         className="ml-4 px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+//                                                     >
+//                                                         Ship
+//                                                     </button>
+//                                                 )}
+//                                             </td>
+//                                             <td className="px-4 py-2 border">{order.capacity_limit}</td>
+//                                             <td className="px-4 py-2 border">{order.capacity}</td>
+//                                         </tr>
+//                                     ))
+//                                 ) : (
+//                                     <tr>
+//                                         <td colSpan="6" className="px-4 py-2 border text-center">No orders found.</td>
+//                                     </tr>
+//                                 )}
+//                             </tbody>
+//                         </table>
+//                     </div>
+//                 )}
+//             </div>
+//         </div>
+//     );
+// };
+
+// export default Store;
+
+
+
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Sidebar from '../components/Sidebar';
@@ -1716,12 +1974,12 @@ const Store = () => {
     const [filteredData, setFilteredData] = useState([]);
     const [activePage, setActivePage] = useState("Schedule a New Trip");
     const [selectedStore, setSelectedStore] = useState("");
-    const [progress, setProgress] = useState(0); // Progress for train capacity
-    const [barVisible, setBarVisible] = useState(true); // To toggle progress bar visibility
-    const [trainCapacity, setTrainCapacity] = useState(0); // Train capacity for the selected store
-    const [availableCapacity, setAvailableCapacity] = useState(0); // Track available capacity
-    const [orderStatuses, setOrderStatuses] = useState({}); // State to track order statuses
-    const [shipButtonLabel, setShipButtonLabel] = useState("Ship"); // State for ship button label
+    const [progress, setProgress] = useState(0);
+    const [barVisible, setBarVisible] = useState(true);
+    const [trainCapacity, setTrainCapacity] = useState(0);
+    const [availableCapacity, setAvailableCapacity] = useState(0);
+    const [orderStatuses, setOrderStatuses] = useState({});
+    const [shipButtonLabel, setShipButtonLabel] = useState("Ship");
 
     const handleNavigation = (item) => {
         setActivePage(item);
@@ -1745,10 +2003,9 @@ const Store = () => {
             const response = await axios.post(`http://localhost:8080/mainmanager/getorder/${storeId}`);
             setFilteredData(response.data);
 
-            // Initialize order statuses for the new store
             const initialStatuses = {};
             response.data.forEach(order => {
-                initialStatuses[order.order_ID] = order.status; // Set initial status
+                initialStatuses[order.order_id] = order.status;
             });
             setOrderStatuses(initialStatuses);
         } catch (error) {
@@ -1756,70 +2013,72 @@ const Store = () => {
         }
     };
 
-    // Function to fetch train capacity for the selected store
     const loadTrainCapacityByStore = async (storeId) => {
         try {
             const response = await axios.get(`http://localhost:8080/mainmanager/getTrainCapacity/${storeId}`);
-            const capacity = response.data.capacity; // Assuming capacity comes in the response
+            const capacity = response.data.capacity;
             setTrainCapacity(capacity);
-            setAvailableCapacity(capacity); // Initialize available capacity
+            setAvailableCapacity(capacity);
         } catch (error) {
             console.error("Error loading train capacity", error);
         }
     };
 
-    // Handle store change event
     const handleStoreChange = (e) => {
         const storeId = e.target.value;
         setSelectedStore(storeId);
-        loadOrdersByStore(storeId); // Load orders when store is selected
-        loadTrainCapacityByStore(storeId); // Load train capacity for the selected store
+        loadOrdersByStore(storeId);
+        loadTrainCapacityByStore(storeId);
 
-        // Reset the progress bar visibility and progress
         setBarVisible(true);
-        setProgress(0); // Reset progress when switching stores
-
-        // Reset button label to default
-        setShipButtonLabel("Ship"); // Reset button label
+        setProgress(0);
+        setShipButtonLabel("Ship");
     };
 
-    // Function to handle status button click
-    const handleStatusClick = (orderId) => {
-        const order = filteredData.find(order => order.order_ID === orderId);
-        
+    // Function to handle status button click and update in the database
+    const handleStatusClick = async (orderId) => {
+        const order = filteredData.find(order => order.order_id === orderId);
+
         if (order) {
-            // Update the status to "Shipped" for the clicked order
             setOrderStatuses((prevStatuses) => ({
                 ...prevStatuses,
-                [orderId]: 'Shipped' // Change status to "Shipped"
+                [orderId]: 'Shipped'
             }));
 
-            // Calculate the new available capacity first
-            const newAvailableCapacity = Math.max(availableCapacity - order.capacity, 0); // Ensure it doesn't go below 0
-            setAvailableCapacity(newAvailableCapacity); // Update available capacity
+            const newAvailableCapacity = Math.max(availableCapacity - order.capacity, 0);
+            setAvailableCapacity(newAvailableCapacity);
 
-            // Calculate the new progress based on the new available capacity
-            const newProgress = ((trainCapacity - newAvailableCapacity) / trainCapacity) * 100; // Calculate the percentage of used capacity
-            setProgress(Math.min(newProgress, 100)); // Ensure progress doesn't exceed 100%
+            const newProgress = ((trainCapacity - newAvailableCapacity) / trainCapacity) * 100;
+            setProgress(Math.min(newProgress, 100));
+
+            await updateOrderStatus(orderId, 'Shipped');
         }
     };
 
-    // Function to handle the new button click
-    const handleNewButtonClick = () => {
-        setShipButtonLabel("Shipped"); // Change button label to "Shipped"
-        // Add logic for what this button should do
-        console.log("New button clicked!"); // Placeholder action
+    const updateOrderStatus = async (orderId, status) => {
+        try {
+            await axios.put(`http://localhost:8080/mainmanager/updateOrderStatus`, {
+                order_id: orderId,
+                status: status
+            });
+            console.log(`Order ${orderId} status updated to ${status} in the database.`);
+        } catch (error) {
+            console.error("Error updating order status", error);
+        }
     };
 
-    // Reset button label if there are no orders
+    const handleNewButtonClick = () => {
+        setShipButtonLabel("Shipped");
+        console.log("New button clicked!");
+    };
+
     useEffect(() => {
         if (filteredData.length === 0) {
-            setShipButtonLabel("Ship"); // Reset button label if no orders are available
+            setShipButtonLabel("Ship");
         }
-    }, [filteredData]); // Effect runs whenever filteredData changes
+    }, [filteredData]);
 
-    // Determine if the button should be disabled
-    const isButtonDisabled = filteredData.length === 0 || availableCapacity === 0 || progress === 0; // Disable if no orders, capacity is 0, or progress is 0
+    const isButtonDisabled = filteredData.length === 0 || availableCapacity === 0 || progress === 0;
 
     return (
         <div className="flex min-h-screen bg-gray-100">
@@ -1828,7 +2087,6 @@ const Store = () => {
             <div className="w-3/4 p-6">
                 <h1 className="text-3xl text-center font-bold mb-6">Store</h1>
 
-                {/* Progress Bar for Train Capacity */}
                 <div className="mb-4">
                     {barVisible && (
                         <div
@@ -1862,18 +2120,16 @@ const Store = () => {
                     )}
                 </div>
 
-                {/* New Button near the Progress Bar */}
                 <div className="mb-4">
                     <button
                         onClick={handleNewButtonClick}
                         className={`px-4 py-2 rounded transition duration-200 ${isButtonDisabled ? 'bg-gray-400 text-gray-700 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
-                        disabled={isButtonDisabled} // Disable button if no orders, capacity is 0, or progress is 0
+                        disabled={isButtonDisabled}
                     >
-                        {shipButtonLabel} {/* Dynamic button label */}
+                        {shipButtonLabel}
                     </button>
                 </div>
 
-                {/* Display Train Capacity and Available Capacity */}
                 {selectedStore && (
                     <div className="mb-4">
                         <h2 className="text-xl font-bold">Train Capacity for Store {selectedStore}: {trainCapacity}</h2>
@@ -1908,33 +2164,37 @@ const Store = () => {
                             <thead>
                                 <tr>
                                     <th className="px-4 py-2 border">Order ID</th>
-                                    <th className="px-4 py-2 border">Cart ID</th>
+                                    <th className="px-4 py-2 border">Customer ID</th>
                                     <th className="px-4 py-2 border">Route ID</th>
-                                    <th className="px-4 py-2 border">Capacity</th>
-                                    <th className="px-4 py-2 border">Store ID</th>
+                                    <th className="px-4 py-2 border">Order Date Time</th>
+                                    <th className="px-4 py-2 border">Total Amount</th>
                                     <th className="px-4 py-2 border">Status</th>
+                                    <th className="px-4 py-2 border">Capacity Limit</th>
+                                    <th className="px-4 py-2 border">Capacity</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredData.length > 0 ? (
                                     filteredData.map((order) => (
-                                        <tr key={order.order_ID}>
-                                            <td className="px-4 py-2 border">{order.order_ID}</td>
-                                            <td className="px-4 py-2 border">{order.cart_ID}</td>
-                                            <td className="px-4 py-2 border">{order.route_ID}</td>
-                                            <td className="px-4 py-2 border">{order.capacity}</td>
-                                            <td className="px-4 py-2 border">{order.store_ID}</td>
+                                        <tr key={order.order_id}>
+                                            <td className="px-4 py-2 border">{order.order_id}</td>
+                                            <td className="px-4 py-2 border">{order.customer_ID}</td>
+                                            <td className="px-4 py-2 border">{order.route_id}</td>
+                                            <td className="px-4 py-2 border">{order.order_date}</td>
+                                            <td className="px-4 py-2 border">{order.total_amount}</td>
                                             <td className="px-4 py-2 border">
-                                                {orderStatuses[order.order_ID]} {/* Display order status */}
-                                                {orderStatuses[order.order_ID] !== 'Shipped' && (
+                                                {orderStatuses[order.order_id]}
+                                                {orderStatuses[order.order_id] !== 'Shipped' && (
                                                     <button
-                                                        onClick={() => handleStatusClick(order.order_ID)}
+                                                        onClick={() => handleStatusClick(order.order_id)}
                                                         className="ml-4 px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600"
                                                     >
                                                         Ship
                                                     </button>
                                                 )}
                                             </td>
+                                            <td className="px-4 py-2 border">{order.capacity_limit}</td>
+                                            <td className="px-4 py-2 border">{order.capacity}</td>
                                         </tr>
                                     ))
                                 ) : (
@@ -1952,10 +2212,3 @@ const Store = () => {
 };
 
 export default Store;
-
-
-
-
-
-
-

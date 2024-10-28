@@ -31,6 +31,7 @@ import UserProfile from "./pages/UserProfile";
 import OrdersDetails from "./pages/Orders";
 import Mainmanagerlogin from "./MainManager/Mainmanagerlogin";
 import MainManagerDashboard from "./MainManager/MainManagerDashboard";
+import DriverDashboard from "./Driver/pages/DriverDashboard";
 
 function App() {
   return (
@@ -68,6 +69,13 @@ function App() {
             <Route path="/store" element={<Store/>} />
             <Route path="/trainschedule" element={<TrainSchedule/>} />
             <Route path="/orders" element={<Orders/>} />
+
+            {/* Driver */}
+            <Route path="/driverdashboard" element={<DriverDashboard/>} />
+            {/* <Route path="/store" element={<Store/>} />
+            <Route path="/trainschedule" element={<TrainSchedule/>} />
+            <Route path="/orders" element={<Orders/>} /> */}
+
               
             {/* Manager Route */}
             <Route path="/manager-dashboard" element={<ManagerDashBoard />} />

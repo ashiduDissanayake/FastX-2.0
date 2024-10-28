@@ -235,7 +235,7 @@ const mainmanagerController = {
 
     //get order details
     getorder:(req, res) => {
-        const sqlGet="SELECT * FROM orders";
+        const sqlGet="SELECT * FROM `Order`";
         db.query(sqlGet,(error,result) => {
             res.send(result);
         }
@@ -244,7 +244,8 @@ const mainmanagerController = {
 
     getselectorder: (req, res) => {
       const storeId = req.params.storeId;
-      const sqlGet = "SELECT * FROM `\order\` WHERE store_ID = ? AND status='branch'"; 
+      
+      const sqlGet = "SELECT * FROM `\Order\` JOIN Route ON Order.route_id = Route.route_ID WHERE store_ID = ? AND Order.status = 'Pending'";
       
       db.query(sqlGet, [storeId], (error, result) => {
           if (error) {
@@ -365,20 +366,44 @@ updateTrainSchedule: (req, res) => {
   });
 },
 
-// Backend code for updating order status
-updateOrderStatus: (req, res) => {
-  const { orderId } = req.params;
-  const { status } = req.body; // Expects { status: 'Shipped' }
 
-  const sqlUpdate = "UPDATE orders SET status = ? WHERE order_ID = ?";
-  db.query(sqlUpdate, [status, orderId], (error, result) => {
+updateOrderStatus: (req, res) => {
+  const { order_id, status } = req.body; // Destructure incoming data
+
+  const sqlUpdate = "UPDATE `Order` SET status = ? WHERE order_id = ?"; // Adjust table name as needed
+
+  db.query(sqlUpdate, [status, order_id], (error, result) => {
       if (error) {
           return res.status(500).json({ message: "Error updating order status", error });
       }
-      res.status(200).json({ message: "Order status updated successfully" });
+      if (result.affectedRows === 0) {
+          return res.status(404).json({ message: "Order not found" });
+      }
+      res.status(200).json({ message: `Order ${order_id} status updated to ${status}` });
   });
 },
 
+
+// Remove the previous updateOrderStatus method if exists
+
+// // Add this function to mainmanagerController
+// updateOrderStatus: async (req, res) => {
+//   const { order_id, status } = req.body;
+
+//   if (!order_id || !status) {
+//       return res.status(400).json({ error: "Missing order_id or status" });
+//   }
+
+//   try {
+//       const query = `UPDATE orders SET status = ? WHERE order_ID = ?`;
+//       await db.query(query, [status, order_id]);
+      
+//       res.status(200).json({ message: `Order ${order_id} status updated to ${status}` });
+//   } catch (error) {
+//       console.error("Error updating order status:", error);
+//       res.status(500).json({ error: "Failed to update order status" });
+//   }
+// },
 
 
 

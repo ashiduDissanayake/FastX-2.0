@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mainmanagerController = require('../controllers/mainmanagerController');
+const MainManagerauthenticateToken = require('../middlewares/MainmanagerauthMiddleware');
 
 // User routes
 router.post('/mainmanagerlogin', mainmanagerController.mainManagerLogin);
@@ -19,6 +20,7 @@ router.get('/getTrainCapacity/:storeId', mainmanagerController.getTrainCapacity)
 // router.put("/updateTrainSchedule", mainmanagerController.updateTrainSchedule);
 router.put('/updateTrainSchedule', mainmanagerController.updateTrainSchedule);
 router.put('/updateOrderStatus/:orderId', mainmanagerController.updateOrderStatus);
+router.get('/profile', MainManagerauthenticateToken, mainmanagerController.getMainManagerDetails);
 
 
 router.get('/Store1/orders', mainmanagerController.getPendingOrdersStore1);

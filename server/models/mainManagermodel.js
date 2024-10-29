@@ -86,6 +86,19 @@ const MainManagerModel = {
       callback(null, results[0]); // Access the actual result set
     });
   },
+
+  getMainManagerByID(MainManagerID) {
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT name, email FROM mainmanager WHERE mainmanager_id = ?';
+
+      db.query(query, [MainManagerID], (error, results) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(results[0]); // Return the first row if a driver is found
+      });
+    });
+  },
   
 
 

@@ -22,29 +22,29 @@ const SidePanel = () => {
           className="rounded-full w-24 h-24 mb-4"
         />
         <h2 className="text-2xl font-semibold tracking-wide">Ashidu Dissanayake</h2>
-        <p className="text-sm opacity-75">Admin</p>
+        <p className="text-sm opacity-75">Main Manager</p>
       </div>
 
       <nav className="space-y-4">
-        <Link to="/mainmanager-dashboard" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
+        <Link to="/mainmanager-profile" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
           <DashboardIcon />
-          <span className="ml-2 text-lg">Dashboard</span>
+          <span className="ml-2 text-lg">Profile</span>
         </Link>
-        <Link to="/mainmanager-customers" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
+        <Link to="/store1" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
           <PeopleIcon />
-          <span className="ml-2 text-lg">Customers</span>
+          <span className="ml-2 text-lg">Dashboard</span>
         </Link>
         <Link to="/mainmanager-trainschedule" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
           <GroupWorkIcon />
           <span className="ml-2 text-lg">TrainSchedule</span>
         </Link>
-        <Link to="/mainmanager-report" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
+        <Link to="/quarterly-sales" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
           <AnalyticsIcon />
           <span className="ml-2 text-lg">Report</span>
         </Link>
-        <Link to="/mainmanager-profile" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
+        <Link to="/mainmanager-customers" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
           <AccountCircleIcon />
-          <span className="ml-2 text-lg">Profile</span>
+          <span className="ml-2 text-lg">Customer</span>
         </Link>
       </nav>
 

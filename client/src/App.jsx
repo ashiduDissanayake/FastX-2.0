@@ -37,7 +37,7 @@ import Report from "./components/Admin/pages/Report";
 import AdminLogin from "./components/Admin/pages/AdminLogin";
 
 // Driver Imports
-import DriverDashboard from "./Driver/DriverDashboard";
+
 import DriverLogin from "./Driver/Driverlogin";
 
 // Main Manager Imports
@@ -59,8 +59,8 @@ import Store2 from './MainManager/Store/Store2'
 import Store3 from './MainManager/Store/Store3'
 import Store4 from './MainManager/Store/Store4'
 import Store5 from './MainManager/Store/Store5'
-import CategoryView from "./pages/CategoryView";
-import AdminLogin from "./components/Admin/pages/AdminLogin";
+
+
 import DriverDashboard from "./Driver/DriverDashboard";
 import Driverlogin from "./Driver/Driverlogin";
 import DriverProfile from "./Driver/DriverProfile";

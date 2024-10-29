@@ -282,6 +282,29 @@ const mainmanagerController = {
       res.send(result);
     });
   },
+
+
+  getMainManagerDetails : async (req, res) => {
+    try {
+        
+      const MainManagerID = req.user.mainmanager_id; // Get the driver ID from middleware
+      console.log(MainManagerID);
+      
+      const mainmanager = await MainManagerModel.getMainManagerByID(MainManagerID);
+  
+      if (!mainmanager) {
+        return res.status(404).json({ message: "Driver not found" });
+      }
+  
+      res.json(mainmanager);
+    } catch (error) {
+      console.error("Error fetching driver details:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  },
+
+
+
   getScheduleTrip: (req, res) => {
     console.log("GET request received");
     res.send("Schedule Trip Endpoint");

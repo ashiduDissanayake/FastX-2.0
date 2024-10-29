@@ -461,3 +461,175 @@ updateOrderStatus: (req, res) => {
   
   module.exports = mainmanagerController;
 
+
+
+// const jwt = require("jsonwebtoken");
+// const dotenv = require("dotenv");
+// dotenv.config();
+
+// const MainManagerModel = require('../models/mainmanagerModel');
+
+// // Handle errors
+// const handleErrors = (err) => {
+//   let errors = { email: "", password: "" };
+
+//   if (err.message === "incorrect email") {
+//     errors.email = "That email is not registered";
+//   }
+//   if (err.message === "incorrect password") {
+//     errors.password = "That password is incorrect";
+//   }
+//   if (err.message === "email already registered") {
+//     errors.email = "That email is already registered";
+//   }
+//   if (err.message.includes("user validation failed")) {
+//     Object.values(err.errors).forEach(({ properties }) => {
+//       errors[properties.path] = properties.message;
+//     });
+//   }
+//   return errors;
+// };
+
+// // Controller to handle requests
+// const mainmanagerController = {
+//   mainManagerLogin: async (req, res) => {
+//     const { username, password } = req.body;
+
+//     try {
+//       const result = await MainManagerModel.login(username, password);
+
+//       if (result.length > 0 && result[0].message === 'Successful login') {
+//         const { manager_id } = result[0];
+//         const token = jwt.sign({ manager_id, username }, process.env.SECRET, { expiresIn: '1h' });
+
+//         res.cookie('token', token, {
+//           httpOnly: true,
+//           secure: process.env.NODE_ENV === 'production',
+//           maxAge: 3600000, // 1 hour
+//         });
+
+//         return res.status(200).json({
+//           message: 'Login successful',
+//           manager_id,
+//           token,
+//         });
+//       } else {
+//         return res.status(401).json({
+//           message: result[0] ? result[0].message : 'Login failed: Incorrect username or password',
+//         });
+//       }
+//     } catch (err) {
+//       console.error('Error during login:', err);
+//       res.status(500).json({ message: 'Error occurred during login' });
+//     }
+//   },
+
+//   getDriver: async (req, res) => {
+//     try {
+//       const result = await MainManagerModel.getDriverByStore(req.params.storeId);
+//       res.status(200).json(result); // Use status 200 for successful retrieval
+//     } catch (err) {
+//       console.error("Error retrieving drivers:", err);
+//       res.status(500).json({ message: "Error retrieving drivers", error: err.message });
+//     }
+//   },
+
+//   getDriverAssistant: async (req, res) => {
+//     try {
+//       const result = await MainManagerModel.getDriverAssistantByStore(req.params.storeId);
+//       res.status(200).json(result);
+//     } catch (err) {
+//       console.error("Error retrieving driver assistants:", err);
+//       res.status(500).json({ message: "Error retrieving driver assistants", error: err.message });
+//     }
+//   },
+
+//   getTruck: async (req, res) => {
+//     try {
+//       const result = await MainManagerModel.getTruckByStore(req.params.storeId);
+//       res.status(200).json(result);
+//     } catch (err) {
+//       console.error("Error retrieving trucks:", err);
+//       res.status(500).json({ message: "Error retrieving trucks", error: err.message });
+//     }
+//   },
+
+//   getOrder: async (req, res) => {
+//     try {
+//       const result = await MainManagerModel.getAllOrders();
+//       res.status(200).json(result);
+//     } catch (err) {
+//       console.error("Error retrieving orders:", err);
+//       res.status(500).json({ message: "Error retrieving orders", error: err.message });
+//     }
+//   },
+
+//   getSelectOrder: async (req, res) => {
+//     try {
+//       const result = await MainManagerModel.getPendingOrdersByStore(req.params.storeId);
+//       res.status(200).json(result);
+//     } catch (err) {
+//       console.error("Error retrieving selected orders:", err);
+//       res.status(500).json({ message: "Error retrieving selected orders", error: err.message });
+//     }
+//   },
+
+//   getTrainSchedule: async (req, res) => {
+//     try {
+//       const result = await MainManagerModel.getTrainSchedule();
+//       res.status(200).json(result);
+//     } catch (err) {
+//       console.error("Error retrieving train schedule:", err);
+//       res.status(500).json({ message: "Error retrieving train schedule", error: err.message });
+//     }
+//   },
+
+//   updateTrainSchedule: async (req, res) => {
+//     const { schedule_ID, departure_Time, arrival_Time } = req.body;
+//     try {
+//       const result = await MainManagerModel.updateTrainSchedule(schedule_ID, departure_Time, arrival_Time);
+//       if (result.affectedRows === 0) {
+//         return res.status(404).json({ message: "Train schedule not found" });
+//       }
+//       res.status(200).json({ message: "Train schedule updated successfully" });
+//     } catch (err) {
+//       console.error("Error updating train schedule:", err);
+//       res.status(500).json({ message: "Error updating train schedule", error: err.message });
+//     }
+//   },
+
+//   updateOrderStatus: async (req, res) => {
+//     const { orderId } = req.params; // Get orderId from params
+//     const { status } = req.body;
+//     try {
+//       const result = await MainManagerModel.updateOrderStatus(orderId, status); // Use orderId from params
+//       if (result.affectedRows === 0) {
+//         return res.status(404).json({ message: "Order not found" });
+//       }
+//       res.status(200).json({ message: `Order ${orderId} status updated to ${status}` });
+//     } catch (err) {
+//       console.error("Error updating order status:", err);
+//       res.status(500).json({ message: "Error updating order status", error: err.message });
+//     }
+//   },
+
+//   scheduleTrip: async (req, res) => {
+//     const { truck_ID, driver_ID, assistant_ID, store_ID, route_ID, start_time } = req.body;
+
+//     if (!truck_ID || !driver_ID || !assistant_ID || !store_ID || !route_ID || !start_time) {
+//       return res.status(400).json({ message: 'All fields are required.' });
+//     }
+
+//     try {
+//       const currentDate = new Date().toISOString().split('T')[0];
+//       const formattedStartTime = `${currentDate} ${start_time}:00`;
+//       await MainManagerModel.scheduleTrip(truck_ID, driver_ID, assistant_ID, store_ID, route_ID, formattedStartTime);
+//       res.status(200).json({ message: 'Trip scheduled successfully!' });
+//     } catch (err) {
+//       console.error('Error scheduling trip:', err);
+//       res.status(500).json({ message: 'Failed to schedule trip', error: err.message });
+//     }
+//   }
+// };
+
+// module.exports = mainmanagerController;

@@ -13,7 +13,7 @@ const RailwaySidebar = ({ activePage, setActivePage }) => {
     // Navigate to the corresponding route
     switch (item) {
       case "Home":
-        navigate("/railwaymanagerdashboard"); // Adjust the route as per your application structure
+        navigate("/railwaytrainschedule"); // Adjust the route as per your application structure
         break;
       
       case "Train schedule":
@@ -48,8 +48,8 @@ const RailwaySidebar = ({ activePage, setActivePage }) => {
           {[
             "Home",
             
-            "Train schedule",
-            "Reports",
+            // "Train schedule",
+            // "Reports",
             "Logout",
           ].map((item) => (
             <li

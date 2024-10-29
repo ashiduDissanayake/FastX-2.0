@@ -43,27 +43,27 @@ const railwayhome = () => {
               //   icon: <FaTruck />,
               //   navigateTo: "/orders",
               // },
-              {
-                title: "Train schedule",
-                bgColor: "bg-green-500",
-                icon: <FaTasks />,
-                navigateTo: "/trainschedule",
+              // {
+              //   title: "Train schedule",
+              //   bgColor: "bg-green-500",
+              //   icon: <FaTasks />,
+              //   navigateTo: "/trainschedule",
     
                 
-              },
-              // {
-              //   title: "Stores",
-              //   bgColor: "bg-yellow-500",
-              //   icon: <FaClipboardList />,
-
-              //   navigateTo: "/store",
               // },
-              {
-                title: "Reports",
-                bgColor: "bg-purple-500",
-                icon: <FaFileAlt />,
-                // navigateTo: "/reports",
-              },
+              // // {
+              // //   title: "Stores",
+              // //   bgColor: "bg-yellow-500",
+              // //   icon: <FaClipboardList />,
+
+              // //   navigateTo: "/store",
+              // // },
+              // {
+              //   title: "Reports",
+              //   bgColor: "bg-purple-500",
+              //   icon: <FaFileAlt />,
+              //   // navigateTo: "/reports",
+              // },
             ].map((stat) => (
               <div
                 key={stat.title}

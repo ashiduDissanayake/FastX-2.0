@@ -9,7 +9,7 @@ const bodyParser = require('body-parser');
 const userRoutes = require('./routes/userRoute');
 const managerRoutes = require('./routes/managerRoute');
 const mainmanagerRoutes = require('./routes/mainmanagerRoute');
-// const driverRoutes = require('./routes/driverRoute');
+const railwaymanagerRoutes = require('./routes/railwaymanagerRoute');
 
 // dotenv config
 dotenv.config();
@@ -57,8 +57,8 @@ const port = process.env.PORT || 5000;
 // User routes
 app.use('/user', userRoutes);
 app.use('/manager', managerRoutes);
-app.use('/mainmanager', mainmanagerRoutes)
-// app.use('/driver', driverRoutes)
+app.use('/mainmanager', mainmanagerRoutes);
+app.use('/railwaymanager', railwaymanagerRoutes)
 
 
 // Root route (for testing)

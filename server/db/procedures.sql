@@ -845,3 +845,184 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+-- railwaymanager
+
+DELIMITER $$
+
+-- Procedure to Get Train Schedule
+CREATE PROCEDURE GetTrainSchedule()
+BEGIN
+    DECLARE exit_code INT DEFAULT 0;
+    DECLARE error_message VARCHAR(255) DEFAULT '';
+
+    -- Retrieve all records from the TrainSchedule table
+    SELECT * FROM TrainSchedule;
+
+END $$
+
+-- Procedure to Update Train Schedule
+CREATE PROCEDURE UpdateTrainSchedule(
+    IN schedule_ID INT,
+    IN departure_Time TIME,
+    IN arrival_Time TIME
+)
+BEGIN
+    DECLARE exit_code INT DEFAULT 0;
+    DECLARE error_message VARCHAR(255) DEFAULT '';
+
+    START TRANSACTION;
+
+    -- Update the schedule details in the TrainSchedule table
+    UPDATE TrainSchedule 
+    SET departure_Time = departure_Time, 
+        arrival_Time = arrival_Time
+    WHERE schedule_ID = schedule_ID;
+
+    -- Check if any rows were affected
+    IF ROW_COUNT() = 0 THEN
+        SET error_message = 'Train schedule not found.';
+        SET exit_code = 1;
+        ROLLBACK;
+    ELSE
+        COMMIT;
+    END IF;
+
+    SELECT error_message AS message, exit_code;
+
+END $$
+
+DELIMITER ;
+
+
+
+
+
+DELIMITER //
+
+-- Procedure for Main Manager Login
+CREATE PROCEDURE MainManagerLogin(
+    IN p_username VARCHAR(255),
+    IN p_password VARCHAR(255)
+)
+BEGIN
+    DECLARE msg VARCHAR(255);
+
+    SELECT manager_id AS manager_id, 
+           CASE 
+               WHEN password = p_password THEN 'Successful login' 
+               ELSE 'Incorrect password' 
+           END AS message
+    INTO @manager_id, msg
+    FROM main_manager 
+    WHERE username = p_username;
+
+    IF msg IS NULL THEN
+        SET msg = 'Incorrect username';
+    END IF;
+
+    SELECT @manager_id AS manager_id, msg AS message;
+END //
+
+-- Procedure for Retrieving Drivers
+CREATE PROCEDURE GetDriverByStoreID(IN p_storeId INT)
+BEGIN
+    SELECT * FROM driver WHERE store_ID = p_storeId;
+END //
+
+-- Procedure for Retrieving Driver Assistants
+CREATE PROCEDURE GetDriverAssistantByStoreID(IN p_storeId INT)
+BEGIN
+    SELECT * FROM driver_assistant WHERE store_ID = p_storeId;
+END //
+
+-- Procedure for Retrieving Truck Details
+CREATE PROCEDURE GetTruckByStoreID(IN p_storeId INT)
+BEGIN
+    SELECT * FROM truck WHERE store_ID = p_storeId;
+END //
+
+-- Procedure for Retrieving All Orders
+CREATE PROCEDURE GetAllOrders()
+BEGIN
+    SELECT * FROM `Order`;
+END //
+
+-- Procedure for Retrieving Selected Orders
+CREATE PROCEDURE GetPendingOrdersByStoreID(IN p_storeId INT)
+BEGIN
+    SELECT * 
+    FROM `Order` 
+    JOIN Route ON Order.route_id = Route.route_ID 
+    WHERE store_ID = p_storeId AND Order.status = 'Pending';
+END //
+
+-- Procedure for Retrieving Train Capacity
+CREATE PROCEDURE GetTrainCapacityByStoreID(IN p_storeId INT)
+BEGIN
+    SELECT capacity FROM TrainSchedule WHERE store_ID = p_storeId;
+END //
+
+-- Procedure for Retrieving Train Schedule
+CREATE PROCEDURE GetTrainSchedule()
+BEGIN
+    SELECT * FROM TrainSchedule;
+END //
+
+-- Procedure for Updating Train Schedule
+CREATE PROCEDURE UpdateTrainSchedule(
+    IN p_schedule_ID INT,
+    IN p_departure_Time DATETIME,
+    IN p_arrival_Time DATETIME
+)
+BEGIN
+    UPDATE TrainSchedule 
+    SET departure_Time = p_departure_Time, 
+        arrival_Time = p_arrival_Time 
+    WHERE schedule_ID = p_schedule_ID;
+END //
+
+-- Procedure for Updating Order Status
+CREATE PROCEDURE UpdateOrderStatus(
+    IN p_order_id INT,
+    IN p_status VARCHAR(50)
+)
+BEGIN
+    UPDATE `Order` 
+    SET status = p_status 
+    WHERE order_id = p_order_id;
+END //
+
+-- Procedure for Scheduling a Trip
+CREATE PROCEDURE ScheduleTrip(
+    IN p_truck_ID INT,
+    IN p_driver_ID INT,
+    IN p_assistant_ID INT,
+    IN p_store_ID INT,
+    IN p_route_ID INT,
+    IN p_start_time DATETIME,
+    IN p_end_time DATETIME
+)
+BEGIN
+    INSERT INTO truck_schedule (
+        truck_ID, 
+        driver_ID, 
+        assistant_ID, 
+        store_ID, 
+        route_ID, 
+        start_time, 
+        end_time
+    )
+    VALUES (
+        p_truck_ID, 
+        p_driver_ID, 
+        p_assistant_ID, 
+        p_store_ID, 
+        p_route_ID, 
+        p_start_time, 
+        p_end_time
+    );
+END //
+
+DELIMITER ;

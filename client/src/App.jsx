@@ -69,11 +69,11 @@ function App() {
             {/* Main manager */}
             <Route path="/maindashboard" element={<MainHome/>} />
             <Route path="/store" element={<Store/>} />
-            <Route path="/trainschedule" element={<TrainSchedule/>} />
+            {/* <Route path="/trainschedule" element={<TrainSchedule/>} /> */}
             <Route path="/orders" element={<Orders/>} />
 
             {/* Railway manager */}
-            <Route path="/railwaymanagerdashboard" element={<RailwayDashboard/>} />
+            {/* <Route path="/railwaymanagerdashboard" element={<RailwayDashboard/>} /> */}
             <Route path="/railwaytrainschedule" element={<RailwayTrainSchedule/>} />
 
               

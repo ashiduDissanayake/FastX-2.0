@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 // Replace with your own images or real links
@@ -30,6 +30,33 @@ const categories = [
 ];
 
 export default function CategoryView() {
+  const [email, setEmail] = useState("");
+
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("access_key", "c3794d33-5403-4aa1-9cec-6aa2b4260d1a");
+
+    const object = Object.fromEntries(formData);
+    const json = JSON.stringify(object);
+
+    const res = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: json,
+    }).then((res) => res.json());
+
+    if (res.success) {
+      alert(`You have successfully subscribed to ${email}`);
+    } else {
+      alert("Subscription failed. Please try again.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Hero Section */}
@@ -38,7 +65,7 @@ export default function CategoryView() {
           VogueNest
         </h1>
         <p className="mt-4 text-2xl font-light text-gray-400">
-        <em>"Where Style Meets Comfort, and Fashion Finds Home."</em>
+          <em>"Where Style Meets Comfort, and Fashion Finds Home."</em>
         </p>
         <Link
           to="/shop"
@@ -123,22 +150,26 @@ export default function CategoryView() {
 
       {/* Newsletter Section */}
       <div className="py-16 bg-black text-center">
-        <h2 className="text-4xl font-bold text-white">
-          Join Our Newsletter
-        </h2>
+        <h2 className="text-4xl font-bold text-white">Join Our Newsletter</h2>
         <p className="text-gray-400 mt-4">
           Stay updated with the latest trends and exclusive offers.
         </p>
-        <div className="mt-8 flex justify-center">
+        <form onSubmit={onSubmit} className="mt-8 flex justify-center">
           <input
             type="email"
             placeholder="Enter your email"
             className="px-6 py-3 w-80 bg-gray-800 text-white rounded-l-full border-none"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
           />
-          <button className="px-6 py-3 bg-pink-500 text-white rounded-r-full font-medium hover:bg-pink-600 transition duration-300">
+          <button
+            type="submit"
+            className="px-6 py-3 bg-pink-500 text-white rounded-r-full font-medium hover:bg-pink-600 transition duration-300"
+          >
             Subscribe
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );

@@ -50,6 +50,8 @@ import Store4 from './MainManager/Store/Store4'
 import Store5 from './MainManager/Store/Store5'
 import CategoryView from "./pages/CategoryView";
 import AdminLogin from "./components/Admin/pages/AdminLogin";
+import DriverDashboard from "./Driver/DriverDashboard";
+import Driverlogin from "./Driver/Driverlogin";
 
 
 function App() {
@@ -111,6 +113,10 @@ function App() {
             <Route path="/store3" element={<Store3/>} />
             <Route path="/store4" element={<Store4/>} />
             <Route path="/store5" element={<Store5/>} />
+              
+            {/*Driver routes*/}
+            <Route path="/driver-dashboard" element={<DriverDashboard/>} />
+            <Route path="/driver-login" element={<Driverlogin/>} />
           </Routes>
         </Router>
       </AuthProvider>

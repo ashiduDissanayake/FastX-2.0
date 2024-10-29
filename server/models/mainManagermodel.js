@@ -1,6 +1,6 @@
 const db = require("../config/db");
 
-const OrderModel = {
+const MainManagerModel = {
   // Login function for Main Manager
   login: (username, password, callback) => {
     const query = 'CALL MainManagerLogin(?, ?)';
@@ -161,4 +161,4 @@ getTopProductsLastThreeMonths: () => {
   }
 };
 
-module.exports = OrderModel;
+module.exports = MainManagerModel;

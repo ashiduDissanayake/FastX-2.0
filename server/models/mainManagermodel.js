@@ -15,7 +15,7 @@ const MainManagerModel = {
   
   // Get pending orders
   getPendingOrdersStore1: (callback) => {
-    const query = 'CALL GetOrdersByPriority(12)';
+    const query = 'CALL GetOrdersByPriority(1)';
     db.query(query, (err, results) => {
       if (err) {
         return callback(err, null);

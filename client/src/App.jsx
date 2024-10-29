@@ -66,7 +66,7 @@ function App() {
 
             
 
-            {/* Main manager */}
+            {/* Main manager///// */}
             <Route path="/maindashboard" element={<MainHome/>} />
             <Route path="/store" element={<Store/>} />
             {/* <Route path="/trainschedule" element={<TrainSchedule/>} /> */}

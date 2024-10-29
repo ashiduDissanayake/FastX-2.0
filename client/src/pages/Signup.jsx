@@ -10,7 +10,7 @@ const SignUpForm = () => {
     firstName: "",
     lastName: "",
     phoneNumber: "",
-    userType: "Retail",
+    userType: "Retail", // Default to "Retail"
     password: "",
     confirmPassword: "",
   });
@@ -68,11 +68,9 @@ const SignUpForm = () => {
           Join VogueNest
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Email Input */}
           <div>
-            <label
-              className="text-sm font-medium text-pink-300 flex items-center"
-              htmlFor="email"
-            >
+            <label className="text-sm font-medium text-pink-300 flex items-center" htmlFor="email">
               <Mail className="mr-2" size={18} />
               Email
             </label>
@@ -84,16 +82,12 @@ const SignUpForm = () => {
               className={inputClasses}
               required
             />
-            {errors.email && (
-              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
-            )}
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
           </div>
 
+          {/* Username Input */}
           <div>
-            <label
-              className="text-sm font-medium text-pink-300 flex items-center"
-              htmlFor="username"
-            >
+            <label className="text-sm font-medium text-pink-300 flex items-center" htmlFor="username">
               <User className="mr-2" size={18} />
               Username
             </label>
@@ -105,17 +99,13 @@ const SignUpForm = () => {
               className={inputClasses}
               required
             />
-            {errors.username && (
-              <p className="text-red-500 text-xs mt-1">{errors.username}</p>
-            )}
+            {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username}</p>}
           </div>
 
+          {/* First and Last Name Inputs */}
           <div className="flex space-x-4">
             <div className="flex-1">
-              <label
-                className="text-sm font-medium text-pink-300"
-                htmlFor="firstName"
-              >
+              <label className="text-sm font-medium text-pink-300" htmlFor="firstName">
                 First Name
               </label>
               <input
@@ -128,10 +118,7 @@ const SignUpForm = () => {
               />
             </div>
             <div className="flex-1">
-              <label
-                className="text-sm font-medium text-pink-300"
-                htmlFor="lastName"
-              >
+              <label className="text-sm font-medium text-pink-300" htmlFor="lastName">
                 Last Name
               </label>
               <input
@@ -145,11 +132,9 @@ const SignUpForm = () => {
             </div>
           </div>
 
+          {/* Phone Number Input */}
           <div>
-            <label
-              className="text-sm font-medium text-pink-300 flex items-center"
-              htmlFor="phoneNumber"
-            >
+            <label className="text-sm font-medium text-pink-300 flex items-center" htmlFor="phoneNumber">
               <Phone className="mr-2" size={18} />
               Phone Number
             </label>
@@ -163,11 +148,27 @@ const SignUpForm = () => {
             />
           </div>
 
+          {/* User Type Dropdown */}
           <div>
-            <label
-              className="text-sm font-medium text-pink-300 flex items-center"
-              htmlFor="password"
+            <label className="text-sm font-medium text-pink-300 flex items-center" htmlFor="userType">
+              Customer Type
+            </label>
+            <select
+              name="userType"
+              value={formData.userType}
+              onChange={handleChange}
+              className={inputClasses}
+              required
             >
+              <option value="Retail">Retail</option>
+              <option value="Wholesale">Wholesale</option>
+              <option value="End Customer">End Customer</option>
+            </select>
+          </div>
+
+          {/* Password Input */}
+          <div>
+            <label className="text-sm font-medium text-pink-300 flex items-center" htmlFor="password">
               <Lock className="mr-2" size={18} />
               Password
             </label>
@@ -181,11 +182,9 @@ const SignUpForm = () => {
             />
           </div>
 
+          {/* Confirm Password Input */}
           <div>
-            <label
-              className="text-sm font-medium text-pink-300 flex items-center"
-              htmlFor="confirmPassword"
-            >
+            <label className="text-sm font-medium text-pink-300 flex items-center" htmlFor="confirmPassword">
               <Lock className="mr-2" size={18} />
               Confirm Password
             </label>
@@ -197,13 +196,10 @@ const SignUpForm = () => {
               className={inputClasses}
               required
             />
-            {errors.confirmPassword && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.confirmPassword}
-              </p>
-            )}
+            {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
           </div>
 
+          {/* Submit Button */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -216,10 +212,7 @@ const SignUpForm = () => {
         </form>
         <p className="mt-4 text-center text-sm text-pink-200">
           Already have an account?{" "}
-          <a
-            href="/login"
-            className="font-medium text-pink-400 hover:text-pink-500 transition"
-          >
+          <a href="/login" className="font-medium text-pink-400 hover:text-pink-500 transition">
             Sign in
           </a>
         </p>

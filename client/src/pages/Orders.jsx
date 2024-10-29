@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
+import { Package } from 'lucide-react';
 import { useAuth } from "../context/AuthContext";
+import OrderCard from "../components/OrderCard";
 
 // Expandable Order Component
 const Order = ({ order }) => {
@@ -14,10 +16,12 @@ const Order = ({ order }) => {
         return "Your order has been delivered successfully.";
       case "Shipped":
         return "Your order has been shipped and is on its way.";
-      case "Processing":
+      case "Pending":
         return "Your order is currently being processed.";
       case "Cancelled":
         return "This order has been cancelled.";
+      case "In Branch":
+        return "This order has been Sent to Branch near by You.";
       default:
         return "Your order status is currently being updated.";
     }
@@ -82,6 +86,7 @@ const Order = ({ order }) => {
 // OrdersDetails Component
 const OrdersDetails = () => {
   const [orders, setOrders] = useState([]);
+  const [error, setError] = useState(null);
   const { auth, loading } = useAuth();
 
   useEffect(() => {
@@ -96,9 +101,15 @@ const OrdersDetails = () => {
         withCredentials: true,
       });
       setOrders(response.data);
+      setError(null); // Clear any previous errors
       console.log("Orders:", response.data);
     } catch (error) {
-      console.error("Error fetching orders:", error);
+      if (error.response && error.response.data.message === "No orders found for this customer") {
+        setError("No orders found.");
+        setOrders([]); // Ensure orders array is empty to show the no-orders message
+      } else {
+        setError("An error occurred while fetching your orders. Please try again later.");
+      }
     }
   };
 
@@ -116,14 +127,19 @@ const OrdersDetails = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className="max-w-4xl mx-auto"
+        className="max-w-3xl mx-auto space-y-6"
       >
-        <h2 className="text-3xl font-bold mb-8">Order History</h2>
+        <h2 className="text-3xl font-bold mb-8">Your Orders</h2>
         <AnimatePresence>
-          {orders.length > 0 ? (
-            orders.map((order) => <Order key={order.order_id} order={order} />)
+          {error ? (
+            <div className="text-center bg-red-500/10 text-red-500 p-4 rounded-lg">{error}</div>
+          ) : orders.length > 0 ? (
+            orders.map((order) => <OrderCard key={order.order_id} order={order} />)
           ) : (
-            <div className="text-center">No orders found.</div>
+            <div className="text-center bg-gray-800/50 p-8 rounded-lg">
+              <Package className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+              <p className="text-gray-400">No orders found.</p>
+            </div>
           )}
         </AnimatePresence>
       </motion.div>

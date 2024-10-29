@@ -1,6 +1,6 @@
 const User = require("../models/userModel");
 const Product = require("../models/productModel");
-const Cart = require("../models/cartModel")
+const Cart = require("../models/cartModel");
 const Order = require("../models/orderModel");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
@@ -147,106 +147,91 @@ const userController = {
     }
   },
 
+  // Get user profile
   getProfile: async (req, res) => {
-    db.query(
-      "SELECT customer_ID, email, username, first_name, last_name, phone_number, type FROM Customer WHERE customer_ID = ?",
-      [req.user.id],
-      (error, results) => {
-        if (error) {
-          console.error("Detailed error:", error); // Log the full error object
-          return res.status(500).json({
-            message: "Error fetching user profile",
-            error: error.message,
-          });
-        }
-
-        if (results.length > 0) {
-          res.json(results[0]);
-        } else {
-          res.status(404).json({ message: "User not found" });
-        }
-      }
-    );
+    try {
+      const user = await User.fetchUserProfile(req.user.id);
+      res.json(user);
+    } catch (error) {
+      const statusCode = error.message === "User not found" ? 404 : 500;
+      res.status(statusCode).json({ message: error.message });
+    }
   },
 
   updateProfile: async (req, res) => {
     const { email, username, first_name, last_name, phone_number } = req.body;
-    db.query(
-      "UPDATE Customer SET email = ?, username = ?, first_name = ?, last_name = ?, phone_number = ? WHERE customer_ID = ?",
-      [email, username, first_name, last_name, phone_number, req.user.id],
 
-      (error, results) => {
-        if (error) {
-          console.error("Detailed error:", error); // Log the full error object
-        }
+    try {
+      const results = await User.updateUserProfile(
+        req.user.id,
+        email,
+        username,
+        first_name,
+        last_name,
+        phone_number
+      );
 
-        res.json(results);
-      }
-    );
+      res.json({ message: "Profile updated successfully", results });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
   },
 
-  getOrders: (req, res) => {
+  getOrders: async (req, res) => {
     const customerId = req.user.id;
 
-    return new Promise((resolve, reject) => {
-      db.query(
-        `SELECT 
-          o.order_id, o.order_date, o.status, o.total_amount,
-          p.product_Name, p.image_link, oi.quantity, oi.price
-        FROM \`Order\` o
-        JOIN OrderItem oi ON o.order_id = oi.order_id
-        JOIN Product p ON oi.product_id = p.product_ID
-        WHERE o.customer_id = ?
-        ORDER BY o.order_date DESC`,
-        [customerId],
-        (error, results) => {
-          if (error) {
-            return reject(error);
-          }
-          resolve(results);
-        }
-      );
-    })
-      .then((orders) => {
-        const groupedOrders = orders.reduce((acc, order) => {
-          const {
+    try {
+      const orders = await User.fetchCustomerOrders(customerId);
+
+      if (orders.length === 0) {
+        // Return a specific message if there are no orders
+        return res
+          .status(404)
+          .json({ message: "No orders found for this customer" });
+      }
+
+      // Group orders by `order_id`
+      const groupedOrders = orders.reduce((acc, order) => {
+        const {
+          order_id,
+          order_date,
+          status,
+          total_amount,
+          product_Name,
+          image_link,
+          quantity,
+          price,
+        } = order;
+
+        if (!acc[order_id]) {
+          acc[order_id] = {
             order_id,
             order_date,
             status,
             total_amount,
-            product_Name,
-            image_link,
-            quantity,
-            price,
-          } = order;
+            items: [],
+          };
+        }
 
-          if (!acc[order_id]) {
-            acc[order_id] = {
-              order_id,
-              order_date,
-              status,
-              total_amount,
-              items: [],
-            };
-          }
+        acc[order_id].items.push({
+          product_Name,
+          image_link,
+          quantity,
+          price,
+        });
 
-          acc[order_id].items.push({
-            product_Name,
-            image_link,
-            quantity,
-            price,
-          });
+        return acc;
+      }, {});
 
-          return acc;
-        }, {});
-
-        res.status(200).json(Object.values(groupedOrders));
-      })
-      .catch((error) => {
-        console.error(error);
-        res.status(500).json({ message: "Error retrieving orders" });
-      });
+      res.status(200).json(Object.values(groupedOrders));
+    } catch (error) {
+      console.error("Detailed error:", error);
+      res
+        .status(500)
+        .json({ message: "Error retrieving orders", error: error.message });
+    }
   },
+
   // Get all products with error handling
   getAllProducts: async (req, res) => {
     const search = req.query.search || "";
@@ -379,53 +364,6 @@ const userController = {
     }
   },
 
-  // Get all users
-  getUsers: (req, res) => {
-    User.findAll((err, users) => {
-      if (err) {
-        return res.status(500).json({ error: "Database error" });
-      }
-      res.json(users);
-    });
-  },
-
-  // Get user by ID
-  getUserById: (req, res) => {
-    const userId = req.params.id;
-    User.findById(userId, (err, user) => {
-      if (err) {
-        return res.status(500).json({ error: "Database error" });
-      }
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      res.json(user);
-    });
-  },
-
-  // Update user
-  updateUser: (req, res) => {
-    const userId = req.params.id;
-    const updatedData = req.body;
-    User.update(userId, updatedData, (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: "Database error" });
-      }
-      res.json({ message: "User updated" });
-    });
-  },
-
-  // Delete user
-  deleteUser: (req, res) => {
-    const userId = req.params.id;
-    User.delete(userId, (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: "Database error" });
-      }
-      res.json({ message: "User deleted" });
-    });
-  },
-
   // Payment
   payment: async (req, res) => {
     const { amount } = req.body;
@@ -443,25 +381,30 @@ const userController = {
   // Place order
   placeOrder: async (req, res) => {
     const { route_ID, store_ID, cartItems } = req.body; // Get cart items from local storage
-    
+
     const userId = req.user.id; // Authenticated user ID from the token
 
     try {
-        // Check if cart has items
-        if (!cartItems || cartItems.length === 0) {
-            return res.status(400).json({ error: 'Cart is empty' });
-        }
+      // Check if cart has items
+      if (!cartItems || cartItems.length === 0) {
+        return res.status(400).json({ error: "Cart is empty" });
+      }
 
-        // Start the order process, use stored procedures for DB interactions
-        const result = await Order.placeOrder(userId, route_ID, store_ID, cartItems);
+      // Start the order process, use stored procedures for DB interactions
+      const result = await Order.placeOrder(
+        userId,
+        route_ID,
+        store_ID,
+        cartItems
+      );
 
-        // Return success message and order ID
-        return res.status(200).json({ success: true, orderId: result.orderId });
+      // Return success message and order ID
+      return res.status(200).json({ success: true, orderId: result.orderId });
     } catch (err) {
-        console.error('Order placement failed:', err);
-        return res.status(500).json({ error: 'Failed to place order' });
+      console.error("Order placement failed:", err);
+      return res.status(500).json({ error: "Failed to place order" });
     }
-},
+  },
 };
 
 module.exports = userController;

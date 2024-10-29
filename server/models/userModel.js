@@ -70,27 +70,76 @@ const User = {
     });
   },
 
-  // Update user
-  update: (id, userData, callback) => {
-    const query = "UPDATE users SET ? WHERE id = ?";
-    db.query(query, [userData, id], (err, result) => {
-      if (err) {
-        return callback(err);
-      }
-      callback(null, result);
+  // Method to fetch user profile
+  fetchUserProfile: (customerID) => {
+    return new Promise((resolve, reject) => {
+      const query = "CALL GetUserProfileByID(?)";
+
+      db.query(query, [customerID], (error, results) => {
+        if (error) {
+          return reject(new Error("Database error fetching user profile"));
+        }
+
+        if (results[0].length > 0) {
+          resolve(results[0][0]);
+        } else {
+          reject(new Error("User not found"));
+        }
+      });
     });
   },
 
-  // Delete user
-  delete: (id, callback) => {
-    const query = "DELETE FROM users WHERE id = ?";
-    db.query(query, [id], (err, result) => {
-      if (err) {
-        return callback(err);
-      }
-      callback(null, result);
+  // Update user
+  updateUserProfile: (
+    customerID,
+    email,
+    username,
+    firstName,
+    lastName,
+    phoneNumber
+  ) => {
+    return new Promise((resolve, reject) => {
+      const query = "CALL UpdateUserProfile(?, ?, ?, ?, ?, ?)";
+
+      db.query(
+        query,
+        [customerID, email, username, firstName, lastName, phoneNumber],
+        (error, results) => {
+          if (error) {
+            // Pass the SQL error message back to the controller
+            return reject(
+              new Error(
+                error.sqlMessage || "Database error updating user profile"
+              )
+            );
+          }
+
+          resolve(results);
+        }
+      );
     });
   },
+
+  // Retrieve all orders of the user
+  fetchCustomerOrders: (customerId) => {
+    return new Promise((resolve, reject) => {
+      const query = "CALL GetCustomerOrders(?)";
+
+      db.query(query, [customerId], (error, results) => {
+        if (error) {
+          if (error.sqlMessage === "No orders found for this customer") {
+            return resolve([]); // Resolve with an empty array for no orders
+          }
+          return reject(
+            new Error(error.sqlMessage || "Database error retrieving orders")
+          );
+        }
+
+        resolve(results[0]); // `results[0]` contains the main query result from the stored procedure
+      });
+    });
+  },
+
 
   // payement using promise
   payment: (amount) => {

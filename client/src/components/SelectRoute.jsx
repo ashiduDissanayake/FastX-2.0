@@ -1,32 +1,44 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { MapPin, Truck, ShoppingBag } from "lucide-react";
-import CustomAlert from "./CustomeAlert"; // Import the custom Alert component
-import { useNavigate } from "react-router-dom"; // Import navigate for redirection
-
+import CustomAlert from "./CustomeAlert"; // Fixed typo in import
+import { useNavigate } from "react-router-dom";
 
 const SelectRoute = () => {
   const [stores, setStores] = useState([]);
   const [selectedStore, setSelectedStore] = useState("");
   const [endLocations, setEndLocations] = useState([]);
-  const [selectedEndLocation, setSelectedEndLocation] = useState("");
+  const [enteredLocation, setEnteredLocation] = useState("");
+  const [selectedRoute, setSelectedRoute] = useState(null);
   const [imageLink, setImageLink] = useState("");
-  const [selectedRouteID, setSelectedRouteID] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate(); // Add navigate for redirection
+  const navigate = useNavigate();
+
+  const handleApiError = (error, customMessage) => {
+    console.error(customMessage, error);
+    setError(error.response?.data?.error || customMessage);
+    setLoading(false);
+  };
 
   useEffect(() => {
     fetchStores();
   }, []);
 
   useEffect(() => {
-    if (selectedStore) fetchEndLocations(selectedStore);
+    if (selectedStore) {
+      setEnteredLocation("");
+      setImageLink("");
+      setSelectedRoute(null);
+      fetchEndLocations(selectedStore);
+    }
   }, [selectedStore]);
 
   useEffect(() => {
-    if (selectedStore && selectedEndLocation) fetchRouteImage();
-  }, [selectedStore, selectedEndLocation]);
+    if (selectedStore && selectedRoute) {
+      fetchRouteImage();
+    }
+  }, [selectedRoute]);
 
   const fetchStores = async () => {
     try {
@@ -34,7 +46,7 @@ const SelectRoute = () => {
       const response = await axios.get("http://localhost:8080/user/stores");
       setStores(response.data);
     } catch (error) {
-      setError("Error fetching stores. Please try again.");
+      handleApiError(error, "Error fetching stores. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -43,12 +55,10 @@ const SelectRoute = () => {
   const fetchEndLocations = async (storeId) => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `http://localhost:8080/user/end-locations/${storeId}`
-      );
+      const response = await axios.get(`http://localhost:8080/user/end-locations/${storeId}`);
       setEndLocations(response.data);
     } catch (error) {
-      setError("Error fetching end locations. Please try again.");
+      handleApiError(error, "Error fetching end locations. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -57,55 +67,62 @@ const SelectRoute = () => {
   const fetchRouteImage = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        "http://localhost:8080/user/route-image",
-        {
-          params: {
-            store: selectedStore,
-            endLocation: selectedEndLocation.route,
-          },
-        }
-      );
+      const response = await axios.get("http://localhost:8080/user/route-image", {
+        params: {
+          store: selectedStore,
+          route: selectedRoute.route,
+        },
+      });
       setImageLink(response.data.imageLink);
     } catch (error) {
-      setError("Error fetching route image. Please try again.");
+      handleApiError(error, "Error fetching route image. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEndLocationChange = (e) => {
-    const selected = endLocations.find(
-      (location) => location.route === e.target.value
-    );
-    setSelectedEndLocation(selected);
-    if (selected) {
-      setSelectedRouteID(selected.route_ID);
+  const handleLocationInput = (e) => {
+    setEnteredLocation(e.target.value);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      const matchingRoute = endLocations.find((location) =>
+        location.end_locations.some((loc) => 
+          loc.toLowerCase().includes(enteredLocation.toLowerCase())
+        )
+      );
+      setSelectedRoute(matchingRoute || null);
     }
   };
 
-  // SelectRoute.js (Handle the actual placing of the order)
   const placeOrder = async () => {
-    setLoading(true);
     try {
+      setLoading(true);
       const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-      console.log(cartItems);
+      
+      if (!cartItems.length) {
+        setError("Cart is empty. Please add items before placing an order.");
+        return;
+      }
+
       const response = await axios.post(
         "http://localhost:8080/user/placeorder",
         {
-          route_ID: selectedRouteID,
+          route_ID: selectedRoute.route_ID,
           store_ID: selectedStore,
-          cartItems: cartItems,
+          cartItems,
         },
         { withCredentials: true }
       );
+
       if (response.data.success) {
-        localStorage.removeItem("cart"); // Clear the cart from local storage
+        localStorage.removeItem("cart");
         alert("Order placed successfully!");
         navigate("/orders");
       }
     } catch (error) {
-      console.error("Failed to place order:", error);
+      handleApiError(error, "Failed to place order. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -119,6 +136,7 @@ const SelectRoute = () => {
 
       <div className="max-w-3xl mx-auto bg-black/40 backdrop-blur-lg rounded-lg shadow-xl p-8">
         <div className="space-y-6">
+          {/* Store Selection */}
           <div>
             <label
               htmlFor="storeSelect"
@@ -130,70 +148,58 @@ const SelectRoute = () => {
               id="storeSelect"
               className="w-full bg-black/30 border border-pink-300 rounded-md p-3 focus:ring-2 focus:ring-pink-400 transition"
               value={selectedStore}
-              onChange={(e) => {
-                setSelectedStore(e.target.value);
-                setSelectedEndLocation("");
-                setImageLink("");
-                setSelectedRouteID("");
-              }}
+              onChange={(e) => setSelectedStore(e.target.value)}
+              disabled={loading}
             >
               <option value="">--Select a store--</option>
-              {stores.map((store, index) => (
-                <option key={index} value={store.store_ID}>
+              {stores.map((store) => (
+                <option key={store.store_ID} value={store.store_ID}>
                   {store.city}
                 </option>
               ))}
             </select>
           </div>
 
+          {/* Location Input */}
           {selectedStore && (
             <div>
               <label
-                htmlFor="endLocationSelect"
+                htmlFor="endLocationInput"
                 className="block text-lg font-medium mb-2 flex items-center text-pink-200"
               >
-                <Truck className="mr-2" /> Select End Location
+                <Truck className="mr-2" /> Enter Delivery Location
               </label>
-              <select
-                id="endLocationSelect"
+              <input
+                id="endLocationInput"
+                type="text"
                 className="w-full bg-black/30 border border-pink-300 rounded-md p-3 focus:ring-2 focus:ring-pink-400 transition"
-                value={selectedEndLocation.route || ""}
-                onChange={handleEndLocationChange}
-              >
-                <option value="">--Select an end location--</option>
-                {endLocations.map((location, index) => (
-                  <option key={index} value={location.route}>
-                    {location.route}
-                  </option>
-                ))}
-              </select>
+                placeholder="Type your end location and press Enter"
+                value={enteredLocation}
+                onChange={handleLocationInput}
+                onKeyPress={handleKeyPress} // Detect Enter key press
+                disabled={loading}
+              />
             </div>
           )}
 
-          {selectedStore && selectedEndLocation && (
+          {/* Route Display and Order Button */}
+          {selectedStore && selectedRoute && (
             <div className="text-center space-y-4">
               <p className="text-lg text-pink-200">
                 Selected route:{" "}
-                <span className="font-bold">{selectedStore}</span> to{" "}
-                <span className="font-bold">{selectedEndLocation.route}</span>
+                <span className="font-bold">{selectedRoute.route}</span>
               </p>
-              <p className="text-sm">Route ID: {selectedRouteID}</p>
               {imageLink && (
                 <div className="mt-4 relative group">
                   <img
                     src={imageLink}
-                    alt={`Route from ${selectedStore} to ${selectedEndLocation.route}`}
+                    alt={`Route to ${selectedRoute.route}`}
                     className="w-full h-64 object-cover rounded-lg transition duration-300 group-hover:opacity-75"
                   />
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
-                    <span className="bg-black bg-opacity-60 text-white px-4 py-2 rounded">
-                      View Larger
-                    </span>
-                  </div>
                 </div>
               )}
               <button
-                className="bg-gradient-to-r from-pink-300 to-rose-400 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:from-pink-400 hover:to-rose-500 transition duration-300 flex items-center justify-center w-full"
+                className="bg-gradient-to-r from-pink-300 to-rose-400 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:from-pink-400 hover:to-rose-500 transition duration-300 flex items-center justify-center w-full disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={placeOrder}
                 disabled={loading}
               >
@@ -210,7 +216,7 @@ const SelectRoute = () => {
       </div>
 
       {error && (
-        <CustomAlert title="Error" variant="destructive">
+        <CustomAlert title="Error" variant="destructive" onClose={() => setError("")}>
           {error}
         </CustomAlert>
       )}

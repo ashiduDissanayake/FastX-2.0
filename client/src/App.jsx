@@ -61,18 +61,17 @@ function App() {
         <Router>
           <Routes>
             {/* Public route - accessible only if not authenticated */}
+            <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/signup" element={<SignUpForm />} />
-
-            {/* Protected route - accessible only if authenticated */}
-            <Route
-              path="/cart"
-              element={
-                <ProtectedRoute>
-                  <Cart />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/shop" element={<PublicRoute><Shop /></PublicRoute>} />
+            <Route path="/shop/:category" element={<PublicRoute><CategoryView /></PublicRoute>} />
+            <Route path="/product/:productId" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
+            <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>}/>
+            <Route path="/placeorder" element={<ProtectedRoute><SelectRoute /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+            <Route path="/orders" element={<ProtectedRoute><OrdersDetails /></ProtectedRoute>} />
+            <Route path="/imageupload" element={<ProtectedRoute><ProductAdder /></ProtectedRoute>} />
 
             {/* Admin  Route*/}
             <Route path="/admin" element={<AdminDashboard />} />
@@ -100,7 +99,6 @@ function App() {
             <Route path="/manager-finished-trips" element={<FinishedTrips />} />
             <Route path="/manager-login" element={<Login/>}/>
             <Route path="/manager-reports" element={<ManagerReports />} />
-           
             <Route path="/mainmanager-login" element={<Mainmanagerlogin />} />
             <Route path="/mainmanager-dashboard" element={<MainManagerDashboard />} />
             <Route path="/mainmanager-customers" element={<MainmanagerCustomer />} />
@@ -115,23 +113,10 @@ function App() {
             <Route path="/store3" element={<Store3/>} />
             <Route path="/store4" element={<Store4/>} />
             <Route path="/store5" element={<Store5/>} />
-
+              
             {/*Driver routes*/}
             <Route path="/driver-dashboard" element={<DriverDashboard/>} />
             <Route path="/driver-login" element={<Driverlogin/>} />
-            
-            
-
-            {/* Other routes */}
-            <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
-            <Route path="/shop" element={<PublicRoute><Shop /></PublicRoute>} />
-            <Route path="/shop/:category" element={<PublicRoute><CategoryView /></PublicRoute>} />
-            <Route path="/product/:productId" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
-            <Route path="/placeorder" element={<PublicRoute><SelectRoute /></PublicRoute>} />
-            <Route path="/profile" element={<PublicRoute><UserProfile /></PublicRoute>} />
-            <Route path="/orders" element={<ProtectedRoute><OrdersDetails /></ProtectedRoute>} />
-            <Route path="/imageupload" element={<PublicRoute><ProductAdder /></PublicRoute>} />
-
           </Routes>
         </Router>
       </AuthProvider>

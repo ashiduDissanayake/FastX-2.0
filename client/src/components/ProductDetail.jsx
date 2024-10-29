@@ -7,7 +7,6 @@ const ProductDetail = () => {
   const [error, setError] = useState(null);
   const [selectedColor, setSelectedColor] = useState("black"); // Default color
   const [quantity, setQuantity] = useState(1); // Default quantity is 1
-  const colors = ["black", "red", "blue", "green", "white"];
   const navigate = useNavigate();
 
   const addToCart = (productId, quantity) => {
@@ -68,48 +67,43 @@ const ProductDetail = () => {
   }
 
   return (
-    <div className="bg-black min-h-screen p-8 pt-20">
-      <div className="max-w-4xl mx-auto bg-gray-900 rounded-lg shadow-lg p-6 flex flex-col md:flex-row text-pink-100">
-        <div className="md:w-1/2">
+    <div className="bg-black p-6 pt-24">
+      <div className="max-w-5xl mx-auto bg-gray-900 rounded-lg shadow-lg p-8 flex flex-col md:flex-row text-pink-100 space-y-6 md:space-y-0">
+        
+        {/* Image Section */}
+        <div className="md:w-1/2 relative">
           <img
             src={product.image_link}
             alt={product.product_Name}
-            className="w-full h-auto object-cover rounded-lg mb-4 md:mb-0"
+            className="w-full h-auto object-cover rounded-lg transition-transform transform hover:scale-105"
           />
+          {product.isNew && (
+            <div className="absolute top-4 left-4 bg-pink-500 text-white px-3 py-1 rounded-full text-xs tracking-wide uppercase shadow">
+              New
+            </div>
+          )}
         </div>
 
-        <div className="md:w-1/2 md:pl-8">
-          <h1 className="text-4xl font-bold mb-4 text-pink-300">
-            {product.product_Name}
-          </h1>
-          <p className="text-lg mb-4 text-pink-200">{product.description}</p>
-          <p className="text-2xl font-bold text-pink-400 mb-4">${product.price}</p>
-
-          <div className="mb-4">
-            <label className="text-lg font-medium text-pink-200">
-              Select Color:
-            </label>
-            <div className="flex space-x-3 mt-4">
-              {colors.map((color) => (
-                <div
-                  key={color}
-                  className={`w-8 h-8 rounded-full cursor-pointer transition-transform duration-200 ease-in-out transform ${
-                    selectedColor === color
-                      ? "border-4 border-pink-400 scale-110"
-                      : "border-2 border-pink-200"
-                  } shadow-md hover:scale-105`}
-                  style={{ backgroundColor: color }}
-                  onClick={() => setSelectedColor(color)}
-                ></div>
-              ))}
-            </div>
+        {/* Details Section */}
+        <div className="md:w-1/2 md:pl-10 flex flex-col justify-between space-y-6">
+          
+          {/* Product Name */}
+          <div>
+            <h1 className="text-4xl font-bold mb-2 text-pink-300 leading-tight">
+              {product.product_Name}
+            </h1>
+            <p className="text-lg text-pink-200">{product.description}</p>
           </div>
 
-          <div className="mb-6">
+          {/* Price */}
+          <div className="text-2xl font-bold text-pink-400">${product.price}</div>
+
+          {/* Quantity Selector */}
+          <div className="flex items-center space-x-3">
             <label className="text-lg font-medium text-pink-200">Quantity:</label>
-            <div className="flex items-center mt-2">
+            <div className="flex items-center border border-gray-700 rounded-lg overflow-hidden">
               <button
-                className="p-2 bg-gray-800 hover:bg-gray-700 rounded-l text-pink-100"
+                className="p-2 bg-gray-800 hover:bg-gray-700 transition-all text-pink-100"
                 onClick={() => setQuantity(quantity > 1 ? quantity - 1 : 1)}
               >
                 -
@@ -119,10 +113,10 @@ const ProductDetail = () => {
                 value={quantity}
                 min="1"
                 onChange={(e) => setQuantity(parseInt(e.target.value))}
-                className="w-16 p-2 border-t border-b border-gray-700 text-center bg-gray-800 text-pink-100"
+                className="w-16 p-2 text-center bg-gray-800 text-pink-100 outline-none border-l border-r border-gray-700"
               />
               <button
-                className="p-2 bg-gray-800 hover:bg-gray-700 rounded-r text-pink-100"
+                className="p-2 bg-gray-800 hover:bg-gray-700 transition-all text-pink-100"
                 onClick={() => setQuantity(quantity + 1)}
               >
                 +
@@ -130,8 +124,9 @@ const ProductDetail = () => {
             </div>
           </div>
 
+          {/* Add to Cart Button */}
           <button
-            className="w-full bg-pink-500 text-white font-medium py-3 rounded hover:bg-pink-600 transition"
+            className="w-full bg-pink-500 text-white font-medium py-3 rounded-lg hover:bg-pink-600 transition-all transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-pink-600"
             onClick={() => addToCart(productId, quantity)}
           >
             Add to Cart

@@ -49,7 +49,7 @@ const SidePanel = () => {
       </nav>
 
       <div className="mt-auto">
-        <Link to="/#" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all" onClick={handleLogout}>
+        <Link to="/mainmanager-login" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all" onClick={handleLogout}>
           <LogoutIcon />
           <span className="ml-2 text-lg">Logout</span>
         </Link>

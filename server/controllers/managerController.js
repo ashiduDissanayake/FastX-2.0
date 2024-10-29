@@ -108,7 +108,6 @@ const managerController = {
   // Login user
   loginManager: (req, res) => {
     const { username, password } = req.body;
-    console.log("Login attempt:", { username, password });
 
     // Call the model to interact with the database
     Manager.login(username, password, (err, result) => {
@@ -118,14 +117,13 @@ const managerController = {
       }
 
       const rows = result[0];
-      console.log("Query result:", rows); // Log the result from the stored procedure
 
       // Check if login was successful
       if (rows.length > 0 && rows[0].login_message === "Login successful") {
         const manager_ID = rows[0].ManagerID;
 
         // Generate a JWT token
-        const token = jwt.sign({ manager_ID, username }, process.env.SECRET, {
+        const token = jwt.sign({ manager_ID, username }, process.env.SECRET4, {
           expiresIn: "1h",
         });
 
@@ -155,10 +153,10 @@ const managerController = {
   },
   // Check Auth
   checkAuth: (req, res) => {
-    const token = req.cookies.jwt; // Get the token from cookies
+    const token = req.cookies.managertoken; // Get the token from cookies
     if (!token) return res.json({ isAuthenticated: false });
 
-    jwt.verify(token, process.env.SECRET, (err, user) => {
+    jwt.verify(token, process.env.SECRET4, (err, user) => {
       if (err) return res.json({ isAuthenticated: false });
       res.json({ isAuthenticated: true });
     });
@@ -166,7 +164,7 @@ const managerController = {
 
   // Logout user
   logoutManager: (req, res) => {
-    res.cookie("jwt", "", { maxAge: 1 });
+    res.cookie("managertoken", "", { maxAge: 1 });
     res.redirect("/");
   },
 

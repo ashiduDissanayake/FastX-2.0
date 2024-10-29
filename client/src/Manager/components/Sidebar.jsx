@@ -2,9 +2,16 @@
 import React from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom"; // Import the useNavigate hook
+import { useAuth } from "../../context/ManagerAuthContext";
 
 const Sidebar = ({ activePage, setActivePage }) => {
   const navigate = useNavigate(); // Initialize the navigate function
+  const { logout } = useAuth();
+
+  // Handle logout
+  const handlelogout = () => {
+    logout();
+  };
 
   // Handle navigation logic
   const handleNavigation = (item) => {
@@ -32,6 +39,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
         break;
       case "Logout":
         // Implement logout logic here, e.g., clear auth tokens
+        handlelogout();
         navigate("/manager-login");
         break;
       default:

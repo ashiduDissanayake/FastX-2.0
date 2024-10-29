@@ -9,7 +9,9 @@ function MainmanagerWorker() {
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
-        const response = await fetch('http://localhost:8080/mainmanager/getTrainSchedule'); // API endpoint to fetch train schedules
+        const response = await fetch('http://localhost:8080/mainmanager/getTrainSchedule', {
+          credentials: 'include' // Include credentials in the fetch request
+        });
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

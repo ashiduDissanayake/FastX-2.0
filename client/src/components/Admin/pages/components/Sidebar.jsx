@@ -48,12 +48,12 @@ export default function Sidebar() {
         <li className="cursor-pointer transition-all hover:bg-white hover:bg-opacity-10 hover:pl-2 hover:scale-110 hover:rounded-lg">
           <Link to="/admincustomer">Customers</Link>
         </li>
-        {/* <li className="cursor-pointer transition-all hover:bg-white hover:bg-opacity-10 hover:pl-2 hover:scale-110 hover:rounded-lg">
+        <li className="cursor-pointer transition-all hover:bg-white hover:bg-opacity-10 hover:pl-2 hover:scale-110 hover:rounded-lg">
           <Link to="/adminreport">Report</Link>
         </li>
         <li className="cursor-pointer transition-all hover:bg-white hover:bg-opacity-10 hover:pl-2 hover:scale-110 hover:rounded-lg">
           <Link to="/adminprofile">Profile</Link>
-        </li> */}
+        </li>
       </ul>
       <button 
         className="bg-red-600 w-full text-white py-2 mt-8 rounded-md hover:bg-red-700 transition transform hover:scale-110" 

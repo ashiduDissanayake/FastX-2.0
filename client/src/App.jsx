@@ -66,6 +66,8 @@ import DriverReport from "./Driver/DriverReport";
 import DriverTruckSchedule from "./Driver/DriverTruckSchedule";
 import { ManagerAuthProvider } from "./context/ManagerAuthContext";
 import ManagerProtectedRoute from "./layouts/ManagerProtectedLayout";
+import { DriverAuthProvider } from "./context/DriverAuthContext";
+import DriverProtectedRoute from "./layouts/DriverProtectedLayout";
 
 
 function App() {
@@ -73,6 +75,7 @@ function App() {
     <AuthProvider>
       <MainManagerAuthProvider>
         <ManagerAuthProvider>
+          <DriverAuthProvider>
         <Router>
           <Routes>
             {/* Public Routes */}
@@ -110,6 +113,22 @@ function App() {
             <Route path="/store4" element={<MainManagerProtectedRoute><Store4 /></MainManagerProtectedRoute>} />
             <Route path="/store5" element={<MainManagerProtectedRoute><Store5 /></MainManagerProtectedRoute>} />
 
+            {/* Manager Routes */}
+            <Route path="/manager-login" element={<ManagerLogin />} />
+            <Route path="/manager-dashboard" element={<ManagerProtectedRoute><ManagerDashBoard /></ManagerProtectedRoute>} />
+            <Route path="/manager-view-orders" element={<ManagerProtectedRoute><ViewOrders /></ManagerProtectedRoute>} />
+            <Route path="/manager-schedule-trip" element={<ManagerProtectedRoute><ScheduleTrip /></ManagerProtectedRoute>} />
+            <Route path="/manager-active-trips" element={<ManagerProtectedRoute><ActiveTrips /></ManagerProtectedRoute>} />
+            <Route path="/manager-finished-trips" element={<ManagerProtectedRoute><FinishedTrips /></ManagerProtectedRoute>} />
+            <Route path="/manager-reports" element={<ManagerProtectedRoute><ManagerReports /></ManagerProtectedRoute>} />
+
+            {/*Driver routes*/}
+            <Route path="/driver-login" element={<Driverlogin/>} />
+            <Route path="/driver-dashboard" element={<DriverProtectedRoute><DriverDashboard/></DriverProtectedRoute>} />
+            <Route path="/driver-profile" element={<DriverProtectedRoute><DriverProfile/></DriverProtectedRoute>} />
+            <Route path="/driver-report" element={<DriverProtectedRoute><DriverReport/></DriverProtectedRoute>} />
+            <Route path="/driver-truckschedule" element={<DriverProtectedRoute><DriverTruckSchedule/></DriverProtectedRoute>} />
+
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboard />} />
@@ -119,25 +138,10 @@ function App() {
             <Route path="/adminassistentdriver" element={<AssistentDriver />} />
             <Route path="/adminmanager" element={<Manager />} />
             <Route path="/adminreport" element={<Report />} />
-            <Route path="/adminlogin" element={<AdminLogin />} />
-            
-            {/* Manager Routes */}
-            <Route path="/manager-login" element={<ManagerLogin />} />
-            <Route path="/manager-dashboard" element={<ManagerProtectedRoute><ManagerDashBoard /></ManagerProtectedRoute>} />
-            <Route path="/manager-view-orders" element={<ManagerProtectedRoute><ViewOrders /></ManagerProtectedRoute>} />
-            <Route path="/manager-schedule-trip" element={<ManagerProtectedRoute><ScheduleTrip /></ManagerProtectedRoute>} />
-            <Route path="/manager-active-trips" element={<ManagerProtectedRoute><ActiveTrips /></ManagerProtectedRoute>} />
-            <Route path="/manager-finished-trips" element={<ManagerProtectedRoute><FinishedTrips /></ManagerProtectedRoute>} />
-            <Route path="/manager-reports" element={<ManagerProtectedRoute><ManagerReports /></ManagerProtectedRoute>} />
-              
-            {/*Driver routes*/}
-            <Route path="/driver-dashboard" element={<DriverDashboard/>} />
-            <Route path="/driver-login" element={<Driverlogin/>} />
-            <Route path="/driver-profile" element={<DriverProfile/>} />
-            <Route path="/driver-report" element={<DriverReport/>} />
-            <Route path="/driver-truckschedule" element={<DriverTruckSchedule/>} />
+            <Route path="/adminlogin" element={<AdminLogin />} />              
           </Routes>
         </Router>
+        </DriverAuthProvider>
         </ManagerAuthProvider>
       </MainManagerAuthProvider>
     </AuthProvider>

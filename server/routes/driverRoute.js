@@ -4,6 +4,8 @@ const driverController = require('../controllers/driverController');
 const DriverauthenticateToken = require('../middlewares/DriverauthMiddleware');
 
 router.post('/driverlogin', driverController.driverLogin);
+router.post('/logout', driverController.logoutDriver);      // GET /user/logout - logout the user
+router.get('/check-auth', driverController.checkAuth);    
 router.get('/order-deliver', DriverauthenticateToken, driverController.getDriverorders);
 router.patch('/deliver/:order_id', driverController.deliverOrder);
 router.get('/truck-schedules', driverController.getAllSchedules);

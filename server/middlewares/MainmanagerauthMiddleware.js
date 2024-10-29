@@ -8,6 +8,7 @@ const JWT_SECRET = process.env.SECRET3; // Load secret from environment variable
 
 const MainManagerAuthenticateToken = (req, res, next) => {
     const token = req.cookies.token; // Ensure your cookies middleware is enabled
+    console.log(token);
     if (!token) {
         return res.status(403).json({ error: 'Token required' }); // Return JSON instead of text
     }

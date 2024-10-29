@@ -20,7 +20,7 @@ router.get('/getactivetrips',managerAuthToken, managerController.getActiveTripsB
 router.get('/getfinishedtrips',managerAuthToken, managerController.getFinishedTripsByStore);
 
 router.post('/updatetobranch',managerAuthToken, managerController.updateOrdersToBranch);
-router.post('/endtrip', managerController.endTrip);
+router.post('/endtrip',managerAuthToken, managerController.endTrip);
 router.post('/scheduletrip',managerAuthToken, managerController.scheduleTrip);   
 
 module.exports = router;

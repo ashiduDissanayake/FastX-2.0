@@ -26,7 +26,10 @@ function Store1() {
   }, []);
 
   const fetchOrders = () => {
-    fetch('http://localhost:8080/mainmanager/Store1/orders')
+    fetch('http://localhost:8080/mainmanager/Store1/orders', {
+      method: 'GET',
+      credentials: 'include', // This adds withCredentials to the request
+    })
       .then((response) => {
         if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
         return response.json();

@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const mainmanagerController = require('../controllers/mainmanagerController');
-const MainManagerauthenticateToken = require('../middlewares/MainmanagerauthMiddleware');
+const MainManagerAuthenticateToken = require('../middlewares/MainmanagerauthMiddleware');
 
 // User routes
 router.post('/mainmanagerlogin', mainmanagerController.mainManagerLogin);
 router.get('/check-auth', mainmanagerController.checkAuth)
 router.post('/logout', mainmanagerController.logout)
+
 router.get('/getdriver/:storeId', mainmanagerController.getDriver);         
 router.get('/getdriverassistant/:storeId', mainmanagerController.getDriverAssistant);      
 router.get('/gettruck/:storeId', mainmanagerController.getTruck);     
@@ -34,7 +35,7 @@ router.get('/most-sold-items', mainmanagerController.getMostSoldItems);
 router.get('/sales-data', mainmanagerController.getSalesData);
 
 // Route to update the order status
-router.put('/orders/:id', mainmanagerController.updateOrderStatus);
+router.put('/orders/:id', MainManagerAuthenticateToken, mainmanagerController.updateOrderStatus);
 
 
 // router.get('//:storeId', mainmanagerController.getDriver);

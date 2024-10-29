@@ -14,7 +14,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await axios.post(
         "http://localhost:8080/manager/managerlogin",
@@ -26,23 +26,18 @@ const Login = () => {
           withCredentials: true, // Include credentials in the request
         }
       );
-
-      // Log the entire response for debugging
-      console.log("Login Response:", response.data);
-
+  
       if (response.data.message === "Login successful") {
         setManagerId(response.data.manager_ID);
         setMessage("Login successful!");
-        navigate("/manager-dashboard"); // Redirect to the dashboard after successful login
+        window.location.href = '/manager-dashboard';
+        // Move this after state updates
       } else {
         setMessage(response.data.message);
         setManagerId(null);
       }
     } catch (error) {
       console.error("Error during login:", error);
-      if (error.response) {
-        console.log("Error Response Data:", error.response.data);
-      }
       setMessage("Error occurred during login.");
       setManagerId(null);
     }

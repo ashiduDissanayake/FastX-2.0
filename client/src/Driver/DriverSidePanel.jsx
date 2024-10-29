@@ -6,8 +6,14 @@ import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { useAuth } from '../context/DriverAuthContext';
 
 const DriverSidePanel = () => {
+  const { logout } = useAuth();
+  const handlelogout = () => {
+    logout();
+  }
+  
   return (
     <div className="bg-[#0A2540] text-white w-64 h-screen p-6 font-raleway">
       <div className="flex items-center flex-col mb-8">
@@ -38,7 +44,9 @@ const DriverSidePanel = () => {
       </nav>
 
       <div className="mt-auto">
-        <Link to="/driver-logout" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
+        <Link to="/driver-login" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all"
+          onClick={handlelogout} // Pass handlelogout as a callback function
+        >
           <LogoutIcon />
           <span className="ml-2 text-lg">Logout</span>
         </Link>

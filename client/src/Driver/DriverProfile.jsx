@@ -47,12 +47,12 @@ function DriverProfile() {
   return (
     <div className="flex">
       {/* SidePanel on the left */}
-      <div className="w-1/5 p-4"> {/* Adjusted width for better fit */}
+      <div className="w-1/4"> {/* Adjusted width for better fit */}
         <SidePanel />
       </div>
 
       {/* Main profile section on the right */}
-      <div className="w-4/5 p-6"> {/* Adjusted width for profile section */}
+      <div className="w-3/4 p-6"> {/* Adjusted width for profile section */}
         <h2 className="text-2xl font-bold mb-4">Driver Profile</h2>
         {loading ? (
           <p>Loading driver details...</p>

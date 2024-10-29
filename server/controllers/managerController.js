@@ -125,7 +125,7 @@ const managerController = {
         const manager_ID = rows[0].ManagerID;
 
         // Generate a JWT token
-        const token = jwt.sign({ manager_ID, username }, process.env.SECRET, {
+        const token = jwt.sign({ manager_ID, username }, process.env.SECRET4, {
           expiresIn: "1h",
         });
 

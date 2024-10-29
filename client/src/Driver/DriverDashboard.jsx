@@ -8,7 +8,7 @@ function DriverDashboard() {
 
   const fetchOrders = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/driver/profile', { withCredentials: true });
+      const response = await axios.get('http://localhost:8080/driver/order-deliver', { withCredentials: true });
       setOrders(response.data.orders);
     } catch (error) {
       setError('Failed to load orders');

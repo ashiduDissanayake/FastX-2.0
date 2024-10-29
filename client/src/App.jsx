@@ -51,14 +51,21 @@ import MainmanagerCustomer from "./MainManager/MainmanagerCustomer";
 import MainmanagerReport from "./MainManager/MainmanagerReport";
 import MainmanagerTrainSchedule from "./MainManager/MainmanagerTrainSchedule";
 import MainmanagerProfile from "./MainManager/MainmanagerProfile";
-import Quarterly from "./MainManager/Quarterly";
-import SalesbyCity from "./MainManager/SalesbyCity";
-import MostOrdered from "./MainManager/MostOrdered";
-import Store1 from "./MainManager/Store/Store1";
-import Store2 from "./MainManager/Store/Store2";
-import Store3 from "./MainManager/Store/Store3";
-import Store4 from "./MainManager/Store/Store4";
-import Store5 from "./MainManager/Store/Store5";
+import Quarterly from "./MainManager/Quarterly"
+import SalesbyCity from "./MainManager/SalesbyCity"
+import MostOrdered from "./MainManager/MostOrdered"
+import Store1 from './MainManager/Store/Store1'
+import Store2 from './MainManager/Store/Store2'
+import Store3 from './MainManager/Store/Store3'
+import Store4 from './MainManager/Store/Store4'
+import Store5 from './MainManager/Store/Store5'
+import CategoryView from "./pages/CategoryView";
+import AdminLogin from "./components/Admin/pages/AdminLogin";
+import DriverDashboard from "./Driver/DriverDashboard";
+import Driverlogin from "./Driver/Driverlogin";
+import DriverProfile from "./Driver/DriverProfile";
+import DriverReport from "./Driver/DriverReport";
+import DriverTruckSchedule from "./Driver/DriverTruckSchedule";
 
 function App() {
   return (
@@ -123,6 +130,14 @@ function App() {
             <Route path="/store3" element={<MainManagerProtectedRoute><Store3 /></MainManagerProtectedRoute>} />
             <Route path="/store4" element={<MainManagerProtectedRoute><Store4 /></MainManagerProtectedRoute>} />
             <Route path="/store5" element={<MainManagerProtectedRoute><Store5 /></MainManagerProtectedRoute>} />
+              
+            {/*Driver routes*/}
+            <Route path="/driver-dashboard" element={<DriverDashboard/>} />
+            <Route path="/driver-login" element={<Driverlogin/>} />
+            <Route path="/driver-profile" element={<DriverProfile/>} />
+            <Route path="/driver-report" element={<DriverReport/>} />
+            <Route path="/driver-truckschedule" element={<DriverTruckSchedule/>} />
+
           </Routes>
         </Router>
       </MainManagerAuthProvider>

@@ -1,53 +1,20 @@
 const Cart = require("../models/cartModel");
 
-// Handle errors
-// handle errors
-const handleErrors = (err) => {
-  // console.log(err.message, err.code);
-  let errors = { email: "", password: "" };
-
-  // incorrect email
-  if (err.message === "Customer not found.") {
-    errors.email = "That email is not registered";
-  }
-
-  // incorrect password
-  if (err.message === "incorrect password") {
-    errors.password = "That password is incorrect";
-  }
-
-  // duplicate email error
-  if (err.message === "email already registered") {
-    errors.email = "that email is already registered";
-    return errors;
-  }
-
-  // validation errors
-  if (err.message.includes("user validation failed")) {
-    // console.log(err);
-    Object.values(err.errors).forEach(({ properties }) => {
-      // console.log(val);
-      // console.log(properties);
-      errors[properties.path] = properties.message;
-    });
-  }
-
-  return errors;
-};
-
 // Product controller to handle product-related operations
 const productController = {
   // Get all products
   getCart: async (req, res) => {
     try {
-        const customerId = req.user.id; // Assuming the customer ID is available from req.user
-        const cartItems = await Cart.getCart(customerId);
-        res.status(200).json({ cart: cartItems });
+      const customerId = req.user.id; // Assuming the customer ID is available from req.user
+      const cartItems = await Cart.getCart(customerId);
+      res.status(200).json({ cart: cartItems });
     } catch (err) {
-        console.error('Error fetching cart:', err);
-        res.status(500).json({ error: "An error occurred while fetching the cart" });
+      console.error("Error fetching cart:", err);
+      res
+        .status(500)
+        .json({ error: "An error occurred while fetching the cart" });
     }
-},
+  },
 
   // Add product to cart
   addToCart: (req, res) => {
@@ -70,8 +37,12 @@ const productController = {
       const result = await Cart.removeProduct(req.user.id, productId);
       res.json(result);
     } catch (err) {
-      console.error('Error removing product from cart:', err);
-      res.status(500).json({ error: "An error occurred while removing the product from the cart" });
+      console.error("Error removing product from cart:", err);
+      res
+        .status(500)
+        .json({
+          error: "An error occurred while removing the product from the cart",
+        });
     }
   },
 
@@ -83,8 +54,10 @@ const productController = {
       const result = await Cart.updateCart(customerId, productId, quantity);
       res.json(result);
     } catch (err) {
-      console.error('Error updating cart:', err);
-      res.status(500).json({ error: "An error occurred while updating the cart" });
+      console.error("Error updating cart:", err);
+      res
+        .status(500)
+        .json({ error: "An error occurred while updating the cart" });
     }
   },
 
@@ -96,8 +69,10 @@ const productController = {
       const result = await Cart.updateStatus(customerId, productId, status);
       res.json(result);
     } catch (err) {
-      console.error('Error updating cart status:', err);
-      res.status(500).json({ error: "An error occurred while updating the cart status" });
+      console.error("Error updating cart status:", err);
+      res
+        .status(500)
+        .json({ error: "An error occurred while updating the cart status" });
     }
   },
 
@@ -108,8 +83,10 @@ const productController = {
       const result = await Cart.placeOrder(customerId, route_ID);
       res.json(result);
     } catch (err) {
-      console.error('Error placing order:', err);
-      res.status(500).json({ error: "An error occurred while placing the order" });
+      console.error("Error placing order:", err);
+      res
+        .status(500)
+        .json({ error: "An error occurred while placing the order" });
     }
   },
 
@@ -124,43 +101,51 @@ const productController = {
       res.status(500).json({ error: "Database error" });
     }
   },
-  
+
+  // Method to get all stores
   getStores: async (req, res) => {
     try {
       const stores = await Cart.getAllStores();
       res.json(stores);
     } catch (error) {
-      console.error('Error fetching store names:', error);
-      res.status(500).json({ error: 'Database error' });
+      console.error("Error fetching store names:", error);
+      res.status(500).json({ error: "Failed to fetch stores. Please try again." });
     }
   },
 
   getEndLocations: async (req, res) => {
-    const storeId = req.params.store;
+    const { store } = req.params;
+    if (!store) {
+      return res.status(400).json({ error: "Store ID is required" });
+    }
+
     try {
-      const endLocations = await Cart.getEndLocations(storeId);
+      const endLocations = await Cart.getEndLocations(store);
       res.json(endLocations);
     } catch (error) {
-      console.error('Error fetching end locations:', error);
-      res.status(500).json({ error: 'Database error' });
+      console.error("Error fetching end locations:", error);
+      res.status(500).json({ error: "Failed to fetch end locations. Please try again." });
     }
   },
 
   getRouteImage: async (req, res) => {
-    const { store, endLocation } = req.query;
+    const { store, route } = req.query;
+    if (!store || !route) {
+      return res.status(400).json({ error: "Store and route are required" });
+    }
+
     try {
-      const imageLink = await Cart.getRouteImage(store, endLocation);
+      const imageLink = await Cart.getRouteImage(store, route);
       res.json({ imageLink });
     } catch (error) {
-      if (error.message === 'No image found for the selected route') {
+      console.error("Error fetching route image:", error);
+      if (error.message === "No image found for the selected route") {
         res.status(404).json({ error: error.message });
       } else {
-        console.error('Error fetching image link:', error);
-        res.status(500).json({ error: 'Database error' });
+        res.status(500).json({ error: "Failed to fetch route image. Please try again." });
       }
     }
-  },
-
+  }
 };
 
 module.exports = productController;

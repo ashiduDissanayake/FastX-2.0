@@ -12,6 +12,26 @@ router.post('/login', userController.loginUser);       // POST /user/login - log
 router.post('/logout', authenticateToken, userController.logoutUser);      // GET /user/logout - logout the user
 router.get('/check-auth', userController.checkAuth);    // GET /user/check-auth - check if the user is authenticated 
 
+// Profile Section Routes
+router.get('/profile', authenticateToken, userController.getProfile);
+router.put('/profile', authenticateToken, userController.updateProfile);
+router.get('/orders', authenticateToken, userController.getOrders);
+
+// Fetching Products in Shop
+router.get('/new_arrivals', productController.getNewArrivals);
+router.get('/trending', productController.getTrendingProducts);
+router.get('/filter', productController.filterProducts);
+
+// Accesing Cart Routes
+router.get('/getcart', authenticateToken, cartController.getCart);
+router.get('/stores', cartController.getStores);
+router.get('/end-locations/:store', cartController.getEndLocations);
+router.get('/route-image', cartController.getRouteImage);
+
+// Order Placement Routes
+router.post('/payment', authenticateToken, userController.payment);
+router.post('/placeorder', authenticateToken, userController.placeOrder);
+
 // Product routes
 router.get('/getallproducts', userController.getAllProducts); // GET /user/getallproducts - get all products
 router.post('/postproduct', userController.postProduct); // POST /user/postproduct - post a product
@@ -20,32 +40,5 @@ router.delete('/deleteproduct/:id', userController.deleteProduct); // DELETE /us
 router.put('/updateproduct/:id', userController.updateProduct); // PUT /user/updateproduct/:id - update a product by id
 router.get('/getcategoryproducts', userController.getcategoryProducts);
 router.get('/products/:criteria', productController.getProducts);
-// Route for fetching new arrivals
-router.get('/new_arrivals', productController.getNewArrivals);
-
-// Route for fetching trending products
-router.get('/trending', productController.getTrendingProducts);
-
-// Route for filtering products
-router.get('/filter', productController.filterProducts);
-
-// Accesing Cart Routes
-router.get('/getcart', authenticateToken, cartController.getCart);
-router.post('/addtocart', authenticateToken, cartController.addToCart); // POST /user/addtocart - add product to cart
-router.delete('/removecart', authenticateToken, cartController.removeFromCart); // DELETE /user/removecart - remove product from cart
-router.put('/updatecart', authenticateToken, cartController.updateProductInCart); // PUT /user/updatecart - update product in cart
-router.put('/updatecartstatus', authenticateToken, cartController.updateCartStatus);
-router.get('/stores', cartController.getStores);
-router.get('/end-locations/:store', cartController.getEndLocations);
-router.get('/route-image', cartController.getRouteImage);
-
-// Profile Section Routes
-router.get('/profile', authenticateToken, userController.getProfile);
-router.put('/profile', authenticateToken, userController.updateProfile);
-router.get('/orders', authenticateToken, userController.getOrders);
-
-// Order Placement Routes
-router.post('/payment', authenticateToken, userController.payment);
-router.post('/placeorder', authenticateToken, userController.placeOrder);
 
 module.exports = router;

@@ -77,7 +77,7 @@ const UserProfile = () => {
           
           <div className="bg-black bg-opacity-50 backdrop-blur-xl rounded-xl p-8 mb-10">
             <div className="flex items-center space-x-6 mb-6">
-              <img src={profile.avatar || '/api/placeholder/300/300'} alt="User Avatar" className="w-32 h-32 rounded-full border-4 border-pink-500" />
+              <img src={profile.avatar || 'https://img.freepik.com/premium-vector/avatar-icon0002_750950-43.jpg?semt=ais_hybrid'} alt="User Avatar" className="w-32 h-32 rounded-full border-4 border-pink-500" />
               <div>
                 <h2 className="text-3xl font-bold">{profile.first_name} {profile.last_name}</h2>
                 <p className="text-xl text-gray-300">{profile.username}</p>
@@ -96,8 +96,8 @@ const UserProfile = () => {
             </div>
           </div>
 
-          <div className="mb-8 flex justify-between items-center">
-            <h2 className="text-3xl font-bold">Profile Information</h2>
+          <div className="flex justify-between items-center">
+            <h2 className="text-3xl font-bold"> </h2>
             <div className="flex space-x-4">
               <FuturisticButton onClick={() => setIsEditing(!isEditing)}>
                 {isEditing ? 'Cancel' : 'Edit Profile'}
@@ -106,7 +106,7 @@ const UserProfile = () => {
           </div>
 
           {isEditing ? (
-            <form onSubmit={handleSubmit} className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
+            <form onSubmit={handleSubmit} className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg text-black">
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <label className="block mb-2 text-gray-700">First Name</label>

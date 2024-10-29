@@ -69,7 +69,7 @@ const Cart = {
 
   getAllStores: () => {
     return new Promise((resolve, reject) => {
-      const query = "SELECT * FROM Store";
+      const query = "SELECT store_ID, city FROM Store";
       db.query(query, (error, results) => {
         if (error) {
           return reject(error);
@@ -82,10 +82,10 @@ const Cart = {
   getEndLocations: (storeId) => {
     return new Promise((resolve, reject) => {
       const query = `
-        SELECT R.route, R.route_ID 
+        SELECT R.route_ID, R.route, JSON_UNQUOTE(JSON_EXTRACT(R.end_locations, '$')) AS end_locations 
         FROM Route R 
-        JOIN Store S ON R.store_ID = S.store_ID 
-        WHERE S.store_ID = ?`;
+        WHERE R.store_ID = ?
+      `;
       db.query(query, [storeId], (error, results) => {
         if (error) {
           return reject(error);
@@ -94,6 +94,7 @@ const Cart = {
           results.map((row) => ({
             route: row.route,
             route_ID: row.route_ID,
+            end_locations: JSON.parse(row.end_locations),
           }))
         );
       });
@@ -102,16 +103,19 @@ const Cart = {
 
   getRouteImage: (storeId, route) => {
     return new Promise((resolve, reject) => {
-      const query =
-        "SELECT image_link FROM Route WHERE store_ID = ? AND route = ?";
+      const query = `
+        SELECT image_link 
+        FROM Route 
+        WHERE store_ID = ? AND route = ?
+      `;
       db.query(query, [storeId, route], (error, results) => {
         if (error) {
           return reject(error);
         }
-        if (results.length > 0) {
-          resolve(results[0].image_link);
-        } else {
+        if (results.length === 0) {
           reject(new Error("No image found for the selected route"));
+        } else {
+          resolve(results[0].image_link);
         }
       });
     });
@@ -140,22 +144,22 @@ const Cart = {
         }
         resolve(result[0][0]);
       });
-    })
+    });
   },
 
   clearCart: (userId) => {
     return new Promise((resolve, reject) => {
-        // Delete all items from Cart_Items and Cart for the user
-        db.query(
-            "DELETE FROM Cart_Items WHERE cart_id = (SELECT cart_id FROM Cart WHERE customer_ID = ?); DELETE FROM Cart WHERE customer_ID = ?;",
-            [userId, userId],
-            (err, results) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(results);
-            }
-        );
+      // Delete all items from Cart_Items and Cart for the user
+      db.query(
+        "DELETE FROM Cart_Items WHERE cart_id = (SELECT cart_id FROM Cart WHERE customer_ID = ?); DELETE FROM Cart WHERE customer_ID = ?;",
+        [userId, userId],
+        (err, results) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve(results);
+        }
+      );
     });
   },
 };

@@ -52,6 +52,9 @@ import CategoryView from "./pages/CategoryView";
 import AdminLogin from "./components/Admin/pages/AdminLogin";
 import DriverDashboard from "./Driver/DriverDashboard";
 import Driverlogin from "./Driver/Driverlogin";
+import DriverProfile from "./Driver/DriverProfile";
+import DriverReport from "./Driver/DriverReport";
+import DriverTruckSchedule from "./Driver/DriverTruckSchedule";
 
 
 function App() {
@@ -117,6 +120,10 @@ function App() {
             {/*Driver routes*/}
             <Route path="/driver-dashboard" element={<DriverDashboard/>} />
             <Route path="/driver-login" element={<Driverlogin/>} />
+            <Route path="/driver-profile" element={<DriverProfile/>} />
+            <Route path="/driver-report" element={<DriverReport/>} />
+            <Route path="/driver-truckschedule" element={<DriverTruckSchedule/>} />
+
           </Routes>
         </Router>
       </AuthProvider>

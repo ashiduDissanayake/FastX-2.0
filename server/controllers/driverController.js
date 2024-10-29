@@ -32,7 +32,7 @@ const driverController = {
                 // Generate a JWT token
                 const driver = jwt.sign(
                     { driver_ID ,username}, // Payload with some user info
-                    process.env.SECRET, // Secret key
+                    process.env.SECRET2, // Secret key
                     { expiresIn: '1h' } // Token expiry (e.g., 1 hour)
                 );
     
@@ -81,6 +81,36 @@ const driverController = {
             return res.status(200).json({ message: 'Order marked as Delivered' });
         });
     },
+
+    getAllSchedules : (req, res) => {
+        DriverModel.getAllSchedules((error, results) => {
+          if (error) {
+            res.status(500).json({ error: 'An error occurred while fetching the schedule data' });
+          } else {
+            res.status(200).json(results);
+          }
+        });
+      },
+
+
+      
+    getDriverDetails : async (req, res) => {
+    try {
+        
+      const driverID = req.user.driver_ID; // Get the driver ID from middleware
+      
+      const driver = await DriverModel.getDriverByID(driverID);
+  
+      if (!driver) {
+        return res.status(404).json({ message: "Driver not found" });
+      }
+  
+      res.json(driver);
+    } catch (error) {
+      console.error("Error fetching driver details:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  },
 
     
 

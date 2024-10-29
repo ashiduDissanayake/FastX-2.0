@@ -72,7 +72,7 @@ function App() {
             {/* <Route path="/trainschedule" element={<TrainSchedule/>} /> */}
             <Route path="/orders" element={<Orders/>} />
 
-            {/* Railway manager */}
+            {/* Railway manager routes */}
             {/* <Route path="/railwaymanagerdashboard" element={<RailwayDashboard/>} /> */}
             <Route path="/railwaytrainschedule" element={<RailwayTrainSchedule/>} />
 

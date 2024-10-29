@@ -3,6 +3,9 @@ const router = express.Router();
 const mainmanagerController = require('../controllers/mainmanagerController');
 
 // User routes
+router.post('/mainmanagerlogin', mainmanagerController.mainManagerLogin);
+router.get('/check-auth', mainmanagerController.checkAuth)
+router.post('/logout', mainmanagerController.logout)
 router.get('/getdriver/:storeId', mainmanagerController.getDriver);         
 router.get('/getdriverassistant/:storeId', mainmanagerController.getDriverAssistant);      
 router.get('/gettruck/:storeId', mainmanagerController.getTruck);     
@@ -16,7 +19,7 @@ router.get('/getTrainCapacity/:storeId', mainmanagerController.getTrainCapacity)
 // router.put("/updateTrainSchedule", mainmanagerController.updateTrainSchedule);
 router.put('/updateTrainSchedule', mainmanagerController.updateTrainSchedule);
 router.put('/updateOrderStatus/:orderId', mainmanagerController.updateOrderStatus);
-router.post('/mainmanagerlogin', mainmanagerController.mainManagerLogin);
+
 
 router.get('/Store1/orders', mainmanagerController.getPendingOrdersStore1);
 router.get('/Store2/orders', mainmanagerController.getPendingOrdersStore2);

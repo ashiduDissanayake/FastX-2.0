@@ -1,79 +1,87 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import PublicRoute from "./layouts/PublicLayout";
-//import ProtectedRoute from "./layouts/ProtectedLayout";
+import ProtectedRoute from "./layouts/ProtectedLayout";
+import MainManagerProtectedRoute from "./layouts/MainManagerProtectedLayout";
+import { AuthProvider } from "./context/AuthContext";
+import { MainManagerAuthProvider } from "./context/MainManagerAuthContext";
+
 import Home from "./pages/Home";
-import MainHome from "./Main Manager/pages/Home";
 import LoginForm from "./pages/Login";
 import SignUpForm from "./pages/Signup";
-import { AuthProvider } from "./context/AuthContext";
-import ManagerDashBoard from "./Manager/pages/ManagerDashboard";
-import ScheduleTrip from "./Manager/pages/ScheduleTrip";
 import Shop from "./pages/Shop";
-import Store from "./Main Manager/pages/Store";
-import TrainSchedule from "./Main Manager/pages/TrainSchedule";
-import Orders from "./Main Manager/pages/Orders";
-import ProtectedRoute from "./layouts/ProtectedLayout";
-import AdminDashboard from "../src/components/Admin/pages/AdminDashboard";
-import Driver from "../src/components/Admin/pages/Driver";
-import Profile from "../src/components/Admin/pages/Profile";
-import Customer from "../src/components/Admin/pages/Customer";
-import AssistentDriver from "../src/components/Admin/pages/AssistentDriver";
-import Manager from "../src/components/Admin/pages/Manager";
-import Report from "../src/components/Admin/pages/Report";
-
 import Cart from "./pages/Cart";
-import ActiveTrips from "./Manager/pages/ActiveTrips";
-import FinishedTrips from "./Manager/pages/FinishedTrips";
-import ViewOrders from "./Manager/pages/ViewOrders";
-import Login from "./Manager/pages/ManagerLogin";
-import ManagerReports from "./Manager/pages/ManagerReports";
-
 import ProductDetail from "./components/ProductDetail";
 import SelectRoute from "./components/SelectRoute";
 import UserProfile from "./pages/UserProfile";
 import OrdersDetails from "./pages/Orders";
-import Mainmanagerlogin from "./MainManager/Mainmanagerlogin";
-import MainManagerSidepanel from "./MainManager/MainManagerSidepanel";
 import ProductAdder from "./pages/ProductAdder";
+import CategoryView from "./pages/CategoryView";
+
+// Manager Imports
+import ManagerDashBoard from "./Manager/pages/ManagerDashboard";
+import ScheduleTrip from "./Manager/pages/ScheduleTrip";
+import ActiveTrips from "./Manager/pages/ActiveTrips";
+import FinishedTrips from "./Manager/pages/FinishedTrips";
+import ViewOrders from "./Manager/pages/ViewOrders";
+import ManagerReports from "./Manager/pages/ManagerReports";
+import ManagerLogin from "./Manager/pages/ManagerLogin";
+
+// Admin Imports
+import AdminDashboard from "./components/Admin/pages/AdminDashboard";
+import Driver from "./components/Admin/pages/Driver";
+import Profile from "./components/Admin/pages/Profile";
+import Customer from "./components/Admin/pages/Customer";
+import AssistentDriver from "./components/Admin/pages/AssistentDriver";
+import Manager from "./components/Admin/pages/Manager";
+import Report from "./components/Admin/pages/Report";
+import AdminLogin from "./components/Admin/pages/AdminLogin";
+
+// Driver Imports
+import DriverDashboard from "./Driver/DriverDashboard";
+import DriverLogin from "./Driver/Driverlogin";
+
+// Main Manager Imports
+import MainHome from "./Main Manager/pages/Home";
+import Store from "./Main Manager/pages/Store";
+import TrainSchedule from "./Main Manager/pages/TrainSchedule";
+import Orders from "./Main Manager/pages/Orders";
+import Mainmanagerlogin from "./MainManager/Mainmanagerlogin";
 import MainManagerDashboard from "./MainManager/MainManagerDashboard";
 import MainmanagerCustomer from "./MainManager/MainmanagerCustomer";
 import MainmanagerReport from "./MainManager/MainmanagerReport";
 import MainmanagerTrainSchedule from "./MainManager/MainmanagerTrainSchedule";
 import MainmanagerProfile from "./MainManager/MainmanagerProfile";
-import Quarterly from "./MainManager/Quarterly"
-import SalesbyCity from "./MainManager/SalesbyCity"
-import MostOrdered from "./MainManager/MostOrdered"
-import Store1 from './MainManager/Store/Store1'
-import Store2 from './MainManager/Store/Store2'
-import Store3 from './MainManager/Store/Store3'
-import Store4 from './MainManager/Store/Store4'
-import Store5 from './MainManager/Store/Store5'
-import CategoryView from "./pages/CategoryView";
-import AdminLogin from "./components/Admin/pages/AdminLogin";
-import DriverDashboard from "./Driver/DriverDashboard";
-import Driverlogin from "./Driver/Driverlogin";
-
+import Quarterly from "./MainManager/Quarterly";
+import SalesbyCity from "./MainManager/SalesbyCity";
+import MostOrdered from "./MainManager/MostOrdered";
+import Store1 from "./MainManager/Store/Store1";
+import Store2 from "./MainManager/Store/Store2";
+import Store3 from "./MainManager/Store/Store3";
+import Store4 from "./MainManager/Store/Store4";
+import Store5 from "./MainManager/Store/Store5";
 
 function App() {
   return (
-    <>
-      <AuthProvider>
+    <AuthProvider>
+      <MainManagerAuthProvider>
         <Router>
           <Routes>
-            {/* Public route - accessible only if not authenticated */}
+            {/* Public Routes */}
             <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/signup" element={<SignUpForm />} />
             <Route path="/shop" element={<PublicRoute><Shop /></PublicRoute>} />
             <Route path="/shop/:category" element={<PublicRoute><CategoryView /></PublicRoute>} />
+            
+            {/* Protected Routes */}
             <Route path="/product/:productId" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
-            <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>}/>
+            <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
             <Route path="/placeorder" element={<ProtectedRoute><SelectRoute /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
             <Route path="/orders" element={<ProtectedRoute><OrdersDetails /></ProtectedRoute>} />
             <Route path="/imageupload" element={<ProtectedRoute><ProductAdder /></ProtectedRoute>} />
 
-            {/* Admin  Route*/}
+            {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admindriver" element={<Driver />} />
             <Route path="/adminprofile" element={<Profile />} />
@@ -81,46 +89,44 @@ function App() {
             <Route path="/adminassistentdriver" element={<AssistentDriver />} />
             <Route path="/adminmanager" element={<Manager />} />
             <Route path="/adminreport" element={<Report />} />
-            <Route path="/adminlogin" element={<AdminLogin/>} />
-
+            <Route path="/adminlogin" element={<AdminLogin />} />
             
-
-            {/* Main manager */}
-            <Route path="/maindashboard" element={<MainHome/>} />
-            <Route path="/store" element={<Store/>} />
-            <Route path="/trainschedule" element={<TrainSchedule/>} />
-            <Route path="/mainmanager-orders" element={<Orders/>} />
-              
-            {/* Manager Route */}
+            {/* Manager Routes */}
             <Route path="/manager-dashboard" element={<ManagerDashBoard />} />
             <Route path="/manager-view-orders" element={<ViewOrders />} />
             <Route path="/manager-schedule-trip" element={<ScheduleTrip />} />
             <Route path="/manager-active-trips" element={<ActiveTrips />} />
             <Route path="/manager-finished-trips" element={<FinishedTrips />} />
-            <Route path="/manager-login" element={<Login/>}/>
+            <Route path="/manager-login" element={<ManagerLogin />} />
             <Route path="/manager-reports" element={<ManagerReports />} />
+            
+            {/* Driver Routes */}
+            <Route path="/driver-dashboard" element={<DriverDashboard />} />
+            <Route path="/driver-login" element={<DriverLogin />} />
+
+            {/* Main Manager Routes */}
             <Route path="/mainmanager-login" element={<Mainmanagerlogin />} />
-            <Route path="/mainmanager-dashboard" element={<MainManagerDashboard />} />
-            <Route path="/mainmanager-customers" element={<MainmanagerCustomer />} />
-            <Route path="/mainmanager-report" element={<MainmanagerReport />} />
-            <Route path="/mainmanager-trainschedule" element={<MainmanagerTrainSchedule />} />
-            <Route path="/mainmanager-profile" element={<MainmanagerProfile />} />
-            <Route path="/quarterly-sales" element={<Quarterly />} />
-            <Route path="/most-ordered-items" element={<MostOrdered />} />
-            <Route path="/sales-by-city-route" element={<SalesbyCity />} />
-            <Route path="/store1" element={<Store1/>} />
-            <Route path="/store2" element={<Store2/>} />
-            <Route path="/store3" element={<Store3/>} />
-            <Route path="/store4" element={<Store4/>} />
-            <Route path="/store5" element={<Store5/>} />
-              
-            {/*Driver routes*/}
-            <Route path="/driver-dashboard" element={<DriverDashboard/>} />
-            <Route path="/driver-login" element={<Driverlogin/>} />
+            <Route path="/maindashboard" element={<MainManagerProtectedRoute><MainHome /></MainManagerProtectedRoute>} />
+            <Route path="/store" element={<MainManagerProtectedRoute><Store /></MainManagerProtectedRoute>} />
+            <Route path="/trainschedule" element={<MainManagerProtectedRoute><TrainSchedule /></MainManagerProtectedRoute>} />
+            <Route path="/mainmanager-orders" element={<MainManagerProtectedRoute><Orders /></MainManagerProtectedRoute>} />
+            <Route path="/mainmanager-dashboard" element={<MainManagerProtectedRoute><MainManagerDashboard /></MainManagerProtectedRoute>} />
+            <Route path="/mainmanager-customers" element={<MainManagerProtectedRoute><MainmanagerCustomer /></MainManagerProtectedRoute>} />
+            <Route path="/mainmanager-report" element={<MainManagerProtectedRoute><MainmanagerReport /></MainManagerProtectedRoute>} />
+            <Route path="/mainmanager-trainschedule" element={<MainManagerProtectedRoute><MainmanagerTrainSchedule /></MainManagerProtectedRoute>} />
+            <Route path="/mainmanager-profile" element={<MainManagerProtectedRoute><MainmanagerProfile /></MainManagerProtectedRoute>} />
+            <Route path="/quarterly-sales" element={<MainManagerProtectedRoute><Quarterly /></MainManagerProtectedRoute>} />
+            <Route path="/most-ordered-items" element={<MainManagerProtectedRoute><MostOrdered /></MainManagerProtectedRoute>} />
+            <Route path="/sales-by-city-route" element={<MainManagerProtectedRoute><SalesbyCity /></MainManagerProtectedRoute>} />
+            <Route path="/store1" element={<MainManagerProtectedRoute><Store1 /></MainManagerProtectedRoute>} />
+            <Route path="/store2" element={<MainManagerProtectedRoute><Store2 /></MainManagerProtectedRoute>} />
+            <Route path="/store3" element={<MainManagerProtectedRoute><Store3 /></MainManagerProtectedRoute>} />
+            <Route path="/store4" element={<MainManagerProtectedRoute><Store4 /></MainManagerProtectedRoute>} />
+            <Route path="/store5" element={<MainManagerProtectedRoute><Store5 /></MainManagerProtectedRoute>} />
           </Routes>
         </Router>
-      </AuthProvider>
-    </>
+      </MainManagerAuthProvider>
+    </AuthProvider>
   );
 }
 

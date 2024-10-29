@@ -29,7 +29,10 @@ function Store2() {
   }, []);
 
   const fetchOrders = () => {
-    fetch('http://localhost:8080/mainmanager/Store2/orders')
+    fetch('http://localhost:8080/mainmanager/Store2/orders', {
+      method: 'GET',
+      credentials: 'include', // This adds withCredentials to the request
+    })
       .then((response) => {
         if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
         return response.json();
@@ -39,7 +42,9 @@ function Store2() {
   };
 
   const fetchTrainCapacity = () => {
-    fetch('http://localhost:8080/mainmanager/train/nearest-capacity/2')
+    fetch('http://localhost:8080/mainmanager/train/nearest-capacity/2', {
+      credentials: 'include'
+    })
       .then(response => response.json())
       .then(data => {
         setTrainCapacity(data.capacity);

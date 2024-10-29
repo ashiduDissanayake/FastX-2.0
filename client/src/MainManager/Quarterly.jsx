@@ -12,7 +12,9 @@ function Quarterly() {
   useEffect(() => {
     async function fetchSalesData() {
       try {
-        const response = await fetch('http://localhost:8080/mainmanager/sales-data');
+        const response = await fetch('http://localhost:8080/mainmanager/sales-data', {
+          credentials: 'include' // Include credentials in the fetch request
+        });
         const data = await response.json();
 
         setRevenuePast3Months(data.revenue_past_3_months);

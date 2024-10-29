@@ -39,7 +39,9 @@ function Store1() {
   };
 
   const fetchTrainCapacity = () => {
-    fetch('http://localhost:8080/mainmanager/train/nearest-capacity/1')
+    fetch('http://localhost:8080/mainmanager/train/nearest-capacity/1', {
+      credentials: 'include'
+    })
       .then(response => response.json())
       .then(data => {
         setTrainCapacity(data.capacity);

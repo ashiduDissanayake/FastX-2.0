@@ -17,7 +17,9 @@ function MostSoldItems() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/mainmanager/most-sold-items');
+        const response = await axios.get('http://localhost:8080/mainmanager/most-sold-items', {
+          withCredentials: true, // Include credentials in the request
+        });
         setMostSoldItems(response.data);
       } catch (error) {
         console.error("Error fetching most sold items data:", error);

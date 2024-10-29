@@ -6,8 +6,13 @@ import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { useAuth } from '../context/MainManagerAuthContext';
 
 const SidePanel = () => {
+  const { logout } = useAuth();
+  const handleLogout = () => {
+    logout();
+  }
   return (
     <div className="bg-[#0A2540] text-white w-64 h-screen p-6 font-raleway">
       <div className="flex items-center flex-col mb-8">
@@ -44,7 +49,7 @@ const SidePanel = () => {
       </nav>
 
       <div className="mt-auto">
-        <Link to="/mainmanager-logout" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
+        <Link to="/#" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all" onClick={handleLogout}>
           <LogoutIcon />
           <span className="ml-2 text-lg">Logout</span>
         </Link>

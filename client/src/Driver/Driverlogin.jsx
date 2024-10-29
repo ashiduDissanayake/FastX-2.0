@@ -25,7 +25,7 @@ const Driverlogin = () => {
                 setDriverId(response.data.driver_ID);
                 setMessage('Login successful!');
                 // Navigate to the main manager dashboard
-                navigate('/driver-dashboard'); // Redirect to the dashboard after successful login
+                navigate('/driver-profile'); // Redirect to the dashboard after successful login
             } else {
                 setMessage(response.data.message);
                 setDriverId(null);

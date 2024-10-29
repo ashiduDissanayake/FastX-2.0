@@ -21,30 +21,24 @@ const DriverSidePanel = () => {
       </div>
 
       <nav className="space-y-4">
-        <Link to="/mainmanager-dashboard" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
+        <Link to="/driver-profile" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
           <DashboardIcon />
-          <span className="ml-2 text-lg">Dashboard</span>
-        </Link>
-        <Link to="/mainmanager-customers" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
-          <PeopleIcon />
-          <span className="ml-2 text-lg">Customers</span>
-        </Link>
-        <Link to="/mainmanager-trainschedule" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
-          <GroupWorkIcon />
-          <span className="ml-2 text-lg">TrainSchedule</span>
-        </Link>
-        <Link to="/mainmanager-report" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
-          <AnalyticsIcon />
-          <span className="ml-2 text-lg">Report</span>
-        </Link>
-        <Link to="/mainmanager-profile" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
-          <AccountCircleIcon />
           <span className="ml-2 text-lg">Profile</span>
         </Link>
+        
+        <Link to="/driver-dashboard" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
+          <GroupWorkIcon />
+          <span className="ml-2 text-lg">Assign Trip</span>
+        </Link>
+        <Link to="/driver-truckschedule" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
+          <AnalyticsIcon />
+          <span className="ml-2 text-lg">Truck Schedule</span>
+        </Link>
+        
       </nav>
 
       <div className="mt-auto">
-        <Link to="/mainmanager-logout" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
+        <Link to="/driver-logout" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
           <LogoutIcon />
           <span className="ml-2 text-lg">Logout</span>
         </Link>

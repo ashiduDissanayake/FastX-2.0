@@ -51,16 +51,21 @@ import MainmanagerCustomer from "./MainManager/MainmanagerCustomer";
 import MainmanagerReport from "./MainManager/MainmanagerReport";
 import MainmanagerTrainSchedule from "./MainManager/MainmanagerTrainSchedule";
 import MainmanagerProfile from "./MainManager/MainmanagerProfile";
-import Quarterly from "./MainManager/Quarterly";
-import SalesbyCity from "./MainManager/SalesbyCity";
-import MostOrdered from "./MainManager/MostOrdered";
-import Store1 from "./MainManager/Store/Store1";
-import Store2 from "./MainManager/Store/Store2";
-import Store3 from "./MainManager/Store/Store3";
-import Store4 from "./MainManager/Store/Store4";
-import Store5 from "./MainManager/Store/Store5";
+import Quarterly from "./MainManager/Quarterly"
+import SalesbyCity from "./MainManager/SalesbyCity"
+import MostOrdered from "./MainManager/MostOrdered"
+import Store1 from './MainManager/Store/Store1'
+import Store2 from './MainManager/Store/Store2'
+import Store3 from './MainManager/Store/Store3'
+import Store4 from './MainManager/Store/Store4'
+import Store5 from './MainManager/Store/Store5'
+import Driverlogin from "./Driver/Driverlogin";
+import DriverProfile from "./Driver/DriverProfile";
+import DriverReport from "./Driver/DriverReport";
+import DriverTruckSchedule from "./Driver/DriverTruckSchedule";
 import { ManagerAuthProvider } from "./context/ManagerAuthContext";
 import ManagerProtectedRoute from "./layouts/ManagerProtectedLayout";
+
 
 function App() {
   return (
@@ -104,6 +109,7 @@ function App() {
             <Route path="/store4" element={<MainManagerProtectedRoute><Store4 /></MainManagerProtectedRoute>} />
             <Route path="/store5" element={<MainManagerProtectedRoute><Store5 /></MainManagerProtectedRoute>} />
 
+
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admindriver" element={<Driver />} />
@@ -122,12 +128,13 @@ function App() {
             <Route path="/manager-active-trips" element={<ManagerProtectedRoute><ActiveTrips /></ManagerProtectedRoute>} />
             <Route path="/manager-finished-trips" element={<ManagerProtectedRoute><FinishedTrips /></ManagerProtectedRoute>} />
             <Route path="/manager-reports" element={<ManagerProtectedRoute><ManagerReports /></ManagerProtectedRoute>} />
-            
-            {/* Driver Routes */}
-            <Route path="/driver-dashboard" element={<DriverDashboard />} />
-            <Route path="/driver-login" element={<DriverLogin />} />
-
-
+              
+            {/*Driver routes*/}
+            <Route path="/driver-dashboard" element={<DriverDashboard/>} />
+            <Route path="/driver-login" element={<Driverlogin/>} />
+            <Route path="/driver-profile" element={<DriverProfile/>} />
+            <Route path="/driver-report" element={<DriverReport/>} />
+            <Route path="/driver-truckschedule" element={<DriverTruckSchedule/>} />
           </Routes>
         </Router>
         </ManagerAuthProvider>

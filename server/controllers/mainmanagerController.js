@@ -169,7 +169,7 @@ const mainmanagerController = {
             // Generate a JWT token
             const token = jwt.sign(
                 { mainmanager_id, username }, // Payload with some user info
-                process.env.SECRET, // Secret key
+                process.env.SECRET3, // Secret key
                 { expiresIn: '1h' } // Token expiry (e.g., 1 hour)
             );
 

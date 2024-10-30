@@ -51,6 +51,7 @@ const Order = ({ order }) => {
                   alt={item.product_Name}
                   className="w-16 h-16 object-cover rounded"
                 />
+                
                 <div>
                   <p className="text-sm font-semibold">{item.product_Name}</p>
                   <p>Quantity: {item.quantity}</p>

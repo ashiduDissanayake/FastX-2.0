@@ -55,7 +55,9 @@ const SelectRoute = () => {
   const fetchEndLocations = async (storeId) => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:8080/user/end-locations/${storeId}`);
+      const response = await axios.get(
+        `http://localhost:8080/user/end-locations/${storeId}`
+      );
       setEndLocations(response.data);
     } catch (error) {
       handleApiError(error, "Error fetching end locations. Please try again.");
@@ -67,12 +69,15 @@ const SelectRoute = () => {
   const fetchRouteImage = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:8080/user/route-image", {
-        params: {
-          store: selectedStore,
-          route: selectedRoute.route,
-        },
-      });
+      const response = await axios.get(
+        "http://localhost:8080/user/route-image",
+        {
+          params: {
+            store: selectedStore,
+            route: selectedRoute.route,
+          },
+        }
+      );
       setImageLink(response.data.imageLink);
     } catch (error) {
       handleApiError(error, "Error fetching route image. Please try again.");
@@ -88,7 +93,7 @@ const SelectRoute = () => {
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       const matchingRoute = endLocations.find((location) =>
-        location.end_locations.some((loc) => 
+        location.end_locations.some((loc) =>
           loc.toLowerCase().includes(enteredLocation.toLowerCase())
         )
       );
@@ -100,7 +105,7 @@ const SelectRoute = () => {
     try {
       setLoading(true);
       const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-      
+
       if (!cartItems.length) {
         setError("Cart is empty. Please add items before placing an order.");
         return;
@@ -191,11 +196,16 @@ const SelectRoute = () => {
               </p>
               {imageLink && (
                 <div className="mt-4 relative group">
-                  <img
+                  <iframe
                     src={imageLink}
-                    alt={`Route to ${selectedRoute.route}`}
-                    className="w-full h-64 object-cover rounded-lg transition duration-300 group-hover:opacity-75"
-                  />
+                    width="700"
+                    height="450"
+                    style={{ border: "0" }} // Updated to an object
+                    allowFullScreen=""
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Google Map"
+                  ></iframe>
                 </div>
               )}
               <button
@@ -216,7 +226,11 @@ const SelectRoute = () => {
       </div>
 
       {error && (
-        <CustomAlert title="Error" variant="destructive" onClose={() => setError("")}>
+        <CustomAlert
+          title="Error"
+          variant="destructive"
+          onClose={() => setError("")}
+        >
           {error}
         </CustomAlert>
       )}

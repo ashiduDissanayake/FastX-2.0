@@ -24,7 +24,7 @@ ChartJS.register(
 
 function SalesbyCity() {
     const [store, setStore] = useState('1'); // Default to Store 1
-    const [dateRange, setDateRange] = useState('7'); // Default to 1 day
+    const [dateRange, setDateRange] = useState('1'); // Default to 1 day
     const [revenueData, setRevenueData] = useState([]);
 
     // Fetch revenue data based on store and date range
@@ -50,7 +50,7 @@ function SalesbyCity() {
                 label: 'Total Revenue',
                 data: revenueData.map(item => item.total_revenue),
                 backgroundColor: revenueData.map(item => 
-                    item.total_revenue > 1000 ? 'rgba(34, 139, 34, 0.8)' : 'rgba(144, 238, 144, 0.8)'
+                    item.total_revenue > 1000 ? 'rgba(34, 139, 34, 0.8)' : 'rgba(144, 238, 144, 0.8)' // Dark green for high, light green for low
                 ),
                 borderColor: revenueData.map(item => 
                     item.total_revenue > 1000 ? 'rgba(34, 139, 34, 1)' : 'rgba(144, 238, 144, 1)'
@@ -61,19 +61,19 @@ function SalesbyCity() {
     };
 
     return (
-        <div className="flex">
+        <div className="flex min-h-screen">
             {/* SidePanel on the left */}
-            <div className="w-1/5">
+            <div className="w-1/5 h-full">
                 <SidePanel />
             </div>
 
             {/* Main Content on the right */}
-            <div className="w-4/5 p-6 bg-gray-50">
+            <div className="flex flex-col w-4/5 p-6 bg-gray-50 h-full">
                 <ReportSelectionbar />
                 <p className="text-xl font-semibold text-gray-800 mt-4">Sales by City</p>
 
                 {/* Route Revenue Chart */}
-                <h2 className="text-xl font-semibold mt-25 text-gray-800">Route Revenue</h2>
+                <h2 className="text-xl font-semibold mt-4 text-gray-800">Route Revenue</h2>
                 <div className="flex items-center space-x-4 mt-4 mb-8">
                     <div>
                         <label className="mr-2 font-medium text-gray-700">Store:</label>
@@ -95,7 +95,7 @@ function SalesbyCity() {
                             className="border border-gray-300 bg-gradient-to-r from-green-200 to-green-300 rounded-full px-4 py-2 text-gray-700 font-semibold hover:from-green-300 hover:to-green-400 transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
                             value={dateRange} 
                             onChange={(e) => setDateRange(e.target.value)}
-                        >
+                            >
                             <option value="1">1 day</option>
                             <option value="7">1 week</option>
                             <option value="30">1 month</option>
@@ -103,13 +103,14 @@ function SalesbyCity() {
                     </div>
                 </div>
 
-                {/* Render Bar chart only if revenueData has entries */}
-                {revenueData.length > 0 && (
-                    <div className="bg-white p-4 rounded-lg shadow-lg mx-auto" style={{ height: '400px', width: '90%' }}>
+                {/* Centered Chart Container */}
+                <div className="flex-grow flex items-center justify-center">
+                    <div className="bg-white p-4 rounded-lg shadow-lg w-4/5 max-w-3xl">
                         <Bar 
                             data={chartData} 
                             options={{
                                 responsive: true,
+                                maintainAspectRatio: false,
                                 plugins: {
                                     legend: { position: 'top' },
                                     title: { display: true, text: 'Route Revenue by Date Range' }
@@ -117,16 +118,17 @@ function SalesbyCity() {
                                 scales: {
                                     y: { 
                                         beginAtZero: true,
-                                        ticks: { color: '#4B5563' },
+                                        ticks: { color: '#4B5563' }, // Dark gray for Y-axis labels
                                     },
                                     x: {
-                                        ticks: { color: '#4B5563' },
+                                        ticks: { color: '#4B5563' }, // Dark gray for X-axis labels
                                     }
                                 }
-                            }} 
+                            }}
+                            height={400}
                         />
                     </div>
-                )}
+                </div>
             </div>
         </div>
     );

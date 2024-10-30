@@ -9,6 +9,8 @@ router.post("/managerlogin", managerController.loginManager); // POST /manager/l
 router.post("/logout", managerController.logoutManager); // GET /manager/logout - logout the manager
 router.get("/check-auth", managerController.checkAuth); // GET /manager/check-auth - check if the manager is authenticated
 
+router.get('/dashboard-data', managerAuthToken, managerController.getDashboardData); 
+
 router.get('/getdriver', managerAuthToken, managerController.getDriverByStore);         
 router.get('/getdriverassistant',managerAuthToken, managerController.getDriverAssistant);      
 router.get('/gettruck',managerAuthToken, managerController.getTruck);       

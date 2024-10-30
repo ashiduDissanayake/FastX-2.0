@@ -75,6 +75,7 @@ import DriverAssistantLogin from "./DriverAssistant/DriverAssistantLogin";
 import { DriverAssistantAuthProvider } from "./context/DriverAssistantAuthContext";
 import DriverAssistantProtectedRoute from "./layouts/DriverAssistantProtectedLayout";
 import AdminProtectedLayout from "./layouts/AdminLayout";
+import CustomerOrder from './MainManager/CustomerOrder';
 
 
 
@@ -116,6 +117,7 @@ function App() {
             <Route path="/quarterly-sales" element={<MainManagerProtectedRoute><Quarterly /></MainManagerProtectedRoute>} />
             <Route path="/most-ordered-items" element={<MainManagerProtectedRoute><MostOrdered /></MainManagerProtectedRoute>} />
             <Route path="/sales-by-city-route" element={<MainManagerProtectedRoute><SalesbyCity /></MainManagerProtectedRoute>} />
+            <Route path="/customerorder-route" element={<MainManagerProtectedRoute><CustomerOrder /></MainManagerProtectedRoute>} />
             <Route path="/store1" element={<MainManagerProtectedRoute><Store1 /></MainManagerProtectedRoute>} />
             <Route path="/store2" element={<MainManagerProtectedRoute><Store2 /></MainManagerProtectedRoute>} />
             <Route path="/store3" element={<MainManagerProtectedRoute><Store3 /></MainManagerProtectedRoute>} />

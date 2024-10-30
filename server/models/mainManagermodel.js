@@ -112,6 +112,24 @@ getMostSoldProducts : (storeId, daysRange) => {
   });
 },
 
+
+getTopCustomerByStore(storeId) {
+  console.log(storeId);
+  return new Promise((resolve, reject) => {
+    db.query(`CALL GetTopCustomerByStore(?)`, [storeId], (error, results) => {
+      if (error) {
+        reject(error);
+      } else {
+        console.log(results);
+        resolve(results);
+      }
+    });
+  });
+},
+
+
+
+
   getPendingOrdersStore5: (callback) => {
     const query = 'CALL GetOrdersByPriority(5)';
     db.query(query, (err, results) => {

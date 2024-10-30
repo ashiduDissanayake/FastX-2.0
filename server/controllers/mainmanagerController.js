@@ -474,6 +474,30 @@ const mainmanagerController = {
       res.status(500).json({ error: "Error fetching most sold products." });
     }
   },
+
+
+   
+   // Controller method
+getTopCustomers(req, res) {
+  try {
+      const storeId = req.params.storeId;
+      MainManagerModel.getTopCustomerByStore(storeId)
+          .then((results) => {
+              // Send only the customer data (first element of results)
+              res.json(results[0]);
+          })
+          .catch((error) => {
+              res.status(500).json({ message: 'Error fetching customer data', error });
+          });
+  } catch (error) {
+      res.status(500).json({ message: 'Error in controller', error });
+  }
+},
+
+
+
+
+
   getSalesData: async (req, res) => {
     try {
       const revenuePast3Months =

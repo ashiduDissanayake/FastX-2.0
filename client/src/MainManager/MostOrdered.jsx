@@ -3,107 +3,141 @@ import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
 import SidePanel from './MainManagerSidepanel';
 import ReportSelectionbar from "./ReportSelectionbar";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+// Register necessary chart components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 function MostSoldItems() {
-  const [mostSoldItems, setMostSoldItems] = useState([]);
-
-  // Darker color palette for the bar chart
+  const [selectedStore, setSelectedStore] = useState("1"); // Default to Store 1
+  const [dateRange, setDateRange] = useState(7); // Default to 1 Week
+  const [chartData, setChartData] = useState(null);
+  
+  // Dark color palette for bars
   const colors = [
-    '#8B0000', '#556B2F', '#2F4F4F', '#8A2BE2', '#483D8B', 
-    '#B22222', '#5F9EA0', '#A0522D', '#6A5ACD', '#8B4513'
+    '#3B3B98', '#40407A', '#2C2C54', '#706FD3', '#474787',
+    '#5758BB', '#4B6587', '#2C3A47', '#6D214F', '#182C61'
   ];
 
-  // Fetch data from backend
+  // Fetch product data whenever the store or date range changes
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:8080/mainmanager/most-sold-items', {
-          withCredentials: true, // Include credentials in the request
+    if (selectedStore) {
+      axios.get("http://localhost:8080/mainmanager/products/most-sold", {
+          params: { storeId: selectedStore, daysRange: dateRange },
+          withCredentials: true, // Enable credentials
+        })
+        .then((response) => {
+          const data = response.data[0];
+          setChartData({
+            labels: data.map((item) => item.Product),
+            datasets: [
+              {
+                label: "Quantity Sold",
+                data: data.map((item) => item.Quantity_Sold),
+                backgroundColor: colors.slice(0, data.length),
+                borderColor: colors.slice(0, data.length),
+                borderWidth: 1,
+              },
+            ],
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching product data:", error);
         });
-        setMostSoldItems(response.data);
-      } catch (error) {
-        console.error("Error fetching most sold items data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  // Prepare chart data
-  const labels = mostSoldItems.map(item => item.product_Name);
-  const dataValues = mostSoldItems.map(item => item.total_quantity);
-
-  // Apply colors to chart (cycling through colors if more items exist)
-  const backgroundColors = labels.map((_, index) => colors[index % colors.length]);
-  const borderColors = labels.map((_, index) => colors[index % colors.length]);
-
-  const barData = {
-    labels: labels,
-    datasets: [
-      {
-        label: 'Most Sold Items (Quantity)',
-        data: dataValues,
-        backgroundColor: backgroundColors,
-        borderColor: borderColors,
-        borderWidth: 1,
-        barThickness: 18, // Slightly reduced bar thickness for better fit
-      },
-    ],
-  };
+    }
+  }, [selectedStore, dateRange]);
 
   return (
-    <div className="flex">
+    <div className="flex bg-gray-50 min-h-screen">
       {/* SidePanel on the left */}
       <div className="w-1/5">
         <SidePanel />
       </div>
 
       {/* Main Content on the right */}
-      <div className="w-4/5 p-4">
+      <div className="w-4/5 p-6">
         <ReportSelectionbar />
-        <p className="text-lg font-semibold mb-4">Most Sold Items</p>
+        <h2 className="text-2xl font-bold text-gray-700 mb-6">Most Sold Items</h2>
         
+        {/* Store and Date Range Selection */}
+        <div className="flex items-center mb-6 space-x-4 bg-white p-4 rounded-lg shadow-md">
+          <label className="text-gray-600 font-semibold">Select Store:</label>
+          <select
+            value={selectedStore}
+            onChange={(e) => setSelectedStore(e.target.value)}
+            className="bg-gradient-to-r from-green-400 to-teal-500 text-white font-semibold rounded-md px-4 py-2 shadow-md hover:from-teal-500 hover:to-green-400 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200 ease-in-out"
+          >
+            {[1, 2, 3, 4, 5, 6].map((storeNumber) => (
+              <option key={storeNumber} value={storeNumber}>
+                Store {storeNumber}
+              </option>
+            ))}
+          </select>
+
+          <label className="text-gray-600 font-semibold">Select Date Range:</label>
+          <select
+            value={dateRange}
+            onChange={(e) => setDateRange(parseInt(e.target.value))}
+            className="bg-gradient-to-r from-green-400 to-teal-500 text-white font-semibold rounded-md px-4 py-2 shadow-md hover:from-teal-500 hover:to-green-400 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200 ease-in-out"
+          >
+            <option value={1}>1 Day</option>
+            <option value={7}>1 Week</option>
+            <option value={30}>1 Month</option>
+          </select>
+        </div>
+
         {/* Chart and Legend Container */}
         <div className="flex">
-          {/* Bar Chart */}
-          <div className="w-3/5 h-80 mb-8"> {/* Height and width adjusted */}
-            {mostSoldItems.length > 0 ? (
-              <Bar 
-                data={barData} 
+          {/* Bar Chart for Most Sold Products */}
+          <div className="bg-white p-6 rounded-lg shadow-lg w-3/5">
+            {chartData ? (
+              <Bar
+                data={chartData}
                 options={{
                   responsive: true,
                   maintainAspectRatio: false,
-                  animation: false, // Disable animation
-                  scales: {
-                    x: {
-                      ticks: {
-                        display: false, // Hide product names on x-axis
-                      },
-                      grid: {
-                        color: 'rgba(0,0,0,0.1)',
-                      },
-                    },
-                    y: {
-                      min: 0, // Minimum value on y-axis
-                      max: Math.max(...dataValues) + 10, // Max value with a buffer
-                      ticks: {
-                        stepSize: 5, // Adjust tick interval
-                        color: '#333',
-                        font: {
-                          size: 12, // Font size for y-axis
-                        },
-                      },
-                      grid: {
-                        color: 'rgba(0,0,0,0.1)',
-                      },
-                    },
-                  },
                   plugins: {
-                    legend: {
-                      display: false,
+                    legend: { display: false },
+                    title: {
+                      display: true,
+                      text: "Most Sold Products",
+                      color: '#2D3748',
+                      font: { size: 20, weight: 'bold' },
+                    },
+                    tooltip: {
+                      backgroundColor: "rgba(45, 55, 72, 0.8)",
+                      titleFont: { size: 14, weight: 'bold', color: '#E2E8F0' },
+                      bodyFont: { size: 12, color: '#CBD5E0' },
                     },
                   },
-                }} 
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      title: {
+                        display: true,
+                        text: "Quantity Sold",
+                        color: '#4A5568',
+                        font: { size: 16 },
+                      },
+                      ticks: { color: '#4A5568' },
+                    },
+                    x: {
+                      ticks: { display: false }, // Hide product names on x-axis
+                      title: {
+                        display: false,
+                      },
+                    },
+                  },
+                }}
+                className="w-full h-80"
               />
             ) : (
               <p className="text-center text-gray-500">Loading Bar Chart...</p>
@@ -111,17 +145,21 @@ function MostSoldItems() {
           </div>
 
           {/* Product Color Legend */}
-          <div className="w-2/5 pl-6"> {/* Adjusted width and padding for spacing */}
-            <h4 className="text-lg font-semibold text-gray-700 mb-4">Product Color Legend</h4>
-            <div className="space-y-2">
-              {labels.map((label, index) => (
-                <div key={label} className="flex items-center space-x-2">
-                  <div style={{
-                    backgroundColor: colors[index % colors.length],
-                  }} className="w-5 h-5 rounded-full border border-gray-300" />
-                  <span className="text-gray-700 font-medium">{label}</span>
-                </div>
-              ))}
+          <div className="w-2/5 pl-6">
+            <div className="bg-white p-4 rounded-lg shadow-md">
+              <h3 className="text-lg font-semibold text-gray-700 mb-4">Product Color Legend</h3>
+              <div className="space-y-2">
+                {chartData &&
+                  chartData.labels.map((label, index) => (
+                    <div key={label} className="flex items-center space-x-2">
+                      <div
+                        style={{ backgroundColor: colors[index % colors.length] }}
+                        className="w-6 h-6 rounded-full border border-gray-300"
+                      />
+                      <span className="text-gray-700 font-medium">{label}</span>
+                    </div>
+                  ))}
+              </div>
             </div>
           </div>
         </div>

@@ -101,27 +101,16 @@ const MainManagerModel = {
 
 
 
-   async getMostSoldItems() {
-    const query = `
-        SELECT p.product_Name, SUM(oi.quantity) AS total_quantity
-        FROM OrderItem oi
-        JOIN Product p ON oi.product_id = p.product_ID
-        GROUP BY p.product_Name
-        ORDER BY total_quantity DESC
-        LIMIT 10;
-    `;
-    
-    return new Promise((resolve, reject) => {
-        db.query(query, (error, results) => {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(results);
-            }
-        });
-    });
-},
+getMostSoldProducts : (storeId, daysRange) => {
+  const query = `CALL GetMostSoldProducts(?, ?);`;
 
+  return new Promise((resolve, reject) => {
+    db.query(query, [storeId, daysRange], (err, results) => {
+      if (err) reject(err);
+      resolve(results);
+    });
+  });
+},
 
   getPendingOrdersStore5: (callback) => {
     const query = 'CALL GetOrdersByPriority(5)';

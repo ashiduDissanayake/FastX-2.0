@@ -462,21 +462,18 @@ const mainmanagerController = {
 
   // Backend code for updating order status
 
-  getMostSoldItems: async (req, res) => {
+  getMostSoldProducts : async (req, res) => {
+    const { storeId, daysRange } = req.query;
+    
+  
     try {
-      const results = await MainManagerModel.getMostSoldItems();
-      res.status(200).json(results);
-    } catch (error) {
-      console.error("Error fetching most sold items:", error);
-      res
-        .status(500)
-        .json({
-          message: "Failed to fetch most sold items",
-          error: error.message,
-        });
+      const data = await MainManagerModel.getMostSoldProducts(storeId, daysRange);
+      res.json(data);
+      
+    } catch (err) {
+      res.status(500).json({ error: "Error fetching most sold products." });
     }
   },
-
   getSalesData: async (req, res) => {
     try {
       const revenuePast3Months =

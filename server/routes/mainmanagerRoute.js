@@ -32,7 +32,7 @@ router.get('/Store5/orders',MainManagerAuthenticateToken, mainmanagerController.
 router.get('/Store6/orders',MainManagerAuthenticateToken, mainmanagerController.getPendingOrdersStore6);
 router.get('/train/nearest-capacity/:storeId',MainManagerAuthenticateToken, mainmanagerController.getNearestCapacity);
 router.put('/train/reduce-capacity/:storeId',MainManagerAuthenticateToken, mainmanagerController.reduceCapacity); 
-router.get('/most-sold-items',MainManagerAuthenticateToken, mainmanagerController.getMostSoldItems);
+router.get("/products/most-sold",MainManagerAuthenticateToken, mainmanagerController.getMostSoldProducts);
 router.get('/sales-data',MainManagerAuthenticateToken, mainmanagerController.getSalesData);
 
 router.get('/route-revenue',MainManagerAuthenticateToken, mainmanagerController.getRouteRevenue);

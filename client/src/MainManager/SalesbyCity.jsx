@@ -95,7 +95,7 @@ function SalesbyCity() {
                             className="border border-gray-300 bg-gradient-to-r from-green-200 to-green-300 rounded-full px-4 py-2 text-gray-700 font-semibold hover:from-green-300 hover:to-green-400 transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
                             value={dateRange} 
                             onChange={(e) => setDateRange(e.target.value)}
-                        >
+                            >
                             <option value="1">1 day</option>
                             <option value="7">1 week</option>
                             <option value="30">1 month</option>

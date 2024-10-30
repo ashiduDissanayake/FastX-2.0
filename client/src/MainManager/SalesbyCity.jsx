@@ -24,7 +24,7 @@ ChartJS.register(
 
 function SalesbyCity() {
     const [store, setStore] = useState('1'); // Default to Store 1
-    const [dateRange, setDateRange] = useState('1'); // Default to 1 day
+    const [dateRange, setDateRange] = useState('7'); // Default to 1 day
     const [revenueData, setRevenueData] = useState([]);
 
     // Fetch revenue data based on store and date range
@@ -50,7 +50,7 @@ function SalesbyCity() {
                 label: 'Total Revenue',
                 data: revenueData.map(item => item.total_revenue),
                 backgroundColor: revenueData.map(item => 
-                    item.total_revenue > 1000 ? 'rgba(34, 139, 34, 0.8)' : 'rgba(144, 238, 144, 0.8)' // Dark green for high, light green for low
+                    item.total_revenue > 1000 ? 'rgba(34, 139, 34, 0.8)' : 'rgba(144, 238, 144, 0.8)'
                 ),
                 borderColor: revenueData.map(item => 
                     item.total_revenue > 1000 ? 'rgba(34, 139, 34, 1)' : 'rgba(144, 238, 144, 1)'
@@ -103,27 +103,30 @@ function SalesbyCity() {
                     </div>
                 </div>
 
-                <div className="bg-white p-4 pl-10 rounded-lg shadow-lg mx-auto" style={{ height: '500px', width: '90%' }}>
-                    <Bar 
-                        data={chartData} 
-                        options={{
-                            responsive: true,
-                            plugins: {
-                                legend: { position: 'top' },
-                                title: { display: true, text: 'Route Revenue by Date Range' }
-                            },
-                            scales: {
-                                y: { 
-                                    beginAtZero: true,
-                                    ticks: { color: '#4B5563' }, // Dark gray for Y-axis labels
+                {/* Render Bar chart only if revenueData has entries */}
+                {revenueData.length > 0 && (
+                    <div className="bg-white p-4 rounded-lg shadow-lg mx-auto" style={{ height: '400px', width: '90%' }}>
+                        <Bar 
+                            data={chartData} 
+                            options={{
+                                responsive: true,
+                                plugins: {
+                                    legend: { position: 'top' },
+                                    title: { display: true, text: 'Route Revenue by Date Range' }
                                 },
-                                x: {
-                                    ticks: { color: '#4B5563' }, // Dark gray for X-axis labels
+                                scales: {
+                                    y: { 
+                                        beginAtZero: true,
+                                        ticks: { color: '#4B5563' },
+                                    },
+                                    x: {
+                                        ticks: { color: '#4B5563' },
+                                    }
                                 }
-                            }
-                        }} 
-                    />
-                </div>
+                            }} 
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

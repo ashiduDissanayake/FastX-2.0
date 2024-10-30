@@ -1,6 +1,6 @@
 import React from 'react';
 import SidePanel from './MainManagerSidepanel';
-import StoreSidebar from './StoreSidebar'
+
 
 function MainmanagerCustomer() {
   return (
@@ -12,8 +12,8 @@ function MainmanagerCustomer() {
 
       {/* MainmanagerReport on the right */}
       <div className="w-3/4 p-8">
-        <StoreSidebar/>
-        <p>Hi</p>
+       
+        <p>Dashboard</p>
       </div>
     </div>
   );

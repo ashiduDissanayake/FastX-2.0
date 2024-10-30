@@ -26,13 +26,13 @@ const SidePanel = () => {
       </div>
 
       <nav className="space-y-4">
-        <Link to="/mainmanager-profile" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
+        <Link to="/mainmanager-dashboard" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
           <DashboardIcon />
-          <span className="ml-2 text-lg">Profile</span>
+          <span className="ml-2 text-lg">Dashboard</span>
         </Link>
         <Link to="/store1" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
           <PeopleIcon />
-          <span className="ml-2 text-lg">Dashboard</span>
+          <span className="ml-2 text-lg">Ship Orders</span>
         </Link>
         <Link to="/mainmanager-trainschedule" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
           <GroupWorkIcon />
@@ -42,9 +42,9 @@ const SidePanel = () => {
           <AnalyticsIcon />
           <span className="ml-2 text-lg">Report</span>
         </Link>
-        <Link to="/mainmanager-customers" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
+        <Link to="/mainmanager-profile" className="flex items-center p-3 rounded-lg hover:bg-[#12365C] transition-all">
           <AccountCircleIcon />
-          <span className="ml-2 text-lg">Customer</span>
+          <span className="ml-2 text-lg">Profile</span>
         </Link>
       </nav>
 

@@ -200,7 +200,29 @@ getTopProductsLastThreeMonths: () => {
       }
       callback(null, result);
     });
-  }
+  },
+  getWeeklyOrderStats: () => {
+    return new Promise((resolve, reject) => {
+        const query = 'CALL GetWeeklyOrderStats()';
+        
+        db.query(query, (error, result) => {
+            if (error) return reject(error); // Reject the promise if there's an error
+            resolve(result[1]); // Resolve the promise with the result
+        });
+    });
+},
+
+getTrendingProducts: () => {
+  return new Promise((resolve, reject) => {
+    const query = `CALL GetTredingProductsChart()`;
+    
+    db.query(query, (error, results) => {
+      if (error) return reject(error);
+      resolve(results[0]); // Return only the data without metadata
+    });
+  });
+},
+  
 };
 
 module.exports = MainManagerModel;

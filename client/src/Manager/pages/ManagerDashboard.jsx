@@ -189,7 +189,7 @@ const ManagerDashBoard = () => {
           <FaClipboardList />
         </div>
         <div>
-          <h4 className="font-bold">3 Pending Reports</h4>
+          <h4 className="font-bold">1 Pending Report</h4>
           <p className="text-sm text-gray-600">Review performance data</p>
         </div>
       </div>

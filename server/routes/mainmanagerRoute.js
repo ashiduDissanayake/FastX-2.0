@@ -23,6 +23,9 @@ router.put('/updateTrainSchedule',MainManagerAuthenticateToken, mainmanagerContr
 router.put('/updateOrderStatus/:orderId',MainManagerAuthenticateToken, mainmanagerController.updateOrderStatus);
 router.get('/profile', MainManagerAuthenticateToken, mainmanagerController.getMainManagerDetails);
 
+router.get('/mainmanager-dashboard-data', MainManagerAuthenticateToken, mainmanagerController.getWeeklyOrderStats);
+router.get('/mainmanager-tredingproducts', MainManagerAuthenticateToken, mainmanagerController.getTrendingProducts);
+
 
 router.get('/Store1/orders',MainManagerAuthenticateToken, mainmanagerController.getPendingOrdersStore1);
 router.get('/Store2/orders',MainManagerAuthenticateToken, mainmanagerController.getPendingOrdersStore2);

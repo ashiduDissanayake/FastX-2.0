@@ -538,58 +538,44 @@ const mainmanagerController = {
         .send({ message: "Failed to schedule trip", error: error.message });
     }
   },
-};
+  getWeeklyOrderStats: async (req, res) => {
+    try {
+      // Call the model method that fetches weekly order statistics
+      const results = await MainManagerModel.getWeeklyOrderStats();
 
-module.exports = mainmanagerController;
+      // Check if results are returned
+      if (results.length > 0) {
+        // Respond with the fetched statistics
+        res.status(200).json({
+          totalOrders: results[0].totalOrders,
+          shippedOrders: results[0].shippedOrders,
+          pendingOrders: results[0].pendingOrders,
+        });
+      } else {
+        // If no data is found
+        res.status(404).json({ message: "No data found" });
+      }
+    } catch (error) {
+      console.error("Error fetching weekly order statistics:", error);
+      res.status(500).json({
+        message: "Failed to fetch weekly order statistics",
+        error: error.message,
+      });
+    }
+  },
 
-scheduleTrip: async (req, res) => {
-  const {
-    truck_ID,
-    driver_ID,
-    assistant_ID,
-    store_ID,
-    route_ID,
-    start_time,
-    end_time,
-  } = req.body;
-
-  if (
-    !truck_ID ||
-    !driver_ID ||
-    !assistant_ID ||
-    !store_ID ||
-    !route_ID ||
-    !start_time
-  ) {
-    return res.status(400).send({ message: "All fields are required." });
-  }
-
-  try {
-    const currentDate = new Date().toISOString().split("T")[0]; // Get the current date in YYYY-MM-DD format
-    const formattedStartTime = `${currentDate} ${start_time}:00`;
-
-    const query = `INSERT INTO truck_schedule ( truck_ID, driver_ID, assistant_ID, store_ID, route_ID, start_time, end_time)
-        VALUES ( ?, ?, ?, ?, ?, ?, ?);`;
-
-    await db
-      .promise()
-      .execute(query, [
-        truck_ID,
-        driver_ID,
-        assistant_ID,
-        store_ID,
-        route_ID,
-        formattedStartTime,
-        null,
-      ]);
-
-    res.status(200).send({ message: "Trip scheduled successfully!" });
-  } catch (error) {
-    console.error("Error scheduling trip:", error);
-    res
-      .status(500)
-      .send({ message: "Failed to schedule trip", error: error.message });
-  }
+  getTrendingProducts: async (req, res) => {
+    try {
+      const trendingProducts = await MainManagerModel.getTrendingProducts();
+      res.status(200).json(trendingProducts); 
+    } catch (error) {
+      console.error("Error fetching trending products:", error);
+      res.status(500).json({
+        message: "Failed to fetch trending products",
+        error: error.message,
+      });
+    }
+  },
 };
 
 module.exports = mainmanagerController;

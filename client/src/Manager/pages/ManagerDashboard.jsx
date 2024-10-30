@@ -17,67 +17,66 @@ const ManagerDashBoard = () => {
     {
       title: "View Orders",
       description: "Check and manage orders for all stores.",
-      bgColor: "bg-gradient-to-r from-red-500 to-red-700",
+      bgColor: "bg-gradient-to-r from-[#A56EFF] to-[#7F56D9]",
       icon: <FaStore />,
       navigateTo: "/manager-view-orders",
     },
     {
       title: "Schedule a New Trip",
       description: "Organize and plan new delivery routes.",
-      bgColor: "bg-gradient-to-r from-blue-700 to-blue-900",
+      bgColor: "bg-gradient-to-r from-[#A56EFF] to-[#7F56D9]",
       icon: <FaTruck />,
       navigateTo: "/manager-schedule-trip",
     },
     {
       title: "Active Trips",
       description: "Monitor ongoing trips and logistics.",
-      bgColor: "bg-gradient-to-r from-green-500 to-green-700",
+      bgColor: "bg-gradient-to-r from-[#A56EFF] to-[#7F56D9]",
       icon: <FaTasks />,
       navigateTo: "/manager-active-trips",
     },
     {
       title: "Finished Trips",
       description: "Review completed trips and performance.",
-      bgColor: "bg-gradient-to-r from-yellow-500 to-yellow-700",
+      bgColor: "bg-gradient-to-r from-[#A56EFF] to-[#7F56D9]",
       icon: <FaClipboardList />,
       navigateTo: "/manager-finished-trips",
     },
     {
       title: "Reports",
       description: "View working hours and truck usage reports.",
-      bgColor: "bg-gradient-to-r from-purple-700 to-purple-900",
+      bgColor: "bg-gradient-to-r from-[#A56EFF] to-[#7F56D9]",
       icon: <FaChartBar />,
       navigateTo: "/manager-reports",
     },
-    
   ];
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-r from-purple-100 to-blue-100">
+    <div className="flex min-h-screen bg-white">
       {/* Sidebar */}
       <Sidebar activePage={activePage} setActivePage={setActivePage} />
 
       {/* Main Content */}
       <main className="flex-1 p-0">
         {/* Header Section */}
-        <div className="bg-gray-900 p-5 shadow-lg mb-6 text-center ">
-          <h1 className="text-4xl font-extrabold text-white">Branch Manager Dashboard</h1>
+        <div className="bg-white p-5 text-center rounded-lg">
+          <h1 className="text-4xl font-bold text-[#42307D]">Branch Manager Dashboard</h1>
         </div>
 
         {/* Cards Section */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 p-6">
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 p-6">
           {cards.map((card) => (
             <div
               key={card.title}
-              className={`${card.bgColor} text-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer relative flex flex-col`}
+              className={`${card.bgColor} text-white p-5 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer relative flex flex-col`}
               onClick={() => navigate(card.navigateTo)}
             >
-              <div className="absolute top-0 right-0 opacity-10 text-6xl">
+              <div className="absolute top-2 right-5 opacity-10 text-6xl">
                 {card.icon}
               </div>
-              <div className="relative z-10 flex-grow">
-                <h3 className="text-2xl font-semibold">{card.title}</h3>
-                <p className="text-gray-200 mt-2">{card.description}</p>
+              <div className="relative z-10">
+                <h3 className="text-xl font-semibold">{card.title}</h3>
+                <p className="text-[#FCFAFF] mt-2">{card.description}</p>
               </div>
             </div>
           ))}

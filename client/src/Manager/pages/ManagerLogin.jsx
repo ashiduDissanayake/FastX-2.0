@@ -10,11 +10,11 @@ const Login = () => {
   const [message, setMessage] = useState("");
   const [ManagerId, setManagerId] = useState(null);
 
-  const navigate = useNavigate(); // Initialize the navigate function
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-  
+
     try {
       const response = await axios.post(
         "http://localhost:8080/manager/managerlogin",
@@ -23,15 +23,14 @@ const Login = () => {
           password,
         },
         {
-          withCredentials: true, // Include credentials in the request
+          withCredentials: true,
         }
       );
-  
+
       if (response.data.message === "Login successful") {
         setManagerId(response.data.manager_ID);
         setMessage("Login successful!");
-        window.location.href = '/manager-dashboard';
-        // Move this after state updates
+        window.location.href = "/manager-dashboard";
       } else {
         setMessage(response.data.message);
         setManagerId(null);
@@ -44,20 +43,20 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-[#1F1A37] flex items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-black/80 p-8 rounded-lg shadow-2xl w-full max-w-md"
+        className="bg-[#2C2541] p-8 rounded-lg shadow-2xl w-full max-w-md"
       >
-        <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-rose-400 mb-6 text-center">
+        <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#C8A2F6] to-[#9E77ED] mb-6 text-center">
           Login
         </h2>
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
             <label
-              className="text-sm font-medium text-pink-300 flex items-center"
+              className="text-sm font-medium text-[#A56EFF] flex items-center"
               htmlFor="username"
             >
               <Mail className="mr-2" size={18} />
@@ -68,12 +67,12 @@ const Login = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              className="w-full px-4 py-2 mt-2 bg-black/60 text-white border border-pink-400 rounded-md focus:ring-pink-500 focus:border-pink-500 focus:outline-none"
+              className="w-full px-4 py-2 mt-2 bg-[#2C1C5F] text-white border border-[#9E77ED] rounded-md focus:ring-[#A56EFF] focus:border-[#A56EFF] focus:outline-none"
             />
           </div>
           <div>
             <label
-              className="text-sm font-medium text-pink-300 flex items-center"
+              className="text-sm font-medium text-[#A56EFF] flex items-center"
               htmlFor="password"
             >
               <Lock className="mr-2" size={18} />
@@ -84,14 +83,14 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2 mt-2 bg-black/60 text-white border border-pink-400 rounded-md focus:ring-pink-500 focus:border-pink-500 focus:outline-none"
+              className="w-full px-4 py-2 mt-2 bg-[#2C1C5F] text-white border border-[#9E77ED] rounded-md focus:ring-[#A56EFF] focus:border-[#A56EFF] focus:outline-none"
             />
           </div>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             type="submit"
-            className="w-full bg-gradient-to-r from-pink-400 to-rose-500 text-white font-bold py-3 px-4 rounded-full transition duration-300 flex items-center justify-center"
+            className="w-full bg-gradient-to-r from-[#9E77ED] to-[#A56EFF] text-white font-bold py-3 px-4 rounded-full transition duration-300 flex items-center justify-center"
           >
             <LogIn className="mr-2" size={18} />
             Login
@@ -109,7 +108,7 @@ const Login = () => {
 
         {ManagerId && (
           <div className="mt-6 text-center">
-            <p className="text-sm text-pink-200">Manager ID: {ManagerId}</p>
+            <p className="text-sm text-[#C8A2F6]">Manager ID: {ManagerId}</p>
           </div>
         )}
       </motion.div>

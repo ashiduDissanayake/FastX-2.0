@@ -334,6 +334,21 @@ const mainmanagerController = {
     });
   },
 
+
+  getRouteRevenue : async (req, res) => {
+    
+    const { store_id, date_range } = req.query;
+    
+    try {
+        const revenueData = await MainManagerModel.getRouteRevenue(store_id, date_range);
+        res.json(revenueData);
+        
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch route revenue.' });
+    }
+},
+
+
   //   // Get train schedule
   // getTrainSchedule: (req, res) => {
   //   const sqlGet = "SELECT * FROM train_schedule";

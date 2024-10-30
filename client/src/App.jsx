@@ -52,6 +52,9 @@ import CategoryView from "./pages/CategoryView";
 import AdminLogin from "./components/Admin/pages/AdminLogin";
 import DriverDashboard from "./Driver/DriverDashboard";
 import Driverlogin from "./Driver/Driverlogin";
+import DriverAssistantDashboard from "./DriverAssistant/DriverAssistantDashboard";
+import UpdateOrders from "./DriverAssistant/DriverAssistantUpdateOrders";
+import DriverAssistantLogin from "./DriverAssistant/DriverAssistantLogin";
 
 
 function App() {
@@ -117,6 +120,12 @@ function App() {
             {/*Driver routes*/}
             <Route path="/driver-dashboard" element={<DriverDashboard/>} />
             <Route path="/driver-login" element={<Driverlogin/>} />
+
+
+            {/* Driver Assistant Routes */}
+            <Route path="/driver-assistant-login" element={<DriverAssistantLogin/>}/>
+            <Route path="/driver-assistant-dashboard" element={<DriverAssistantDashboard/>} />
+            <Route path="/driver-assistant-update-orders" element={<UpdateOrders/>} />
           </Routes>
         </Router>
       </AuthProvider>

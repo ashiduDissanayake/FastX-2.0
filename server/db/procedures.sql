@@ -1014,3 +1014,141 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+
+--  ---------------------------------------------------------------------------------------
+--                                  Driver Assistant Procedures
+--  ---------------------------------------------------------------------------------------
+
+DELIMITER $$
+
+CREATE TRIGGER encrypt_assistant_password
+BEFORE INSERT ON DriverAssistant
+FOR EACH ROW
+BEGIN
+    SET NEW.password = AES_ENCRYPT(NEW.password, 'Your_strong_key_256_bits');
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE InsertDriverAssistantRecord (
+    IN p_assistant_ID INT,
+    IN p_status VARCHAR(50),
+    IN p_store_ID INT,
+    IN p_username VARCHAR(50),
+    IN p_password VARCHAR(255),
+    IN p_current_working_time TIME
+)
+BEGIN
+    INSERT INTO DriverAssistant (assistant_ID, status, store_ID, username, password, current_working_time)
+    VALUES (p_assistant_ID, p_status, p_store_ID, p_username, p_password, p_current_working_time);
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE DriverAssistantLogin (
+    IN p_username VARCHAR(50),
+    IN p_password VARCHAR(255)
+)
+BEGIN
+    DECLARE decrypted_password VARCHAR(255);
+    DECLARE matched_assistant_id INT;
+
+    -- Attempt to find a driver with the matching username
+    SELECT assistant_ID, AES_DECRYPT(password, 'Your_strong_key_256_bits') INTO matched_assistant_id, decrypted_password
+    FROM DriverAssistant
+    WHERE username = p_username;
+
+    -- Check if the decrypted password matches the input password
+    IF decrypted_password = p_password THEN
+        SELECT matched_assistant_id AS assistant_ID, 'Login successful' AS message;
+    ELSE
+        SELECT NULL AS assistant_ID, 'Invalid username or password' AS message;
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE GetCurrentWorkingTimeByAssistantID(
+    IN assistantID INT
+)
+BEGIN
+    -- Declare an exception handler for SQL errors
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        -- Handling SQL exception, return an error message
+        SELECT 'SQL Exception Occurred. Unable to fetch current working time.' AS error_message;
+    END;
+
+    -- Select current working time for the specified driver assistant
+    SELECT current_working_time 
+    FROM DriverAssistant 
+    WHERE assistant_ID = assistantID;
+END $$
+
+DELIMITER ;
+
+
+
+DELIMITER $$
+
+CREATE PROCEDURE GetOrdersByTruckSchedule(
+    IN driverAssistantID INT
+)
+BEGIN
+    -- Declare an exception handler for SQL errors
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        -- Handling SQL exception, return an error message
+        SELECT 'SQL Exception Occurred. Unable to fetch orders.' AS error_message;
+    END;
+
+    -- Select orders for the specified driver assistant and the latest truck schedule
+    SELECT O.schedule_ID, O.order_id, O.capacity, O.status
+    FROM `Order` O
+    JOIN TruckSchedule TS ON O.schedule_ID = TS.schedule_ID
+    WHERE TS.assistant_ID = driverAssistantID 
+      AND TS.end_time IS NULL 
+      AND TS.schedule_ID = (
+          SELECT TS_inner.schedule_ID
+          FROM TruckSchedule TS_inner
+          WHERE TS_inner.assistant_ID = driverAssistantID
+          ORDER BY TS_inner.start_time DESC
+          LIMIT 1
+      );
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE UpdateOrderStatus(
+    IN orderID INT,
+    IN newStatus VARCHAR(255) -- Adjust the length as needed based on your schema
+)
+BEGIN
+    -- Declare an exception handler for SQL errors
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        -- Handling SQL exception, return an error message
+        SELECT 'SQL Exception Occurred. Unable to update order status.' AS error_message;
+    END;
+
+    -- Update the order status for the specified order ID
+    UPDATE `Order`
+    SET status = newStatus
+    WHERE order_id = orderID;
+    
+    -- Optionally return a success message
+    SELECT 'Order status updated successfully.' AS message;
+END $$
+
+DELIMITER ;

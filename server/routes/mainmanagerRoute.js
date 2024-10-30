@@ -37,6 +37,8 @@ router.get('/train/nearest-capacity/:storeId',MainManagerAuthenticateToken, main
 router.put('/train/reduce-capacity/:storeId',MainManagerAuthenticateToken, mainmanagerController.reduceCapacity); 
 router.get("/products/most-sold",MainManagerAuthenticateToken, mainmanagerController.getMostSoldProducts);
 router.get('/sales-data',MainManagerAuthenticateToken, mainmanagerController.getSalesData);
+router.get('/top-customers/:storeId',MainManagerAuthenticateToken, mainmanagerController.getTopCustomers);
+
 
 router.get('/route-revenue',MainManagerAuthenticateToken, mainmanagerController.getRouteRevenue);
 

@@ -26,7 +26,7 @@ const Login = () => {
       if (response.data.message === "Login successful") {
         setManagerId(response.data.manager_ID);
         setMessage("Login successful!");
-        navigate("/manager-dashboard");
+        window.location.href = "/manager-dashboard";
       } else {
         setMessage(response.data.message);
         setManagerId(null);

@@ -47,7 +47,9 @@ const Order = ({ order }) => {
             {order.items.map((item) => (
               <div key={item.item_id} className="flex items-center space-x-4">
                 <img
-                  src={item.image_link || "/default-image.png"} // Fallback image
+                  src={item.image_link
+                    .replace(/^".\/?/, '/public/')
+                    .replace(/"$/, '') || "/default-image.png"} // Fallback image
                   alt={item.product_Name}
                   className="w-16 h-16 object-cover rounded"
                 />

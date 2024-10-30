@@ -73,9 +73,11 @@ const ProductDetail = () => {
         {/* Image Section */}
         <div className="md:w-1/2 relative">
           <img
-            src={product.image_link}
+            src={product.image_link
+              .replace(/^".\/?/, '/public/')
+              .replace(/"$/, '')}
             alt={product.product_Name}
-            className="w-full h-auto object-cover rounded-lg transition-transform transform hover:scale-105"
+            className="w-40px h-10px object-cover rounded-lg transition-transform transform hover:scale-105"
           />
           {product.isNew && (
             <div className="absolute top-4 left-4 bg-pink-500 text-white px-3 py-1 rounded-full text-xs tracking-wide uppercase shadow">

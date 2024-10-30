@@ -170,6 +170,9 @@ const Shop = () => {
     const { height, width, span } = getRandomSize();
     const ref = isLast ? lastProductRef : null;
 
+    // Clean up any extra quotes from the image link
+    const cleanImageLink = product.image_link.replace(/^"|"$/g, '');
+
     return (
       <motion.div
         ref={ref}
@@ -184,7 +187,7 @@ const Shop = () => {
         <div className="group relative bg-gray-900 rounded-lg overflow-hidden border border-pink-300/20 hover:border-pink-300/40 transition-colors h-full">
           <div className="relative">
             <img
-              src={product.image_link}
+              src={cleanImageLink}
               alt={product.product_Name}
               className={`${width} ${height} object-cover transition-transform group-hover:scale-105`}
             />

@@ -59,6 +59,7 @@ import Store2 from './MainManager/Store/Store2'
 import Store3 from './MainManager/Store/Store3'
 import Store4 from './MainManager/Store/Store4'
 import Store5 from './MainManager/Store/Store5'
+import Store6 from "./MainManager/Store/Srore6";
 import DriverDashboard from "./Driver/DriverDashboard";
 import Driverlogin from "./Driver/Driverlogin";
 import DriverProfile from "./Driver/DriverProfile";
@@ -68,8 +69,10 @@ import { ManagerAuthProvider } from "./context/ManagerAuthContext";
 import ManagerProtectedRoute from "./layouts/ManagerProtectedLayout";
 import { DriverAuthProvider } from "./context/DriverAuthContext";
 import DriverProtectedRoute from "./layouts/DriverProtectedLayout";
-import Store6 from "./MainManager/Store/Srore6";
 
+import DriverAssistantDashboard from "./DriverAssistant/DriverAssistantDashboard";
+import UpdateOrders from "./DriverAssistant/DriverAssistantUpdateOrders";
+import DriverAssistantLogin from "./DriverAssistant/DriverAssistantLogin";
 
 function App() {
   return (
@@ -140,7 +143,14 @@ function App() {
             <Route path="/adminassistentdriver" element={<AssistentDriver />} />
             <Route path="/adminmanager" element={<Manager />} />
             <Route path="/adminreport" element={<Report />} />
-            <Route path="/adminlogin" element={<AdminLogin />} />              
+            <Route path="/adminlogin" element={<AdminLogin/>} />
+
+
+            {/* Driver Assistant Routes */}
+            <Route path="/driver-assistant-login" element={<DriverAssistantLogin/>}/>
+            <Route path="/driver-assistant-dashboard" element={<DriverAssistantDashboard/>} />
+            <Route path="/driver-assistant-update-orders" element={<UpdateOrders/>} />
+
           </Routes>
         </Router>
         </DriverAuthProvider>

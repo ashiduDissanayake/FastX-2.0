@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Mail, Lock, LogIn } from "lucide-react";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import img2 from './assets/bg.jpeg';
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -14,7 +13,6 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     try {
       const response = await axios.post(
         "http://localhost:8080/mainmanager/mainmanagerlogin",

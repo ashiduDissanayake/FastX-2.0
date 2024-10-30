@@ -120,26 +120,34 @@ const CategoryView = () => {
     </div>
   );
 
-  const ProductCard = ({ product }) => (
-    <div className="bg-gray-900 rounded-lg overflow-hidden border border-pink-300/20 hover:border-pink-300/40 transition-all hover:-translate-y-1">
-      <img
-        src={product.image_link}
-        alt={product.name}
-        className="w-full h-72 object-cover"
-      />
-      <div className="p-4">
-        <h3 className="text-lg font-semibold text-pink-300">{product.name}</h3>
-        <p className="text-sm text-pink-100/70 mb-2">{product.brand}</p>
-        <div className="flex justify-between items-center">
-          <span className="text-lg font-bold text-pink-400">${product.price}</span>
-          <div className="flex items-center space-x-1">
-            <Star className="w-4 h-4 text-pink-300 fill-current" />
-            <span className="text-sm text-pink-100">{product.rating}</span>
+  const ProductCard = ({ product }) => {
+    const cleanImageLink = product.image_link
+  .replace(/^".\/?/, '/public/')
+  .replace(/"$/, ''); // Ensure no trailing slash at the end if present
+
+  
+    return (
+      <div className="bg-gray-900 rounded-lg overflow-hidden border border-pink-300/20 hover:border-pink-300/40 transition-all hover:-translate-y-1">
+        <img
+          src={cleanImageLink}
+          alt={product.name}
+          className="w-full h-72 object-cover"
+        />
+        <div className="p-4">
+          <h3 className="text-lg font-semibold text-pink-300">{product.name}</h3>
+          <p className="text-sm text-pink-100/70 mb-2">{product.brand}</p>
+          <div className="flex justify-between items-center">
+            <span className="text-lg font-bold text-pink-400">${product.price}</span>
+            <div className="flex items-center space-x-1">
+              <Star className="w-4 h-4 text-pink-300 fill-current" />
+              <span className="text-sm text-pink-100">{product.rating}</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
+  
 
   return (
     <div className="min-h-screen bg-black text-pink-100 pt-16">

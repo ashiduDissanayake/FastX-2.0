@@ -13,6 +13,7 @@ const managerRoutes = require('./routes/managerRoute');
 const mainmanagerRoutes = require('./routes/mainmanagerRoute');
 const adminRoutes = require('./routes/adminRoute');
 const driverRoutes = require('./routes/driverRoute');
+const driverAssistantRoutes = require('./routes/driverAssistantRoute');
 
 // dotenv config
 dotenv.config();
@@ -75,6 +76,7 @@ app.use('/manager', managerRoutes);
 app.use('/mainmanager', mainmanagerRoutes)
 app.use('/admin', adminRoutes);
 app.use('/driver', driverRoutes);
+app.use('/driverassistant', driverAssistantRoutes);
 
 // Root route (for testing)
 app.get('/', (req, res) => {

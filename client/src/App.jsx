@@ -68,7 +68,9 @@ import { ManagerAuthProvider } from "./context/ManagerAuthContext";
 import ManagerProtectedRoute from "./layouts/ManagerProtectedLayout";
 import { DriverAuthProvider } from "./context/DriverAuthContext";
 import DriverProtectedRoute from "./layouts/DriverProtectedLayout";
-
+import DriverAssistantDashboard from "./DriverAssistant/DriverAssistantDashboard";
+import UpdateOrders from "./DriverAssistant/DriverAssistantUpdateOrders";
+import DriverAssistantLogin from "./DriverAssistant/DriverAssistantLogin";
 
 function App() {
   return (
@@ -138,7 +140,14 @@ function App() {
             <Route path="/adminassistentdriver" element={<AssistentDriver />} />
             <Route path="/adminmanager" element={<Manager />} />
             <Route path="/adminreport" element={<Report />} />
-            <Route path="/adminlogin" element={<AdminLogin />} />              
+            <Route path="/adminlogin" element={<AdminLogin/>} />
+
+
+            {/* Driver Assistant Routes */}
+            <Route path="/driver-assistant-login" element={<DriverAssistantLogin/>}/>
+            <Route path="/driver-assistant-dashboard" element={<DriverAssistantDashboard/>} />
+            <Route path="/driver-assistant-update-orders" element={<UpdateOrders/>} />
+
           </Routes>
         </Router>
         </DriverAuthProvider>

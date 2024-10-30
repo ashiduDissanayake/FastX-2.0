@@ -3,31 +3,6 @@ const bcrypt = require("bcrypt");
 
 const Manager = {
 
-//   // Method to login user
-//   login:  (email, password, callback) => {
-//     return new Promise((resolve, reject) => {
-//     const query = "CALL GetUserByEmail(?)";
-
-//     db.query(query, [email], async (err, result) => {
-//       if (err) {
-//         // Handle SQL error (including custom errors from the stored procedure)
-//         if (err.sqlState === "45000") {
-//           return callback(new Error("incorrect email"), null); // Return error through callback
-//         }
-//         return callback(err, null); // Handle any other SQL errors
-//       }
-
-//       const user = result[0][0];
-//       const auth = await bcrypt.compare(password, user.password);
-
-//       if (auth) {
-//         return callback(null, user); // Return user on success
-//       } else {
-//         return callback(new Error("incorrect password"), null); // Handle incorrect password
-//       }
-//     });
-// });
-//   },
 
 login :(username, password, callback) => {
   const query = 'CALL ManagerLogin(?, ?)';

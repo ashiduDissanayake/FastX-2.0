@@ -2,15 +2,13 @@ import React from 'react';
 import { useState } from 'react';
 import img2 from './assets/bg.jpg';
 import axios from "axios" // Background image
-
-
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminLogin() {
   
-
   const[email, setEmail] = useState("");
   const[password, setPassword] = useState("");
-
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     console.log("HIII");
@@ -25,9 +23,11 @@ export default function AdminLogin() {
       }
       );
       console.log(response.data);
+      
       if(response.data.success){
         console.log("Login successful");
-        window.location.href = "/admin";}
+        navigate("/admin");
+      }
     } catch (error) {
       console.error("Error:", error);
     }

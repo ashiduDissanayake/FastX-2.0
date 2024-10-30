@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,7 +8,7 @@ const Login = () => {
     const [message, setMessage] = useState('');
     const [mainManagerId, setMainManagerId] = useState(null);
 
-    const navigate = useNavigate(); // Initialize the navigate function
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -17,21 +17,22 @@ const Login = () => {
             const response = await axios.post('http://localhost:8080/mainmanager/mainmanagerlogin', {
                 username,
                 password,
-            },{
-                withCredentials: true,  // Include credentials in the request
+            }, {
+                withCredentials: true,
             });
+
+            console.log("Login Response:", response.data); // Log response for debugging
 
             if (response.data.message === 'Login successful') {
                 setMainManagerId(response.data.mainmanager_id);
                 setMessage('Login successful!');
-                // Navigate to the main manager dashboard
-                navigate('/mainmanager-dashboard'); // Redirect to the dashboard after successful login
+                window.location.href = '/mainmanager-dashboard';
             } else {
                 setMessage(response.data.message);
                 setMainManagerId(null);
             }
         } catch (error) {
-            console.error(error);
+            console.error("Login error:", error);
             setMessage('Error occurred during login.');
             setMainManagerId(null);
         }

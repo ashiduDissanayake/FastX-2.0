@@ -29,6 +29,30 @@ const DriverModel = {
           callback(null, results);
       });
   },
+
+   getAllSchedules(callback) {
+    const sql = 'SELECT * FROM TruckSchedule';
+    db.query(sql, (error, results) => {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    });
+  },
+
+  getDriverByID(driverID) {
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT driver_ID, status, store_ID, current_working_time FROM Driver WHERE driver_ID = ?';
+
+      db.query(query, [driverID], (error, results) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(results[0]); // Return the first row if a driver is found
+      });
+    });
+  }
     
 
 

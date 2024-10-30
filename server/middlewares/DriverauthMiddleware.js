@@ -4,7 +4,7 @@ const dotenv = require("dotenv");
 // dotenv config
 dotenv.config();
 
-const JWT_SECRET = process.env.SECRET; // Load secret from environment variables or config
+const JWT_SECRET = process.env.SECRET2; // Load secret from environment variables or config
 
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.driver; // Ensure your cookies middleware is enabled

@@ -9,7 +9,7 @@ router.post("/managerlogin", managerController.loginManager); // POST /manager/l
 router.post("/logout", managerController.logoutManager); // GET /manager/logout - logout the manager
 router.get("/check-auth", managerController.checkAuth); // GET /manager/check-auth - check if the manager is authenticated
 
-router.get('/getdriver', managerAuthToken,managerController.getDriverByStore);         
+router.get('/getdriver', managerAuthToken, managerController.getDriverByStore);         
 router.get('/getdriverassistant',managerAuthToken, managerController.getDriverAssistant);      
 router.get('/gettruck',managerAuthToken, managerController.getTruck);       
 router.get('/getroute', managerAuthToken,managerController.getRoute);   
@@ -20,7 +20,7 @@ router.get('/getactivetrips',managerAuthToken, managerController.getActiveTripsB
 router.get('/getfinishedtrips',managerAuthToken, managerController.getFinishedTripsByStore);
 
 router.post('/updatetobranch',managerAuthToken, managerController.updateOrdersToBranch);
-router.post('/endtrip', managerController.endTrip);
+router.post('/endtrip',managerAuthToken, managerController.endTrip);
 router.post('/scheduletrip',managerAuthToken, managerController.scheduleTrip);   
 
 module.exports = router;

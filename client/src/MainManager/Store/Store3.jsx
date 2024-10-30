@@ -162,7 +162,7 @@ function Store3() {
             <div className="w-full bg-gray-300 rounded-full h-6 shadow-lg">
               <div
                 className="bg-gradient-to-r from-green-400 to-green-600 h-6 rounded-full transition-all duration-300 ease-in-out"
-                style={{ width: `${(displayCapacity / trainCapacity) * 100}%` }}
+                style={{ width: `${((trainCapacity-displayCapacity) / trainCapacity) * 100}%` }}
               >
                 <span className="text-white font-semibold pl-2">{displayCapacity} / {trainCapacity}</span>
               </div>

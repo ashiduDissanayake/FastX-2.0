@@ -3,6 +3,7 @@ const db = require("../config/db");
 const Order = {
   placeOrder: async (userId, routeId, storeId, cartItems) => {
     return new Promise((resolve, reject) => {
+      console.log(cartItems);
       const query = "CALL PlaceOrder(?, ?, ?, ?)";
 
       // Convert cart items to a JSON string to pass as an argument to the procedure

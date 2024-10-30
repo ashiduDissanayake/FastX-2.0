@@ -35,6 +35,8 @@ router.put('/train/reduce-capacity/:storeId',MainManagerAuthenticateToken, mainm
 router.get('/most-sold-items',MainManagerAuthenticateToken, mainmanagerController.getMostSoldItems);
 router.get('/sales-data',MainManagerAuthenticateToken, mainmanagerController.getSalesData);
 
+router.get('/route-revenue',MainManagerAuthenticateToken, mainmanagerController.getRouteRevenue);
+
 // Route to update the order status
 router.put('/orders/:id', MainManagerAuthenticateToken, mainmanagerController.updateOrderStatus);
 

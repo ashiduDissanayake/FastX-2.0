@@ -509,6 +509,31 @@ const managerController = {
         .send({ message: "Failed to schedule trip", error: error.message });
     }
   },
+
+  getDashboardData: async (req, res) => {
+    const managerID = req.user.manager_ID;
+   
+    try {
+        const storeIDResult = await Manager.getStoreIDByManagerID(managerID);
+
+        if (!storeIDResult || !storeIDResult.store_ID) {
+            return res
+                .status(404)
+                .json({ message: "No store associated with this manager." });
+        }
+
+        const storeID = storeIDResult.store_ID;   
+        const dashboardData = await Manager.getDashboardData(storeID);
+
+        res.status(200).json({ data: dashboardData });
+    } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        res
+            .status(500)
+            .json({ message: "Failed to fetch dashboard data", error: error.message });
+    }
+},
+
 };
 
 module.exports = managerController;

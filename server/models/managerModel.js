@@ -320,6 +320,29 @@ login :(username, password, callback) => {
     });
 },
 
+getDashboardData: async (storeID) => {
+  return new Promise((resolve, reject) => {
+    const query = "CALL GetDashboardData(?)";
+
+    db.query(query, [storeID], (error, result) => {
+      if (error) {
+        console.error("Database query error:", error);
+        return reject(new Error("Failed to retrieve dashboard data"));
+      }
+
+      // Ensure result is properly formatted
+      if (result && result[0] && result[0].length > 0) {
+        const [data] = result[0]; // Extract the first row of data
+        resolve(data); // Pass only the data to the resolve function
+      } else {
+        console.warn("No data found in dashboard query result");
+        resolve(null); // Resolve with null if no data is found
+      }
+    });
+  });
+},
+
+
 
 };
 

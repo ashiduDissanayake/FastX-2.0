@@ -87,19 +87,18 @@ const MainManagerModel = {
     });
   },
 
-  getMainManagerByID(MainManagerID) {
-    return new Promise((resolve, reject) => {
-      const query = 'SELECT name, email FROM mainmanager WHERE mainmanager_id = ?';
+   getMainManagerByID : async (MainManagerID) => {
+    try {
+        const query = 'SELECT name, email FROM mainmanager WHERE mainmanager_id = ?';
+        const [results] = await db.query(query, [MainManagerID]);
+        
+        return results[0]; // Return the first row if a manager is found
+    } catch (error) {
+        console.error('Error fetching main manager:', error.message);
+        throw error;
+    }
+},
 
-      db.query(query, [MainManagerID], (error, results) => {
-        if (error) {
-          return reject(error);
-        }
-        resolve(results[0]); // Return the first row if a driver is found
-      });
-    });
-  },
-  
 
 
    async getMostSoldItems() {
@@ -133,6 +132,26 @@ const MainManagerModel = {
       callback(null, results[0]); // Access the actual result set
     });
   },
+
+
+   getRouteRevenue : (store_id, date_range) => {
+    return new Promise((resolve, reject) => {
+        const query = 'CALL GetRouteRevenueByStoreAndDateRange(?, ?)';
+        
+        db.query(query, [store_id, date_range], (error, results) => {
+            if (error) {
+                console.log('Error occurred:', error.message); // Log error details
+                return reject(error); // Reject the promise with the error
+            }
+            
+            
+            console.log(results[0]);
+            resolve(results[0]); // Resolve the promise with the first result set
+        });
+    });
+},
+
+
 
   getPendingOrdersStore6: (callback) => {
     const query = 'CALL GetOrdersByPriority(6)';

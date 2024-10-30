@@ -5,7 +5,7 @@ const db = require("../config/db");
 // dotenv config
 dotenv.config();
 
-const DriverModel = require("../models/drivermodel");
+const DriverModel = require("../models/driverModel");
 // handle errors
 
 const driverController = {

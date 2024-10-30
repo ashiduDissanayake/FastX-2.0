@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Lock, LogIn } from "lucide-react";
 
@@ -10,7 +9,6 @@ const DriverAssistantLogin = () => {
   const [message, setMessage] = useState("");
   const [DriverAssistantID, setDriverAssistantId] = useState(null);
 
-  const navigate = useNavigate(); // Initialize the navigate function
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -33,7 +31,7 @@ const DriverAssistantLogin = () => {
       if (response.data.message === "Login successful") {
         setDriverAssistantId(response.data.driverAssistantID);
         setMessage("Login successful!");
-        navigate("/driver-assistant-dashboard"); // Redirect to the dashboard after successful login
+        window.location.href = '/driver-assistant-dashboard';
       } else {
         setMessage(response.data.message);
         setDriverAssistantId(null);

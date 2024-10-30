@@ -4,6 +4,10 @@ import ProtectedRoute from "./layouts/ProtectedLayout";
 import MainManagerProtectedRoute from "./layouts/MainManagerProtectedLayout";
 import { AuthProvider } from "./context/AuthContext";
 import { MainManagerAuthProvider } from "./context/MainManagerAuthContext";
+import { ManagerAuthProvider } from "./context/ManagerAuthContext";
+import ManagerProtectedRoute from "./layouts/ManagerProtectedLayout";
+import { DriverAuthProvider } from "./context/DriverAuthContext";
+import DriverProtectedRoute from "./layouts/DriverProtectedLayout";
 
 import Home from "./pages/Home";
 import LoginForm from "./pages/Login";
@@ -37,8 +41,11 @@ import Report from "./components/Admin/pages/Report";
 import AdminLogin from "./components/Admin/pages/AdminLogin";
 
 // Driver Imports
-
-import DriverLogin from "./Driver/Driverlogin";
+import DriverDashboard from "./Driver/DriverDashboard";
+import Driverlogin from "./Driver/Driverlogin";
+import DriverProfile from "./Driver/DriverProfile";
+import DriverReport from "./Driver/DriverReport";
+import DriverTruckSchedule from "./Driver/DriverTruckSchedule";
 
 // Main Manager Imports
 import MainHome from "./Main Manager/pages/Home";
@@ -60,19 +67,16 @@ import Store3 from './MainManager/Store/Store3'
 import Store4 from './MainManager/Store/Store4'
 import Store5 from './MainManager/Store/Store5'
 import Store6 from "./MainManager/Store/Srore6";
-import DriverDashboard from "./Driver/DriverDashboard";
-import Driverlogin from "./Driver/Driverlogin";
-import DriverProfile from "./Driver/DriverProfile";
-import DriverReport from "./Driver/DriverReport";
-import DriverTruckSchedule from "./Driver/DriverTruckSchedule";
-import { ManagerAuthProvider } from "./context/ManagerAuthContext";
-import ManagerProtectedRoute from "./layouts/ManagerProtectedLayout";
-import { DriverAuthProvider } from "./context/DriverAuthContext";
-import DriverProtectedRoute from "./layouts/DriverProtectedLayout";
 
+// Driver Assistant Imports
 import DriverAssistantDashboard from "./DriverAssistant/DriverAssistantDashboard";
 import UpdateOrders from "./DriverAssistant/DriverAssistantUpdateOrders";
 import DriverAssistantLogin from "./DriverAssistant/DriverAssistantLogin";
+import { DriverAssistantAuthProvider } from "./context/DriverAssistantAuthContext";
+import DriverAssistantProtectedRoute from "./layouts/DriverAssistantProtectedLayout";
+import AdminProtectedLayout from "./layouts/AdminLayout";
+
+
 
 function App() {
   return (
@@ -80,6 +84,7 @@ function App() {
       <MainManagerAuthProvider>
         <ManagerAuthProvider>
           <DriverAuthProvider>
+            <DriverAssistantAuthProvider>
         <Router>
           <Routes>
             {/* Public Routes */}
@@ -134,25 +139,24 @@ function App() {
             <Route path="/driver-report" element={<DriverProtectedRoute><DriverReport/></DriverProtectedRoute>} />
             <Route path="/driver-truckschedule" element={<DriverProtectedRoute><DriverTruckSchedule/></DriverProtectedRoute>} />
 
-
-            {/* Admin Routes */}
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admindriver" element={<Driver />} />
-            <Route path="/adminprofile" element={<Profile />} />
-            <Route path="/admincustomer" element={<Customer />} />
-            <Route path="/adminassistentdriver" element={<AssistentDriver />} />
-            <Route path="/adminmanager" element={<Manager />} />
-            <Route path="/adminreport" element={<Report />} />
-            <Route path="/adminlogin" element={<AdminLogin/>} />
-
-
             {/* Driver Assistant Routes */}
             <Route path="/driver-assistant-login" element={<DriverAssistantLogin/>}/>
-            <Route path="/driver-assistant-dashboard" element={<DriverAssistantDashboard/>} />
-            <Route path="/driver-assistant-update-orders" element={<UpdateOrders/>} />
+            <Route path="/driver-assistant-dashboard" element={<DriverAssistantProtectedRoute><DriverAssistantDashboard/></DriverAssistantProtectedRoute>} />
+            <Route path="/driver-assistant-update-orders" element={<DriverAssistantProtectedRoute><UpdateOrders/></DriverAssistantProtectedRoute>} />
+
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminProtectedLayout><AdminDashboard /></AdminProtectedLayout>} />
+            <Route path="/admindriver" element={<AdminProtectedLayout><Driver /></AdminProtectedLayout>} />
+            <Route path="/adminprofile" element={<AdminProtectedLayout><Profile /></AdminProtectedLayout>} />
+            <Route path="/admincustomer" element={<AdminProtectedLayout><Customer /></AdminProtectedLayout>} />
+            <Route path="/adminassistentdriver" element={<AdminProtectedLayout><AssistentDriver /></AdminProtectedLayout>} />
+            <Route path="/adminmanager" element={<AdminProtectedLayout><Manager /></AdminProtectedLayout>} />
+            <Route path="/adminreport" element={<AdminProtectedLayout><Report /></AdminProtectedLayout>} />
+            <Route path="/adminlogin" element={<AdminLogin/>} />
 
           </Routes>
         </Router>
+        </DriverAssistantAuthProvider>
         </DriverAuthProvider>
         </ManagerAuthProvider>
       </MainManagerAuthProvider>

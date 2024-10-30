@@ -4,8 +4,13 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import UpdateIcon from '@mui/icons-material/Update';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { FaUserCircle } from "react-icons/fa";
+import { useAuth } from '../context/DriverAssistantAuthContext'
 
 const DriverAssistantSideBar = () => {
+  const { logout } = useAuth();
+  const handlelogout = () => {
+    logout();
+  }
   return (
     <div className="bg-[#0A2540] text-white w-64 h-screen p-6 font-raleway">
       <div className="flex items-center flex-col mb-8">
@@ -32,8 +37,9 @@ const DriverAssistantSideBar = () => {
       </nav>
       <div className="mt-auto">
         <NavLink 
-          to="/driver-assistant-logout" 
+          to="/driver-assistant-login" 
           className={({ isActive }) => `flex items-center p-3 rounded-lg transition-all ${isActive ? 'bg-[#12365C] text-yellow-300' : 'hover:bg-[#12365C]'}`}
+          onClick={handlelogout}
         >
           <LogoutIcon />
           <span className="ml-2 text-lg">Logout</span>

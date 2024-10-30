@@ -59,6 +59,7 @@ import Store2 from './MainManager/Store/Store2'
 import Store3 from './MainManager/Store/Store3'
 import Store4 from './MainManager/Store/Store4'
 import Store5 from './MainManager/Store/Store5'
+import Store6 from "./MainManager/Store/Srore6";
 import DriverDashboard from "./Driver/DriverDashboard";
 import Driverlogin from "./Driver/Driverlogin";
 import DriverProfile from "./Driver/DriverProfile";
@@ -68,6 +69,7 @@ import { ManagerAuthProvider } from "./context/ManagerAuthContext";
 import ManagerProtectedRoute from "./layouts/ManagerProtectedLayout";
 import { DriverAuthProvider } from "./context/DriverAuthContext";
 import DriverProtectedRoute from "./layouts/DriverProtectedLayout";
+
 import DriverAssistantDashboard from "./DriverAssistant/DriverAssistantDashboard";
 import UpdateOrders from "./DriverAssistant/DriverAssistantUpdateOrders";
 import DriverAssistantLogin from "./DriverAssistant/DriverAssistantLogin";
@@ -114,6 +116,7 @@ function App() {
             <Route path="/store3" element={<MainManagerProtectedRoute><Store3 /></MainManagerProtectedRoute>} />
             <Route path="/store4" element={<MainManagerProtectedRoute><Store4 /></MainManagerProtectedRoute>} />
             <Route path="/store5" element={<MainManagerProtectedRoute><Store5 /></MainManagerProtectedRoute>} />
+            <Route path="/store6" element={<MainManagerProtectedRoute><Store6 /></MainManagerProtectedRoute>} />
 
             {/* Manager Routes */}
             <Route path="/manager-login" element={<ManagerLogin />} />

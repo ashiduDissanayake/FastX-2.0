@@ -134,6 +134,16 @@ const MainManagerModel = {
     });
   },
 
+  getPendingOrdersStore6: (callback) => {
+    const query = 'CALL GetOrdersByPriority(6)';
+    db.query(query, (err, results) => {
+      if (err) {
+        return callback(err, null);
+      }
+      callback(null, results[0]); // Access the actual result set
+    });
+  },
+
   getRevenuePastThreeMonths: () => {
     return new Promise((resolve, reject) => {
         db.query(`CALL GetRevenuePastThreeMonths()`, (error, results) => {

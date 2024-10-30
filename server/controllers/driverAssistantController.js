@@ -32,7 +32,7 @@ const driverAssistantController = {
 
     
             // Generate a JWT token
-            const token = jwt.sign({ driverAssistantID, username }, process.env.SECRET, {
+            const token = jwt.sign({ driverAssistantID, username }, process.env.SECRET5, {
               expiresIn: "1h",
             });
     
@@ -63,10 +63,12 @@ const driverAssistantController = {
 
       // Check Auth
       checkAuth: (req, res) => {
-        const token = req.cookies.jwt; // Get the token from cookies
+        const token = req.cookies.driverassistanttoken; // Get the token from cookies
         if (!token) return res.json({ isAuthenticated: false });
     
-        jwt.verify(token, process.env.SECRET, (err, user) => {
+        jwt.verify(token, process.env.SECRET5, (err, user) => {
+          console.log("User:", user);
+          console.log("Error:", err);
           if (err) return res.json({ isAuthenticated: false });
           res.json({ isAuthenticated: true });
         });
@@ -74,7 +76,7 @@ const driverAssistantController = {
     
       // Logout user
       logoutDriverAssistant: (req, res) => {
-        res.cookie("jwt", "", { maxAge: 1 });
+        res.cookie("driverassistanttoken", "", { maxAge: 1 });
         res.redirect("/");
       },
 

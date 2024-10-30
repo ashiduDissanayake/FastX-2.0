@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { Mail, Lock, LogIn } from "lucide-react";
+import img2 from "./assets/bg.jpeg";
 
 const DriverAssistantLogin = () => {
   const [username, setUsername] = useState("");
@@ -9,60 +10,46 @@ const DriverAssistantLogin = () => {
   const [message, setMessage] = useState("");
   const [DriverAssistantID, setDriverAssistantId] = useState(null);
 
-
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
       const response = await axios.post(
         "http://localhost:8080/driverassistant/driverassistantlogin",
-        {
-          username,
-          password,
-        },
-        {
-          withCredentials: true, // Include credentials in the request
-        }
+        { username, password },
+        { withCredentials: true }
       );
-
-      // Log the entire response for debugging
-      console.log("Login Response:", response.data);
 
       if (response.data.message === "Login successful") {
         setDriverAssistantId(response.data.driverAssistantID);
         setMessage("Login successful!");
-        window.location.href = '/driver-assistant-dashboard';
+        window.location.href = "/driver-assistant-dashboard";
       } else {
         setMessage(response.data.message);
         setDriverAssistantId(null);
       }
     } catch (error) {
       console.error("Error during login:", error);
-      if (error.response) {
-        console.log("Error Response Data:", error.response.data);
-      }
       setMessage("Error occurred during login.");
       setDriverAssistantId(null);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 flex items-center justify-center px-4">
+    <div
+      className="min-h-screen bg-cover bg-center flex items-center justify-center"
+      style={{ backgroundImage: `url(${img2})` }}
+    >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-black/80 p-8 rounded-lg shadow-2xl w-full max-w-md"
+        className="w-full max-w-md p-8 space-y-6 bg-white/20 border border-white/20 rounded-lg shadow-lg backdrop-blur-md"
       >
-        <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-rose-400 mb-6 text-center">
-          Login
-        </h2>
+        <h2 className="text-3xl font-bold text-center text-white">Login</h2>
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label
-              className="text-sm font-medium text-pink-300 flex items-center"
-              htmlFor="username"
-            >
+            <label className="block text-sm font-medium text-white flex items-center">
               <Mail className="mr-2" size={18} />
               Username
             </label>
@@ -71,14 +58,11 @@ const DriverAssistantLogin = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              className="w-full px-4 py-2 mt-2 bg-black/60 text-white border border-pink-400 rounded-md focus:ring-pink-500 focus:border-pink-500 focus:outline-none"
+              className="w-full px-4 py-2 mt-2 bg-transparent border border-white/20 rounded-full text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-white/50"
             />
           </div>
           <div>
-            <label
-              className="text-sm font-medium text-pink-300 flex items-center"
-              htmlFor="password"
-            >
+            <label className="block text-sm font-medium text-white flex items-center">
               <Lock className="mr-2" size={18} />
               Password
             </label>
@@ -87,19 +71,26 @@ const DriverAssistantLogin = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2 mt-2 bg-black/60 text-white border border-pink-400 rounded-md focus:ring-pink-500 focus:border-pink-500 focus:outline-none"
+              className="w-full px-4 py-2 mt-2 bg-transparent border border-white/20 rounded-full text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-white/50"
             />
           </div>
-          <motion.button
+          {/* <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             type="submit"
-            className="w-full bg-gradient-to-r from-pink-400 to-rose-500 text-white font-bold py-3 px-4 rounded-full transition duration-300 flex items-center justify-center"
+            className="w-full bg-white text-gray-800 font-medium py-2 px-4 rounded-full shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-300"
           >
-            <LogIn className="mr-2" size={18} />
+            <LogIn className="mr-2" size={10} />
             Login
-          </motion.button>
+          </motion.button> */}
+          <button
+            type="submit"
+              className="w-full px-4 py-2 font-medium bg-white text-gray-800 rounded-full shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-300">
+                Login
+          </button>
+          
         </form>
+
         {message && (
           <p
             className={`mt-4 text-center ${
@@ -112,7 +103,9 @@ const DriverAssistantLogin = () => {
 
         {DriverAssistantID && (
           <div className="mt-6 text-center">
-            <p className="text-sm text-pink-200">Driver Assitant ID: {DriverAssistantID}</p>
+            <p className="text-sm text-gray-200">
+              Driver Assistant ID: {DriverAssistantID}
+            </p>
           </div>
         )}
       </motion.div>

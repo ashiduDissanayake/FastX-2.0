@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Lock, LogIn } from "lucide-react";
+import img2 from "../assets/bg.jpeg";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -18,19 +19,14 @@ const Login = () => {
     try {
       const response = await axios.post(
         "http://localhost:8080/manager/managerlogin",
-        {
-          username,
-          password,
-        },
-        {
-          withCredentials: true,
-        }
+        { username, password },
+        { withCredentials: true }
       );
 
       if (response.data.message === "Login successful") {
         setManagerId(response.data.manager_ID);
         setMessage("Login successful!");
-        window.location.href = "/manager-dashboard";
+        navigate("/manager-dashboard");
       } else {
         setMessage(response.data.message);
         setManagerId(null);
@@ -43,22 +39,20 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-[#1F1A37] flex items-center justify-center px-4">
+    <div
+      className="min-h-screen bg-cover bg-center flex items-center justify-center"
+      style={{ backgroundImage: `url(${img2})` }}
+    >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-[#2C2541] p-8 rounded-lg shadow-2xl w-full max-w-md"
+        className="w-full max-w-md p-8 space-y-6 bg-white/20 border border-white/20 rounded-lg shadow-lg backdrop-blur-md"
       >
-        <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#C8A2F6] to-[#9E77ED] mb-6 text-center">
-          Login
-        </h2>
+        <h2 className="text-3xl font-bold text-center text-white">Login</h2>
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label
-              className="text-sm font-medium text-[#A56EFF] flex items-center"
-              htmlFor="username"
-            >
+            <label className="block text-sm font-medium text-white flex items-center">
               <Mail className="mr-2" size={18} />
               Username
             </label>
@@ -67,14 +61,11 @@ const Login = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              className="w-full px-4 py-2 mt-2 bg-[#2C1C5F] text-white border border-[#9E77ED] rounded-md focus:ring-[#A56EFF] focus:border-[#A56EFF] focus:outline-none"
+              className="w-full px-4 py-2 mt-2 bg-transparent border border-white/20 rounded-full text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-white/50"
             />
           </div>
           <div>
-            <label
-              className="text-sm font-medium text-[#A56EFF] flex items-center"
-              htmlFor="password"
-            >
+            <label className="block text-sm font-medium text-white flex items-center">
               <Lock className="mr-2" size={18} />
               Password
             </label>
@@ -83,19 +74,25 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2 mt-2 bg-[#2C1C5F] text-white border border-[#9E77ED] rounded-md focus:ring-[#A56EFF] focus:border-[#A56EFF] focus:outline-none"
+              className="w-full px-4 py-2 mt-2 bg-transparent border border-white/20 rounded-full text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-white/50"
             />
           </div>
-          <motion.button
+          {/* <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             type="submit"
-            className="w-full bg-gradient-to-r from-[#9E77ED] to-[#A56EFF] text-white font-bold py-3 px-4 rounded-full transition duration-300 flex items-center justify-center"
+            className="w-full px-4 py-2 font-medium bg-white text-gray-800 rounded-full shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-300"
           >
             <LogIn className="mr-2" size={18} />
             Login
-          </motion.button>
+          </motion.button> */}
+          <button
+            type="submit"
+            className="w-full px-4 py-2 font-medium bg-white text-gray-800 rounded-full shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-300">
+              Login
+          </button>
         </form>
+
         {message && (
           <p
             className={`mt-4 text-center ${
@@ -108,7 +105,7 @@ const Login = () => {
 
         {ManagerId && (
           <div className="mt-6 text-center">
-            <p className="text-sm text-[#C8A2F6]">Manager ID: {ManagerId}</p>
+            <p className="text-sm text-gray-200">Manager ID: {ManagerId}</p>
           </div>
         )}
       </motion.div>

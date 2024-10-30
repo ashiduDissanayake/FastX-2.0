@@ -92,7 +92,9 @@ const OrderCard = ({ order }) => {
                   >
                     <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
                       <img
-                        src={item.image_link || "/api/placeholder/64/64"}
+                        src={item.image_link
+                          .replace(/^".\/?/, '/public/')
+                          .replace(/"$/, '')|| "/api/placeholder/64/64"}
                         alt={item.product_Name}
                         className="w-full h-full object-cover"
                       />

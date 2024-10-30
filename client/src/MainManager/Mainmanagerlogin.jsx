@@ -26,7 +26,7 @@ const Login = () => {
             if (response.data.message === 'Login successful') {
                 setMainManagerId(response.data.mainmanager_id);
                 setMessage('Login successful!');
-                window.location.href = '/store1';
+                window.location.href = '/mainmanager-dashboard';
             } else {
                 setMessage(response.data.message);
                 setMainManagerId(null);

@@ -8,19 +8,22 @@ const HorizontalSidebar = () => {
         <h2 className="text-xl font-semibold">Stores</h2>
         <div className="flex flex-1 justify-around">
           <Link to="/store1" className="hover:bg-gray-700 py-2 px-4 rounded transition duration-300">
-            Store 1
+            Colombo
           </Link>
           <Link to="/store2" className="hover:bg-gray-700 py-2 px-4 rounded transition duration-300">
-            Store 2
+            Negombo
           </Link>
           <Link to="/store3" className="hover:bg-gray-700 py-2 px-4 rounded transition duration-300">
-            Store 3
+            Galle
           </Link>
           <Link to="/store4" className="hover:bg-gray-700 py-2 px-4 rounded transition duration-300">
-            Store 4
+            Matara
           </Link>
           <Link to="/store5" className="hover:bg-gray-700 py-2 px-4 rounded transition duration-300">
-            Store 5
+            Jaffna
+          </Link>
+          <Link to="/store6" className="hover:bg-gray-700 py-2 px-4 rounded transition duration-300">
+            Trinco
           </Link>
         </div>
       </div>

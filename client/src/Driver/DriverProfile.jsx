@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FaIdBadge, FaStore, FaClock, FaUserCheck } from 'react-icons/fa';
 import { Doughnut } from 'react-chartjs-2';
 import SidePanel from './DriverSidePanel';
+import img2 from './assets/bg1.jpg';
 
 function DriverProfile() {
   const [driverDetails, setDriverDetails] = useState(null);
@@ -45,51 +46,58 @@ function DriverProfile() {
   };
 
   return (
-    <div className="flex">
+    <div className="flex bg-gray-100 min-h-screen">
       {/* SidePanel on the left */}
-      <div className="w-1/4"> {/* Adjusted width for better fit */}
+      <div className="w-1/4">
         <SidePanel />
       </div>
 
       {/* Main profile section on the right */}
-      <div className="w-3/4 p-6"> {/* Adjusted width for profile section */}
-        <h2 className="text-2xl font-bold mb-4">Driver Profile</h2>
+      <div className="w-3/4 p-6">
+        <h2 className="text-3xl font-bold mb-8 text-gray-800">Driver Profile</h2> {/* Increased font size */}
         {loading ? (
-          <p>Loading driver details...</p>
+          <p className="text-gray-600">Loading driver details...</p>
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : driverDetails ? (
-          <div className="p-4 border rounded-lg shadow space-y-4">
-            <div className="flex items-center">
-              <FaIdBadge className="mr-2 text-blue-500" />
-              <p><strong>Driver ID:</strong> {driverDetails.driver_ID}</p>
+          <div className="grid grid-cols-2 gap-6"> {/* Increased gap between tiles */}
+            {/* Colorful Tiles for Driver Details */}
+            <div className="bg-blue-200 p-6 rounded-lg shadow-md flex items-center"> {/* Increased padding */}
+              <FaIdBadge className="mr-2 text-blue-500 text-3xl" /> {/* Increased icon size */}
+              <p className="text-lg"><strong>Driver ID:</strong> {driverDetails.driver_ID}</p>
             </div>
-            <div className="flex items-center">
-              <FaUserCheck className="mr-2 text-green-500" />
-              <p><strong>Status:</strong> {driverDetails.status}</p>
+            <div className="bg-green-200 p-6 rounded-lg shadow-md flex items-center"> {/* Increased padding */}
+              <FaUserCheck className="mr-2 text-green-500 text-3xl" /> {/* Increased icon size */}
+              <p className="text-lg"><strong>Status:</strong> {driverDetails.status}</p>
             </div>
-            <div className="flex items-center">
-              <FaStore className="mr-2 text-yellow-500" />
-              <p><strong>Store ID:</strong> {driverDetails.store_ID}</p>
+            <div className="bg-yellow-200 p-6 rounded-lg shadow-md flex items-center"> {/* Increased padding */}
+              <FaStore className="mr-2 text-yellow-500 text-3xl" /> {/* Increased icon size */}
+              <p className="text-lg"><strong>Store ID:</strong> {driverDetails.store_ID}</p>
             </div>
-            <div className="flex items-center">
-              <FaClock className="mr-2 text-purple-500" />
-              <p><strong>Current Working Time:</strong> {driverDetails.current_working_time} hours</p>
-            </div>
-
-            {/* Doughnut Chart for Working Hours */}
-            <div className="flex justify-center mt-4">
-              <div style={{ width: '250px', height: '250px' }}> {/* Increased size for larger chart */}
-                <Doughnut data={progressData} options={{ maintainAspectRatio: false }} />
-                <p className="text-center mt-2">
-                  {((workingHours / maxWorkingHours) * 100).toFixed(2)}% of maximum working hours used
-                </p>
-              </div>
+            <div className="bg-purple-200 p-6 rounded-lg shadow-md flex items-center"> {/* Increased padding */}
+              <FaClock className="mr-2 text-purple-500 text-3xl" /> {/* Increased icon size */}
+              <p className="text-lg"><strong>Current Working Time:</strong> {driverDetails.current_working_time} hours</p>
             </div>
           </div>
         ) : (
-          <p>Driver details not available.</p>
+          <p className="text-gray-600">Driver details not available.</p>
         )}
+
+        {/* Doughnut Chart for Working Hours - positioned outside of the profile box */}
+        <div className="flex justify-center mt-8">
+          <div className="relative flex items-center justify-center" style={{ width: '300px', height: '300px' }}>
+            <Doughnut data={progressData} options={{ maintainAspectRatio: false }} />
+          </div>
+        </div>
+
+        {/* Text Below the Pie Chart */}
+        <div className="flex justify-center mt-4">
+          <p className="text-lg text-gray-800 text-center">
+            {((workingHours / maxWorkingHours) * 100).toFixed(2)}%
+            <br />
+            <span className="text-sm text-gray-600">of maximum working hours used</span>
+          </p>
+        </div>
       </div>
     </div>
   );

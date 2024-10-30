@@ -66,6 +66,7 @@ import Store2 from './MainManager/Store/Store2'
 import Store3 from './MainManager/Store/Store3'
 import Store4 from './MainManager/Store/Store4'
 import Store5 from './MainManager/Store/Store5'
+import Store6 from "./MainManager/Store/Srore6";
 
 // Driver Assistant Imports
 import DriverAssistantDashboard from "./DriverAssistant/DriverAssistantDashboard";
@@ -120,6 +121,7 @@ function App() {
             <Route path="/store3" element={<MainManagerProtectedRoute><Store3 /></MainManagerProtectedRoute>} />
             <Route path="/store4" element={<MainManagerProtectedRoute><Store4 /></MainManagerProtectedRoute>} />
             <Route path="/store5" element={<MainManagerProtectedRoute><Store5 /></MainManagerProtectedRoute>} />
+            <Route path="/store6" element={<MainManagerProtectedRoute><Store6 /></MainManagerProtectedRoute>} />
 
             {/* Manager Routes */}
             <Route path="/manager-login" element={<ManagerLogin />} />

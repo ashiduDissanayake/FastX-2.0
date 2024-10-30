@@ -29,6 +29,7 @@ router.get('/Store2/orders',MainManagerAuthenticateToken, mainmanagerController.
 router.get('/Store3/orders',MainManagerAuthenticateToken, mainmanagerController.getPendingOrdersStore3);
 router.get('/Store4/orders',MainManagerAuthenticateToken, mainmanagerController.getPendingOrdersStore4);
 router.get('/Store5/orders',MainManagerAuthenticateToken, mainmanagerController.getPendingOrdersStore5);
+router.get('/Store6/orders',MainManagerAuthenticateToken, mainmanagerController.getPendingOrdersStore6);
 router.get('/train/nearest-capacity/:storeId',MainManagerAuthenticateToken, mainmanagerController.getNearestCapacity);
 router.put('/train/reduce-capacity/:storeId',MainManagerAuthenticateToken, mainmanagerController.reduceCapacity); 
 router.get('/most-sold-items',MainManagerAuthenticateToken, mainmanagerController.getMostSoldItems);

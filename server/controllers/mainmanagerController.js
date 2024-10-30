@@ -176,6 +176,15 @@ const mainmanagerController = {
     });
   },
 
+  getPendingOrdersStore6: (req, res) => {
+    MainManagerModel.getPendingOrdersStore6((err, orders) => {
+      if (err) {
+        return res.status(500).json({ error: "Database query error" });
+      }
+      res.json(orders);
+    });
+  },
+
   updateOrderStatus: (req, res) => {
     const { id } = req.params;
     const { status } = req.body;

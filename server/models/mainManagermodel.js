@@ -35,13 +35,7 @@ const MainManagerModel = {
   },
 
   reduceTrainCapacity: (storeId, capacity, callback) => {
-    const updateQuery = `
-      UPDATE TrainSchedule
-      SET Availabale_capacity = Availabale_capacity - ?
-      WHERE store_id = ? AND arrival_time >= NOW()
-      ORDER BY arrival_time ASC
-      LIMIT 1;
-    `;
+    const updateQuery = `SELECT UpdateTrainSchedule(?, ?)`;
     
     db.query(updateQuery, [capacity, storeId], (error, results) => {
       if (error) {
@@ -90,7 +84,7 @@ const MainManagerModel = {
 
    getMainManagerByID : async (MainManagerID) => {
     try {
-        const query = 'SELECT name, email FROM mainmanager WHERE mainmanager_id = ?';
+        const query = 'CALL GetMainManagerInfo(?)';
         const [results] = await db.query(query, [MainManagerID]);
         
         return results[0]; // Return the first row if a manager is found

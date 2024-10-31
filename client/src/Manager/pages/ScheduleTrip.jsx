@@ -100,7 +100,7 @@ const ScheduleTrip = () => {
         : totalCapacity + intCapacity;
 
       // Check capacity limit
-      if (!isSelected && newTotalCapacity > 500) {
+      if (!isSelected && newTotalCapacity > 50000) {
         setWarning(
           `Cannot select order! This will exceed the capacity limit of 500. Current capacity: ${newTotalCapacity}`
         );
@@ -266,11 +266,11 @@ const ScheduleTrip = () => {
     <div className="relative h-4 bg-gray-200 rounded-full overflow-hidden">
       <div
         className="absolute top-0 left-0 h-full bg-green-500 transition-all"
-        style={{ width: `${(totalCapacity / 500) * 100}%` }}
+        style={{ width: `${(totalCapacity / 50000) * 100}%` }}
       ></div>
     </div>
     <div className="mt-2 text-sm text-gray-600">
-      Total Capacity Selected: {totalCapacity} / 500
+      Total Capacity Selected: {totalCapacity} / 50,000
     </div>
   </div>
 </div>

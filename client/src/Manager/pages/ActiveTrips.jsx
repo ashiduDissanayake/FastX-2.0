@@ -36,7 +36,7 @@ const ActiveTrips = () => {
     const endTrip = async (schedule_ID) => {
         if (window.confirm("Are you sure you want to end this trip?")) {
             try {
-                const response = await axios.post("http://localhost:8080/manager/endtrip", { schedule_ID });
+                const response = await axios.post("http://localhost:8080/manager/endtrip", { schedule_ID }, { withCredentials: true });
                 setSuccessMessage(response.data.message);
                 // Fetch updated list of trips after ending one
                 const fetchUpdatedTrips = await axios.get("http://localhost:8080/manager/getactivetrips", { withCredentials: true });

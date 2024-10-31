@@ -64,6 +64,7 @@ const MainManagerModel = {
       if (err) {
         return callback(err, null);
       }
+      console.log(results[0]);
       callback(null, results[0]); // Access the actual result set
     });
   },

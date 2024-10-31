@@ -24,7 +24,7 @@ const app = express();
 // Middlewares
 // Allow credentials and specify the frontend origin
 const corsOptions = {
-  origin: 'http://54.167.80.224', // Frontend URL
+  origin: 'http://localhost:3000', // Frontend URL
   credentials: true,               // Allow credentials (cookies)
 };
 

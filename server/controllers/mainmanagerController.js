@@ -127,6 +127,7 @@ const mainmanagerController = {
         return res.status(500).json({ error: "Database query error" });
       }
       res.json(orders);
+      
     });
   },
 
@@ -146,6 +147,7 @@ const mainmanagerController = {
         return res.status(500).json({ error: "Database query error" });
       }
       res.json(orders);
+      
     });
   },
 
@@ -468,6 +470,7 @@ const mainmanagerController = {
   
     try {
       const data = await MainManagerModel.getMostSoldProducts(storeId, daysRange);
+      console.log(data);
       res.json(data);
       
     } catch (err) {

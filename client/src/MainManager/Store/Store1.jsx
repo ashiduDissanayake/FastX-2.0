@@ -143,9 +143,12 @@ function Store1() {
                     {order.status === 'Pending' && (
                       <button
                         onClick={() => handleStatusChange(order.order_id, order.capacity)}
-                        className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
+                        disabled={displayCapacity < order.capacity} // Disable if not enough capacity
+                        className={`${
+                          displayCapacity < order.capacity ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+                        } text-white px-4 py-1 rounded`}
                       >
-                        Mark as Shipped
+                        {displayCapacity < order.capacity ? 'Not Enough Capacity' : 'Mark as Shipped'}
                       </button>
                     )}
                   </td>

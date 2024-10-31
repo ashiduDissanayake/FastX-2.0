@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import SidePanel from './MainManagerSidepanel';
 import ReportSelectionbar from "./ReportSelectionbar";
 import {
@@ -21,6 +23,8 @@ function MostSoldItems() {
   const [dateRange, setDateRange] = useState(7); // Default to 1 Week
   const [chartData, setChartData] = useState(null);
   
+  const reportRef = useRef(null); // Reference to the report container
+
   // Dark color palette for bars
   const colors = [
     '#3B3B98', '#40407A', '#2C2C54', '#706FD3', '#474787',
@@ -55,6 +59,18 @@ function MostSoldItems() {
     }
   }, [selectedStore, dateRange]);
 
+  // Function to download the report as PDF
+  const downloadPDF = () => {
+    html2canvas(reportRef.current).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save("Most_Sold_Items_Report.pdf");
+    });
+  };
+
   return (
     <div className="flex bg-gray-50 min-h-screen">
       {/* SidePanel on the left */}
@@ -63,7 +79,7 @@ function MostSoldItems() {
       </div>
 
       {/* Main Content on the right */}
-      <div className="w-4/5 p-6">
+      <div className="w-4/5 p-6" ref={reportRef}>
         <ReportSelectionbar />
         <h2 className="text-2xl font-bold text-gray-700 mb-6">Most Sold Items</h2>
         
@@ -163,6 +179,14 @@ function MostSoldItems() {
             </div>
           </div>
         </div>
+
+        {/* Download PDF Button */}
+        <button
+          onClick={downloadPDF}
+          className="mt-6 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-md transition duration-200 ease-in-out"
+        >
+          Download Report as PDF
+        </button>
       </div>
     </div>
   );

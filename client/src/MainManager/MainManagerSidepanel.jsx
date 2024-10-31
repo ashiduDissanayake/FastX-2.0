@@ -22,7 +22,7 @@ const SidePanel = () => {
       <div className="flex items-center flex-col mb-8">
         <FaUserCircle className="text-5xl mr-4 mb-6" />
         <h2 className="text-2xl font-semibold tracking-wide">
-          Ashidu Dissanayake
+          Main Manager
         </h2>
         <p className="text-sm opacity-75">Main Manager</p>
       </div>
